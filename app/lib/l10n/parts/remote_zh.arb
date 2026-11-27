@@ -1074,5 +1074,23 @@
   "remoteCompactHistory": "精简历史",
   "remoteErrHistoryModeChanged": "主机已不支持精简历史，请切换到其他主机后再连回来，或重启 App，重新加载历史",
   "remoteCompactHistoryHint": "支持的 DSH Remote 主机会精简历史工具详情，实时回复和审批不变。切换主机或重启 App 后生效；旧主机仍传输完整历史。",
-  "searchKwRemoteCompactHistory": "精简 简洁 历史 工具 传输 流量 远程 compact slim lite"
+  "searchKwRemoteCompactHistory": "精简 简洁 历史 工具 传输 流量 远程 compact slim lite",
+  "pairedErrBanned": "配对尝试次数过多，还需等待 {seconds} 秒",
+  "@pairedErrBanned": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "pairedErrNeedsRepair": "配对凭据已失效，需要重新配对",
+  "pairedErrComputer": "那台电脑没能确认这次访问：请到电脑上确认 DSH 已启动、访问入口已启用",
+  "pairedErrEntryRefused": "入口拒绝了这次访问（{status}）：请确认地址与网络后重新配对",
+  "@pairedErrEntryRefused": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  }
 }

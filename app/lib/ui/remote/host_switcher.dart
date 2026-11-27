@@ -8,6 +8,7 @@ import '../../runtime/local_footprint.dart';
 import '../../runtime/runtime_state.dart';
 import '../../state/connection_state.dart';
 import '../../state/hosts_state.dart';
+import '../../state/paired_hosts_state.dart';
 import '../common/app_sheet.dart';
 import '../common/sheet_title_bar.dart';
 import '../common/status_chip.dart';
@@ -67,9 +68,9 @@ class HostChip extends ConsumerWidget {
   }
 }
 
-/// "切换主机": 本机, saved SSH hosts and the DSH Remote account's hosts, each
-/// with its state; picking one makes it active. [onManage] opens the remote
-/// page.
+/// "切换主机": 本机, saved SSH hosts, paired computers and the DSH Remote
+/// account's hosts, each with its state; picking one makes it active.
+/// [onManage] opens the remote page.
 Future<void> showHostSheet(BuildContext context, {required VoidCallback onManage}) {
   return showAppSheet<void>(context, isScrollControlled: true, builder: (sheet) => HostSheet(onManage: onManage));
 }
@@ -84,6 +85,7 @@ class HostSheet extends ConsumerWidget {
     final l10n = context.l10n;
     final active = ref.watch(activeHostProvider);
     final ssh = ref.watch(hostsProvider.select((s) => s.ssh));
+    final paired = ref.watch(pairedHostsProvider).records;
     final account = ref.watch(relayAccountProvider).value;
     final relayHosts = account?.signedIn == true ? account!.hosts : const <RelayHost>[];
 
@@ -136,6 +138,14 @@ class HostSheet extends ConsumerWidget {
                       subtitle: 'SSH · ${h.address}',
                       active: active == HostRef.ssh(h.id),
                       onTap: () => pick(HostRef.ssh(h.id)),
+                    ),
+                  for (final h in paired)
+                    _HostRow(
+                      host: HostRef.paired(h.id, name: h.name),
+                      title: h.name ?? l10n.commonRemoteHost,
+                      subtitle: h.entry.authority,
+                      active: active == HostRef.paired(h.id, name: h.name),
+                      onTap: () => pick(HostRef.paired(h.id, name: h.name)),
                     ),
                   for (final h in relayHosts)
                     _HostRow(

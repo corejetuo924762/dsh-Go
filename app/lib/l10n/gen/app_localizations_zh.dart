@@ -18602,6 +18602,22 @@ class L10nZh extends L10n {
   String get searchKwRemoteCompactHistory => '精简 简洁 历史 工具 传输 流量 远程 compact slim lite';
 
   @override
+  String pairedErrBanned(int seconds) {
+    return '配对尝试次数过多，还需等待 $seconds 秒';
+  }
+
+  @override
+  String get pairedErrNeedsRepair => '配对凭据已失效，需要重新配对';
+
+  @override
+  String get pairedErrComputer => '那台电脑没能确认这次访问：请到电脑上确认 DSH 已启动、访问入口已启用';
+
+  @override
+  String pairedErrEntryRefused(int status) {
+    return '入口拒绝了这次访问（$status）：请确认地址与网络后重新配对';
+  }
+
+  @override
   String get remotePairEntry => '扫码配对电脑';
 
   @override

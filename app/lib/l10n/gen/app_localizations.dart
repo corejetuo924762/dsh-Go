@@ -34164,6 +34164,30 @@ abstract class L10n {
   /// **'精简 简洁 历史 工具 传输 流量 远程 compact slim lite'**
   String get searchKwRemoteCompactHistory;
 
+  /// No description provided for @pairedErrBanned.
+  ///
+  /// In zh, this message translates to:
+  /// **'配对尝试次数过多，还需等待 {seconds} 秒'**
+  String pairedErrBanned(int seconds);
+
+  /// No description provided for @pairedErrNeedsRepair.
+  ///
+  /// In zh, this message translates to:
+  /// **'配对凭据已失效，需要重新配对'**
+  String get pairedErrNeedsRepair;
+
+  /// No description provided for @pairedErrComputer.
+  ///
+  /// In zh, this message translates to:
+  /// **'那台电脑没能确认这次访问：请到电脑上确认 DSH 已启动、访问入口已启用'**
+  String get pairedErrComputer;
+
+  /// No description provided for @pairedErrEntryRefused.
+  ///
+  /// In zh, this message translates to:
+  /// **'入口拒绝了这次访问（{status}）：请确认地址与网络后重新配对'**
+  String pairedErrEntryRefused(int status);
+
   /// No description provided for @remotePairEntry.
   ///
   /// In zh, this message translates to:

@@ -20,6 +20,28 @@ DraftAttachment _image(String name) => DraftAttachment.sniff(name, _png);
 
 DraftAttachment _file(String name) => DraftAttachment.sniff(name, Uint8List.fromList(utf8.encode('内容')));
 
+/// A carrier that serves neither upload protocol (the old relay tunnel did).
+class _NoUploadCarrier extends DshCarrier {
+  @override
+  String get kind => 'no-upload';
+
+  @override
+  DshTracer? get tracer => null;
+
+  @override
+  bool allowsEndpoint(String endpoint) => false;
+
+  @override
+  Future<RpcResult> call(String endpoint, Map<String, Object?> args, {Duration? timeout}) =>
+      throw UnsupportedError(endpoint);
+
+  @override
+  Future<DshMuxLink> openLink(MuxOptions options) => throw UnsupportedError('no streams');
+
+  @override
+  Future<void> close() async {}
+}
+
 class _Drafts extends DraftStore {
   _Drafts(this.initial);
   final DraftState initial;
@@ -202,16 +224,24 @@ void main() {
     });
   });
 
-  test('canStageFiles asks the connection, else the host kind', () {
-    final connection = HostConnection(
+  test('canStageFiles asks only the live client’s own capability', () {
+    // `fileUploads/upload` is served: an HTTP host uploads whatever it supports,
+    // whatever its kind.
+    final uploading = HostConnection(
       client: DshClient(DshConnection(Uri.parse('http://127.0.0.1:9'))),
       label: '本机',
       isLocal: true,
     );
-    expect(canStageFiles(connection, HostRef.local), isTrue);
+    expect(canStageFiles(uploading, HostRef.local), isTrue);
+    // A carrier that serves no upload protocol can't stage, whatever its kind.
+    final noUpload = HostConnection(client: DshClient.withCarrier(_NoUploadCarrier()), isLocal: false, kind: HostKind.paired);
+    expect(canStageFiles(noUpload, HostRef.paired(pairedHostId('192.168.1.5:3080'))), isFalse);
+    // Nothing connected yet: 本机 stages for the engine about to start, a remote
+    // host waits to be asked instead of guessing from its kind.
     expect(canStageFiles(null, HostRef.local), isTrue);
-    expect(canStageFiles(null, const HostRef.ssh('a')), isTrue);
+    expect(canStageFiles(null, const HostRef.ssh('a')), isFalse);
     expect(canStageFiles(null, const HostRef.relay('r')), isFalse);
+    expect(canStageFiles(null, HostRef.paired(pairedHostId('192.168.1.5:3080'))), isFalse);
   });
 
   group('inbox', () {

@@ -13,6 +13,7 @@ import '../runtime/runtime_state.dart';
 import 'account_state.dart';
 import 'connection_state.dart';
 import 'hosts_state.dart';
+import 'paired_hosts_state.dart';
 import 'read_list_epoch.dart';
 import 'settings_state.dart';
 
@@ -251,8 +252,17 @@ final readListIdentityProvider = Provider<ReadListIdentity?>((ref) {
         epoch,
       ]);
     case HostKind.paired:
-      // No readable identity until the paired link exists: the link and
-      // its session ticket land with the connection ticket.
-      return null;
+      // A paired computer's display projection is keyed by the entry it is
+      // reached at and the credential generation — never by the name the
+      // person gave it, which can change without the sessions changing, and
+      // never by the mux, which a reconnect replaces. No link yet means no
+      // readable identity.
+      if (connection == null) return null;
+      final record = ref.watch(pairedHostsProvider.select((s) => s.byId(selected.id)));
+      if (record == null) return null;
+      final authority = record.entry.authority;
+      final base = record.entry.baseUri.toString();
+      if (authority.length > 512 || base.length > 4096) return null;
+      return ReadListIdentity.of(['paired', base, authority, epoch]);
   }
 });

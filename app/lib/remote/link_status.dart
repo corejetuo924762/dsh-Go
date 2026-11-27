@@ -132,6 +132,11 @@ enum HostLinkDiagnosticCode {
   remoteConnectionFailed,
   remoteRateLimited,
   remoteHistoryModeChanged,
+  pairedUnreachable,
+  pairedTicketRejected,
+  pairedBanned,
+  pairedComputerFailed,
+  pairedGatewayRefused,
 }
 
 enum NetworkIpVersion { ipv4, ipv6 }

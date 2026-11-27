@@ -24,6 +24,27 @@ class DshPairingEntry {
 
   DshPairingEntry.tunnel(Uri baseUri) : this(baseUri: baseUri, isTunnel: true);
 
+  /// The one spelling of a kept entry: scheme and host lower case, no default
+  /// port, no trailing slash, no query or fragment. [#10] deliberately leaves
+  /// [DshPairingInput]'s spelling alone, so the *app* normalizes what it
+  /// stores: two ways of writing one address must key one host, never two.
+  ///
+  /// [isTunnel] overrides the scheme's own answer only for entries restored
+  /// from storage, where the leg matters more than the scheme.
+  factory DshPairingEntry.canonical(Uri baseUri, {bool? isTunnel}) {
+    final scheme = baseUri.scheme.toLowerCase() == 'https' ? 'https' : 'http';
+    final path = baseUri.path == '/' ? '' : baseUri.path;
+    return DshPairingEntry(
+      baseUri: Uri(
+        scheme: scheme,
+        host: baseUri.host.toLowerCase(),
+        port: baseUri.hasPort ? baseUri.port : null,
+        path: path,
+      ),
+      isTunnel: isTunnel ?? scheme == 'https',
+    );
+  }
+
   /// `http://192.168.1.5:3088` or the tunnel's `https://<public host>`, with
   /// no trailing slash and no query: the pairing code never stays in it.
   final Uri baseUri;

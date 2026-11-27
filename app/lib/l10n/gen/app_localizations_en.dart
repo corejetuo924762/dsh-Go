@@ -19624,6 +19624,23 @@ class L10nEn extends L10n {
   String get searchKwRemoteCompactHistory => 'compact slim lite history tools transfer bandwidth remote';
 
   @override
+  String pairedErrBanned(int seconds) {
+    return 'Too many pairing attempts. Wait $seconds seconds, then try again.';
+  }
+
+  @override
+  String get pairedErrNeedsRepair => 'This phone’s pairing has expired. Pair with the computer again.';
+
+  @override
+  String get pairedErrComputer =>
+      'The computer couldn’t confirm this access. Check that DSH is running there and its access entry is on.';
+
+  @override
+  String pairedErrEntryRefused(int status) {
+    return 'The entry refused this access ($status). Check the address and network, then pair again.';
+  }
+
+  @override
   String get remotePairEntry => 'Pair a computer by scanning';
 
   @override

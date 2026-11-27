@@ -201,10 +201,13 @@ final readyComposeProvider = Provider<ComposeRequest?>((ref) {
   return ref.watch(composeInboxProvider).firstOrNull;
 });
 
-/// The active host can stage attachments or publish into its workspace.
-/// Remote workspace uploads require a capability from the live connection.
+/// The active host can stage attachments: the live connection's own
+/// capability decides, never the host kind. A paired computer dials `dsh web`
+/// straight over HTTP, so it uploads exactly what that Host supports. Before
+/// anything is connected, 本机 still stages for the engine that is about to
+/// start; a remote host waits to be asked rather than assuming.
 bool canStageFiles(HostConnection? connection, HostRef host) =>
-    connection?.client.supportsFileUpload ?? host.kind != HostKind.relay;
+    connection?.client.supportsFileUpload ?? host.isLocal;
 
 /// The composer after a fill.
 class MergedDraft {

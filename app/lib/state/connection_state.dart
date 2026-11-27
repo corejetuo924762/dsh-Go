@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../l10n/l10n.dart';
 import '../remote/link_status.dart';
 import '../remote/network_watch.dart';
+import '../remote/paired/paired_host_store.dart';
+import '../remote/paired/paired_link.dart';
 import '../remote/relay/relay_backend.dart';
 import '../remote/ssh/ssh_link.dart';
 import '../remote/ssh/ssh_transport.dart';
@@ -16,6 +18,7 @@ import 'workspaces_state.dart';
 import '../runtime/runtime_state.dart';
 import '../usage/usage_stats.dart';
 import 'hosts_state.dart';
+import 'paired_hosts_state.dart';
 import 'permission_default_repair.dart';
 import 'provider_backend.dart';
 import 'provider_keys.dart';
@@ -199,6 +202,25 @@ final sshLinkFactoryProvider = Provider<SshLinkFactory>(
   },
 );
 
+/// Builds the link for one paired computer. Overridable so tests can inject a
+/// fake session/client instead of dialing a real gateway.
+typedef PairedLinkFactory = PairedHostLink Function(Ref ref, PairedHostRecord record);
+
+final pairedLinkFactoryProvider = Provider<PairedLinkFactory>(
+  (ref) => (ref, record) {
+    final hosts = ref.read(pairedHostsProvider.notifier);
+    return PairedHostLink(
+      entry: record.entry,
+      loadSession: () => hosts.loadSession(record.id),
+      saveSession: (session) => hosts.saveSession(record.id, session),
+      // A code the person just scanned or typed, spent on this first connect.
+      code: hosts.codeFor(record.id),
+      onCodeUsed: () => hosts.clearCode(record.id),
+      kicks: ref.read(networkKicksProvider),
+    );
+  },
+);
+
 /// The live link to a remote host; null for 本机 or an unknown host. Kept while
 /// something watches it (the active connection, a status row); closed after.
 final hostLinkProvider = Provider.autoDispose.family<HostLink?, HostRef>((ref, host) {
@@ -220,9 +242,14 @@ final hostLinkProvider = Provider.autoDispose.family<HostLink?, HostRef>((ref, h
       ref.onDispose(() => unawaited(link.close()));
       return link;
     case HostKind.paired:
-      // The paired link (probe, exchange, WebSocket) lands with the
-      // connection ticket; until then a paired host has no link.
-      return null;
+      // The record (entry + name) comes from the encrypted store; until it is
+      // there (or the host is unknown) there is nothing to dial.
+      final record = ref.watch(pairedHostsProvider.select((s) => s.byId(host.id)));
+      if (record == null) return null;
+      final link = ref.read(pairedLinkFactoryProvider)(ref, record);
+      _observeRemoteLink(ref, link, host.kind);
+      ref.onDispose(() => unawaited(link.close()));
+      return link;
     case HostKind.relay:
       final backend = ref.watch(relayBackendProvider);
       final link = RelayHostLink(
@@ -309,9 +336,9 @@ final hostNameProvider = Provider.autoDispose.family<String?, HostRef>((ref, hos
     HostKind.local => appL10n.commonThisPhone,
     HostKind.ssh => ref.watch(hostsProvider.select((s) => s.sshById(host.id)?.name)),
     HostKind.relay => ref.watch(relayAccountProvider.select((a) => a.value?.hostById(host.id)?.name)) ?? host.name,
-    // The paired host's own name, as last chosen; the paired host store
-    // that keeps it lives with the connection ticket.
-    HostKind.paired => host.name,
+    // The name the person gave the paired computer, following a rename.
+    HostKind.paired =>
+      ref.watch(pairedHostsProvider.select((s) => s.byId(host.id)?.name)) ?? host.name,
   };
 });
 
@@ -611,9 +638,12 @@ AsyncValue<HostConnection?> _connectionForHost(Ref ref, HostRef host) {
       if (!loaded) return const AsyncLoading();
       return ref.watch(remoteConnectionProvider(host));
     case HostKind.paired:
-      // No link yet, and never the on-device engine: falling back would
-      // show the phone's own sessions as the paired computer's.
-      return const AsyncData(null);
+      // Never the on-device engine: that would show the phone's own sessions
+      // as the paired computer's. Unknown until the encrypted store answers.
+      final paired = ref.watch(pairedHostsProvider);
+      if (!paired.loaded) return const AsyncLoading();
+      if (paired.byId(host.id) == null) return const AsyncData(null);
+      return ref.watch(remoteConnectionProvider(host));
     case HostKind.relay:
       return ref.watch(remoteConnectionProvider(host));
   }

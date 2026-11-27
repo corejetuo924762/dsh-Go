@@ -5,13 +5,17 @@
 import 'dart:convert';
 
 import 'package:dsh_app/remote/link_status.dart';
+import 'package:dsh_app/remote/paired/paired_host_store.dart';
+import 'package:dsh_app/remote/paired/paired_link.dart';
 import 'package:dsh_app/remote/relay/dsh_remote_backend.dart';
 import 'package:dsh_app/remote/relay/relay_backend.dart';
 import 'package:dsh_app/remote/secret_store.dart';
 import 'package:dsh_app/remote/ssh/ssh_link.dart';
 import 'package:dsh_app/state/connection_state.dart';
 import 'package:dsh_app/state/hosts_state.dart';
+import 'package:dsh_app/state/paired_hosts_state.dart';
 import 'package:dsh_app/state/sessions_state.dart';
+import 'package:dsh_client/dsh_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -599,4 +603,157 @@ void main() {
       HostLinkStep.startDsh,
     });
   });
+
+  group('paired host', () {
+    DshPairingEntry entry() => DshPairingInput.tryParse('http://192.168.1.5:3088/?auth=ABCD2345')!.entry!;
+
+    ProviderContainer pairedContainer() {
+      final c = ProviderContainer(
+        overrides: [
+          secretStoreProvider.overrideWithValue(secrets),
+          localConnectionProvider.overrideWith(_CountingLocal.new),
+          networkKicksProvider.overrideWithValue(const Stream.empty()),
+          relayBackendProvider.overrideWithValue(FakeRelayBackend()),
+          // The link seam: dial a stand-in client instead of a real gateway.
+          pairedLinkFactoryProvider.overrideWithValue(
+            (ref, record) => PairedHostLink(
+              entry: record.entry,
+              loadSession: () async => null,
+              saveSession: (_) async {},
+              // No HTTP at all: this suite tests the host model, not the
+              // gateway protocol (test/remote/paired_link_test.dart does).
+              sessionFactory: _OpenPairing.new,
+              connectClient: ({required entry, required session}) async =>
+                  DshClient.withCarrier(_IdleCarrier()),
+              kicks: const Stream.empty(),
+            ),
+          ),
+        ],
+      );
+      addTearDown(c.dispose);
+      return c;
+    }
+
+    test('a saved record gives the paired host a live connection and its name', () async {
+      final c = pairedContainer();
+      await c.read(pairedHostsProvider.notifier).ready;
+      final e = entry();
+      final id = pairedHostId(e.authority);
+      await c.read(pairedHostsProvider.notifier).save(PairedHostRecord(id: id, entry: e, name: '书房'));
+
+      final host = HostRef.paired(id);
+      c.read(activeHostProvider.notifier).select(host);
+      final sub = c.listen(activeConnectionProvider, (_, _) {});
+      addTearDown(sub.close);
+      final statuses = c.listen(hostLinkStatusProvider(host), (_, _) {});
+      addTearDown(statuses.close);
+
+      await until(c, activeConnectionProvider, (s) => s.value != null, what: '配对主机连上');
+      final conn = c.read(activeConnectionProvider).value!;
+      expect(conn.kind, HostKind.paired);
+      expect(conn.isLocal, isFalse);
+      expect(conn.hostId, id, reason: 'the read-list identity keys on this id');
+      expect(conn.label, hostLabel(HostKind.paired, '书房'));
+      expect(c.read(hostNameProvider(host)), '书房');
+      expect(_CountingLocal.builds, 0, reason: '配对主机绝不拉起本机引擎');
+
+      // Renaming is a name change, not a new host, and the link stays.
+      await c.read(pairedHostsProvider.notifier).rename(id, '客厅');
+      await until(
+        c,
+        activeConnectionProvider,
+        (s) => s.value?.label == hostLabel(HostKind.paired, '客厅'),
+        what: '改名跟上',
+      );
+      expect(c.read(activeHostProvider), host, reason: '改名不换身份');
+      expect(c.read(hostLinkProvider(host)), isNotNull);
+    });
+
+    test('a pasted link becomes one host, however its address is written', () async {
+      final c = pairedContainer();
+      await c.read(pairedHostsProvider.notifier).ready;
+      final records = c.read(pairedHostsProvider.notifier);
+
+      final first = await records.pair('http://192.168.1.5:3088/?auth=ABCD2345', name: '书房');
+      expect(first, isNotNull);
+      expect(first!.entry.baseUri.toString(), 'http://192.168.1.5:3088');
+      expect(first.id, pairedHostId('192.168.1.5:3088'));
+      expect(records.codeFor(first.id), 'ABCD2345', reason: '首次连接要用的码还在');
+
+      // The same computer written another way replaces, never duplicates.
+      final again = await records.pair('192.168.1.5:3088 ABCD2345');
+      expect(again!.id, first.id);
+      expect(c.read(pairedHostsProvider).records, hasLength(1));
+
+      // A bare code re-authorises the one known computer.
+      records.clearCode(first.id);
+      final recoded = await records.pair('WXYZ6789');
+      expect(recoded!.id, first.id);
+      expect(recoded.name, '书房', reason: '重配对不改名字');
+      expect(records.codeFor(first.id), 'WXYZ6789');
+
+      // Not a pairing input at all: nothing is invented.
+      expect(await records.pair('随便说点什么'), isNull);
+      expect(c.read(pairedHostsProvider).records, hasLength(1));
+    });
+
+    test('a bare code with no known computer pairs nothing', () async {
+      final c = pairedContainer();
+      await c.read(pairedHostsProvider.notifier).ready;
+      expect(await c.read(pairedHostsProvider.notifier).pair('WXYZ6789'), isNull);
+      expect(c.read(pairedHostsProvider).records, isEmpty);
+    });
+
+    test('removing the paired host leaves 本机 and drops its secrets', () async {
+      final c = pairedContainer();
+      await c.read(pairedHostsProvider.notifier).ready;
+      final e = entry();
+      final id = pairedHostId(e.authority);
+      await c.read(pairedHostsProvider.notifier).save(PairedHostRecord(id: id, entry: e, name: '书房'));
+      final host = HostRef.paired(id);
+      c.read(activeHostProvider.notifier).select(host);
+      final sub = c.listen(activeConnectionProvider, (_, _) {});
+      addTearDown(sub.close);
+      final statuses = c.listen(hostLinkStatusProvider(host), (_, _) {});
+      addTearDown(statuses.close);
+      await until(c, activeConnectionProvider, (s) => s.value != null, what: '配对主机连上');
+
+      await c.read(pairedHostsProvider.notifier).remove(id);
+
+      expect(c.read(pairedHostsProvider).records, isEmpty);
+      expect(secrets.values, isEmpty, reason: '配对凭据随记录一并抹去');
+      await until(c, activeConnectionProvider, (s) => !s.isLoading && s.value == null, what: '已回到本机');
+      expect(c.read(activeHostProvider), HostRef.local);
+    });
+  });
+}
+
+/// An entry that needs no ticket: the host model tests never touch the wire.
+class _OpenPairing extends DshPairingSession {
+  _OpenPairing(super.entry);
+
+  @override
+  Future<DshPairingOutcome> connect({String? code}) async => DshPairingConnected(entry: entry);
+}
+
+/// A client that never dials: only its identity matters here.
+class _IdleCarrier extends DshCarrier {
+  @override
+  String get kind => 'idle';
+
+  @override
+  DshTracer? get tracer => null;
+
+  @override
+  bool allowsEndpoint(String endpoint) => true;
+
+  @override
+  Future<RpcResult> call(String endpoint, Map<String, Object?> args, {Duration? timeout}) =>
+      throw UnsupportedError(endpoint);
+
+  @override
+  Future<DshMuxLink> openLink(MuxOptions options) => throw UnsupportedError('no streams');
+
+  @override
+  Future<void> close() async {}
 }
