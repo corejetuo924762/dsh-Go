@@ -40626,6 +40626,12 @@ abstract class L10n {
   /// **'{action}：没能连上引擎'**
   String stateGoalActionOffline(String action);
 
+  /// No description provided for @stateHostPairedLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'{name} · 配对'**
+  String stateHostPairedLabel(String name);
+
   /// No description provided for @stateHostRemoteLabel.
   ///
   /// In zh, this message translates to:

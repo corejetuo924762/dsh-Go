@@ -23333,6 +23333,11 @@ class L10nEn extends L10n {
   }
 
   @override
+  String stateHostPairedLabel(String name) {
+    return '$name · Paired';
+  }
+
+  @override
   String stateHostRemoteLabel(String name) {
     return '$name · Remote';
   }

@@ -250,5 +250,9 @@ final readListIdentityProvider = Provider<ReadListIdentity?>((ref) {
         host.harnessVersion,
         epoch,
       ]);
+    case HostKind.paired:
+      // No readable identity until the paired link exists: the link and
+      // its session ticket land with the connection ticket.
+      return null;
   }
 });

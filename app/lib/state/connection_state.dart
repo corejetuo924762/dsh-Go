@@ -219,6 +219,10 @@ final hostLinkProvider = Provider.autoDispose.family<HostLink?, HostRef>((ref, h
       _observeRemoteLink(ref, link, host.kind);
       ref.onDispose(() => unawaited(link.close()));
       return link;
+    case HostKind.paired:
+      // The paired link (probe, exchange, WebSocket) lands with the
+      // connection ticket; until then a paired host has no link.
+      return null;
     case HostKind.relay:
       final backend = ref.watch(relayBackendProvider);
       final link = RelayHostLink(
@@ -261,6 +265,8 @@ void _observeRemoteLink(Ref ref, HostLink link, HostKind kind) {
         settle ??= ref.read(usageStatsProvider.notifier).beginOperation(switch ((kind, reachedReady)) {
           (HostKind.ssh, false) => UsageOperation.sshInitial,
           (HostKind.ssh, true) => UsageOperation.sshReconnect,
+          (HostKind.paired, false) => UsageOperation.pairedInitial,
+          (HostKind.paired, true) => UsageOperation.pairedReconnect,
           (_, false) => UsageOperation.relayInitial,
           (_, true) => UsageOperation.relayReconnect,
         });
@@ -303,6 +309,9 @@ final hostNameProvider = Provider.autoDispose.family<String?, HostRef>((ref, hos
     HostKind.local => appL10n.commonThisPhone,
     HostKind.ssh => ref.watch(hostsProvider.select((s) => s.sshById(host.id)?.name)),
     HostKind.relay => ref.watch(relayAccountProvider.select((a) => a.value?.hostById(host.id)?.name)) ?? host.name,
+    // The paired host's own name, as last chosen; the paired host store
+    // that keeps it lives with the connection ticket.
+    HostKind.paired => host.name,
   };
 });
 
@@ -601,6 +610,10 @@ AsyncValue<HostConnection?> _connectionForHost(Ref ref, HostRef host) {
       final loaded = ref.watch(hostsProvider.select((s) => s.loaded));
       if (!loaded) return const AsyncLoading();
       return ref.watch(remoteConnectionProvider(host));
+    case HostKind.paired:
+      // No link yet, and never the on-device engine: falling back would
+      // show the phone's own sessions as the paired computer's.
+      return const AsyncData(null);
     case HostKind.relay:
       return ref.watch(remoteConnectionProvider(host));
   }

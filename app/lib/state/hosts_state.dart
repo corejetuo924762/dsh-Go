@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -24,12 +25,16 @@ export '../remote/ssh/ssh_transport.dart' show PresentedHostKey;
 export '../remote/relay/relay_backend.dart' show RelayHost, RelayTrust, RelayUser;
 export '../remote/ssh/ssh_host_config.dart';
 
-/// The three kinds of DSH host the app can talk to.
-enum HostKind { local, ssh, relay }
+/// The kinds of DSH host the app can talk to: the on-device engine, a saved
+/// SSH host, a DSH Remote relay device, or a computer paired from its access
+/// link. [relay] outlives its own removal by one ticket, so records written
+/// before the pairing flow keep loading as they always did.
+enum HostKind { local, ssh, relay, paired }
 
-/// Identifies a host: the on-device engine, a saved SSH host, or a relay
-/// (ds-harness-remote) device. Equality is by kind + id; [name] is only a
-/// cached display name for relay hosts (their list lives on the server).
+/// Identifies a host: the on-device engine, a saved SSH host, a relay
+/// (ds-harness-remote) device, or a paired computer. Equality is by kind + id;
+/// [name] is only a display name (relay hosts serve theirs from the account,
+/// paired hosts keep the one the person chose).
 class HostRef {
   const HostRef._(this.kind, this.id, [this.name]);
 
@@ -38,6 +43,9 @@ class HostRef {
   const HostRef.ssh(String id) : this._(HostKind.ssh, id);
 
   const HostRef.relay(String id, {String? name}) : this._(HostKind.relay, id, name);
+
+  /// [id] is [pairedHostId] of the entry address, never the display [name].
+  const HostRef.paired(String id, {String? name}) : this._(HostKind.paired, id, name);
 
   final HostKind kind;
   final String id;
@@ -58,6 +66,7 @@ class HostRef {
       return switch (map['kind']) {
         'ssh' => HostRef.ssh(id),
         'relay' => HostRef.relay(id, name: name is String ? name : null),
+        'paired' => HostRef.paired(id, name: name is String ? name : null),
         _ => local,
       };
     } catch (_) {
@@ -75,12 +84,20 @@ class HostRef {
   String toString() => 'HostRef(${kind.name}:$id)';
 }
 
-/// Chat-header label for a connection: "本机", "电脑 · SSH", "家里的 Mac · 远程".
+/// Chat-header label for a connection: "本机", "电脑 · SSH", "家里的 Mac · 远程",
+/// "书房 · 配对".
 String hostLabel(HostKind kind, String? name) => switch (kind) {
   HostKind.local => appL10n.commonThisPhone,
   HostKind.ssh => '${_short(name ?? appL10n.stateSshHost)} · SSH',
   HostKind.relay => appL10n.stateHostRemoteLabel(_short(name ?? appL10n.commonRemoteHost)),
+  HostKind.paired => appL10n.stateHostPairedLabel(_short(name ?? appL10n.commonRemoteHost)),
 };
+
+/// Stable identity of a paired computer, derived from the entry address its
+/// access link parsed to (`host:port`, tunnel host included). The name the
+/// person gives it is not part of the identity: renaming keeps the same host.
+String pairedHostId(String authority) =>
+    'paired-${sha1.convert(utf8.encode(authority)).toString().substring(0, 12)}';
 
 String _short(String name) {
   final t = name.trim();
