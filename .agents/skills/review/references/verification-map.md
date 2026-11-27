@@ -13,7 +13,6 @@
 | app/lib 界面/状态/Riverpod | `(cd app && flutter analyze)` + 聚焦 `flutter test test/<相关>` |
 | app 界面文案 ARB | `python3 app/tool/l10n_merge.py --check` |
 | packages/dsh_client 协议/API | `(cd packages/dsh_client && dart analyze && dart test)` |
-| packages/dsh_remote 传输 | `(cd packages/dsh_remote && dart analyze && dart test)` |
 | runtime/bridge 路由与删除逻辑 | `node --test runtime/tests/*.test.mjs` |
 | runtime/patches | pins 同步检查、补丁仍可应用、对应 node 测试 |
 | sdk/plugin-kit | `(cd sdk/plugin-kit && npm test)` + `node sdk/plugin-kit/scripts/sync-skill.mjs --check` |
