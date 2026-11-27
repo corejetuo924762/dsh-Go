@@ -45,7 +45,14 @@ enum HostLinkStep {
 
 /// Why a link failed, with a sentence a person can act on.
 class HostLinkError implements Exception {
-  const HostLinkError(this.kind, this.message, {this.detail, this.retryable = false, this.diagnosticCode});
+  const HostLinkError(
+    this.kind,
+    this.message, {
+    this.detail,
+    this.retryable = false,
+    this.diagnosticCode,
+    this.banRemaining,
+  });
 
   final HostLinkErrorKind kind;
 
@@ -60,6 +67,11 @@ class HostLinkError implements Exception {
 
   /// A closed diagnostic vocabulary; never a server message or exception text.
   final HostLinkDiagnosticCode? diagnosticCode;
+
+  /// Set on a [HostLinkDiagnosticCode.pairedBanned] failure: the seconds the
+  /// gateway asked this phone to wait. Structured (not parsed out of [message])
+  /// so the UI can count down and refuse to dial until it lapses.
+  final Duration? banRemaining;
 
   @override
   String toString() => detail == null ? message : appL10n.remoteErrorDetail(message, detail!);

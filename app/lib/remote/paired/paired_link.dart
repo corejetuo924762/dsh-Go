@@ -38,6 +38,8 @@ class PairedHostLink implements HostLink {
     required this.saveSession,
     this.code,
     this.onCodeUsed,
+    this.loadRenewal,
+    this.clearRenewal,
     PairedSessionFactory? sessionFactory,
     PairedClientConnector? connectClient,
     Stream<void>? kicks,
@@ -62,6 +64,18 @@ class PairedHostLink implements HostLink {
 
   /// Called the first time [code] is spent, so the caller can drop it.
   final void Function()? onCodeUsed;
+
+  /// The code the access link carried (permanent token or a fresh pairing
+  /// code), read fresh on every attempt. When the stored ticket and any typed
+  /// code stop working, the link silently re-exchanges with this so the person
+  /// stays paired for as long as the code keeps minting (a permanent token
+  /// mints forever, rolling the 30 days forward on every connect).
+  final Future<String?> Function()? loadRenewal;
+
+  /// Drops [loadRenewal]'s code after the gateway rejected it, so a dead token
+  /// is not presented again (which would only burn a rate-limit slot).
+  final Future<void> Function()? clearRenewal;
+
 
   final PairedSessionFactory _sessionFactory;
   final PairedClientConnector _connectClient;
@@ -147,30 +161,40 @@ class PairedHostLink implements HostLink {
     _checkOpen();
 
     final typed = code;
-    final DshPairingOutcome outcome;
-    try {
-      outcome = await pairing.connect(code: typed);
-    } on DshTransportException catch (e) {
-      throw HostLinkError(
-        HostLinkErrorKind.unreachable,
-        appL10n.remoteErrHostUnreachable,
-        detail: '$e',
-        retryable: true,
-        diagnosticCode: HostLinkDiagnosticCode.pairedUnreachable,
-      );
-    } on DshProtocolException catch (e) {
-      throw HostLinkError(
-        HostLinkErrorKind.other,
-        appL10n.remoteErrRemoteConnection,
-        detail: '$e',
-        diagnosticCode: HostLinkDiagnosticCode.pairedGatewayRefused,
-      );
-    }
+    var outcome = await _exchange(pairing, typed);
     _checkOpen();
     if (typed != null && code != null) {
       // A code is single-use: whether it minted or was refused, it is spent.
       code = null;
       onCodeUsed?.call();
+    }
+
+    // Both the stored ticket and any typed code failed to authorise. If the
+    // original access link carried a renewal code (a permanent token, or a
+    // still-fresh pairing code), exchange with it once — silently, so a lapsed
+    // ticket, or a computer whose access entry was reset, re-pairs itself and
+    // the person notices nothing. A single-use code past its 5 minutes fails
+    // here too, and then the phone really does need a whole new pairing.
+    if ((outcome is DshPairingNeedsCode || outcome is DshPairingCodeRejected) && loadRenewal != null) {
+      final renewal = await loadRenewal!();
+      _checkOpen();
+      if (renewal != null && renewal.isNotEmpty) {
+        outcome = await _exchange(pairing, renewal);
+        _checkOpen();
+        if (outcome is DshPairingCodeRejected) {
+          // The renewal code itself is dead: the computer's identity changed
+          // (its access token was rotated, or it was reset). Drop it so it is
+          // not presented again, and say the computer must be re-paired — this
+          // is a credential problem, never "the network is down".
+          await clearRenewal?.call();
+          throw HostLinkError(
+            HostLinkErrorKind.authFailed,
+            appL10n.pairedErrIdentityChanged,
+            retryable: false,
+            diagnosticCode: HostLinkDiagnosticCode.pairedTicketRejected,
+          );
+        }
+      }
     }
     switch (outcome) {
       case DshPairingConnected(session: final minted):
@@ -184,6 +208,7 @@ class PairedHostLink implements HostLink {
           appL10n.pairedErrBanned(remaining.inSeconds),
           retryable: false,
           diagnosticCode: HostLinkDiagnosticCode.pairedBanned,
+          banRemaining: remaining,
         );
       case DshPairingNeedsCode() || DshPairingCodeRejected():
         throw HostLinkError(
@@ -244,6 +269,29 @@ class PairedHostLink implements HostLink {
     if (_published) _clients.add(client);
     _published = true;
     return client;
+  }
+
+  /// One connect through the pairing session, with transport/protocol failures
+  /// mapped to the same HostLinkError kinds the rest of the link reports.
+  Future<DshPairingOutcome> _exchange(DshPairingSession pairing, String? code) async {
+    try {
+      return await pairing.connect(code: code);
+    } on DshTransportException catch (e) {
+      throw HostLinkError(
+        HostLinkErrorKind.unreachable,
+        appL10n.remoteErrHostUnreachable,
+        detail: '$e',
+        retryable: true,
+        diagnosticCode: HostLinkDiagnosticCode.pairedUnreachable,
+      );
+    } on DshProtocolException catch (e) {
+      throw HostLinkError(
+        HostLinkErrorKind.other,
+        appL10n.remoteErrRemoteConnection,
+        detail: '$e',
+        diagnosticCode: HostLinkDiagnosticCode.pairedGatewayRefused,
+      );
+    }
   }
 
   /// The gateway ticket can stop working (expired, or the PC reset its access

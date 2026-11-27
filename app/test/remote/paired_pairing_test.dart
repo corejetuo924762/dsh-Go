@@ -178,6 +178,30 @@ void main() {
     expect(find.text('再试一次'), findsOneWidget);
   });
 
+  testWidgets('a ban shows the remaining seconds from the structured field', (tester) async {
+    await pump(tester);
+    await submit(tester, 'http://192.168.1.5:3088?auth=ABCD2345', entry: '粘贴链接');
+
+    statuses.add(
+      const HostLinkStatus(
+        HostLinkPhase.failed,
+        step: HostLinkStep.connect,
+        error: HostLinkError(
+          HostLinkErrorKind.unreachable,
+          // A message with no digits at all: the seconds must come from
+          // banRemaining, never from parsing this string.
+          'banned',
+          retryable: false,
+          diagnosticCode: HostLinkDiagnosticCode.pairedBanned,
+          banRemaining: Duration(seconds: 42),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('配对尝试次数过多，还需等待 42 秒'), findsOneWidget);
+  });
+
   testWidgets('a camera the system refuses hands over to the entries that need none', (tester) async {
     final original = MobileScannerPlatform.instance;
     MobileScannerPlatform.instance = _DeniedCamera();

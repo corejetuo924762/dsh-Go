@@ -697,6 +697,28 @@ void main() {
       expect(c.read(pairedHostsProvider).records, hasLength(1));
     });
 
+    test('the renewal code is persisted and survives a rename', () async {
+      final c = pairedContainer();
+      await c.read(pairedHostsProvider.notifier).ready;
+      final records = c.read(pairedHostsProvider.notifier);
+
+      final record = await records.pair('http://192.168.1.5:3088/?auth=ABCD2345', name: '书房');
+      final id = record!.id;
+      expect(await records.loadRenewal(id), 'ABCD2345', reason: '落盘的续期码');
+
+      // Renaming carries no code: the renewal code must not be cleared.
+      await records.rename(id, '客厅');
+      expect(await records.loadRenewal(id), 'ABCD2345');
+
+      // A plain re-save (no code) also leaves it alone.
+      await records.save(PairedHostRecord(id: id, entry: record.entry, name: '客厅'));
+      expect(await records.loadRenewal(id), 'ABCD2345');
+
+      // A new code replaces it.
+      await records.pair('WXYZ6789');
+      expect(await records.loadRenewal(id), 'WXYZ6789');
+    });
+
     test('a bare code with no known computer pairs nothing', () async {
       final c = pairedContainer();
       await c.read(pairedHostsProvider.notifier).ready;

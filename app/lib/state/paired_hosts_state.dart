@@ -75,7 +75,12 @@ class PairedHostsController extends Notifier<PairedHostsState> {
     }
     await _loaded;
     ref.read(readListCredentialEpochProvider.notifier).advance();
-    if (code != null && code.isNotEmpty) _codes[record.id] = code;
+    if (code != null && code.isNotEmpty) {
+      _codes[record.id] = code;
+      // Keep the code on disk too, so a later connect can silently re-exchange
+      // once the ticket lapses (a rename or a plain save never reaches here).
+      await _store.saveRenewal(record.id, code);
+    }
     await _store.save(record);
     await _refresh();
   }
@@ -139,6 +144,14 @@ class PairedHostsController extends Notifier<PairedHostsState> {
 
   /// Stores the ticket an exchange just minted.
   Future<void> saveSession(String id, DshRemoteSession session) => _store.saveSession(id, session);
+
+  /// The renewal code kept for [id], or null. Read by a link when its stored
+  /// ticket lapses so it can re-exchange without asking the person.
+  Future<String?> loadRenewal(String id) => _store.loadRenewal(id);
+
+  /// Drops a renewal code the gateway already rejected, so the phone stops
+  /// presenting it and does not burn a rate-limit slot retrying.
+  Future<void> clearRenewal(String id) => _store.clearRenewal(id);
 }
 
 final pairedHostsProvider = NotifierProvider<PairedHostsController, PairedHostsState>(

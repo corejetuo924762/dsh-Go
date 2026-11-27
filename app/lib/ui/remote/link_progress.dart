@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -139,6 +141,53 @@ class LinkErrorBox extends StatefulWidget {
 class _LinkErrorBoxState extends State<LinkErrorBox> {
   bool _expanded = false;
 
+  /// Seconds left on a ban the gateway announced, counted down once a second
+  /// so the person sees the wait drain and a retry is withheld until it lapses.
+  /// Null when this is not a ban.
+  int? _banSeconds;
+  Timer? _banTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startBan();
+  }
+
+  @override
+  void didUpdateWidget(LinkErrorBox oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.error.banRemaining != widget.error.banRemaining) _startBan();
+  }
+
+  @override
+  void dispose() {
+    _banTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startBan() {
+    _banTimer?.cancel();
+    _banTimer = null;
+    final remaining = widget.error.banRemaining;
+    if (remaining == null || remaining <= Duration.zero) {
+      _banSeconds = null;
+      return;
+    }
+    _banSeconds = remaining.inSeconds;
+    _banTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      final left = (_banSeconds ?? 0) - 1;
+      if (left <= 0) {
+        timer.cancel();
+        setState(() => _banSeconds = 0);
+      } else {
+        setState(() => _banSeconds = left);
+      }
+    });
+  }
+
+  bool get _banned => widget.error.banRemaining != null && (_banSeconds ?? 0) > 0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -149,6 +198,10 @@ class _LinkErrorBoxState extends State<LinkErrorBox> {
     final security = error.kind == HostLinkErrorKind.hostKeyMismatch;
     final bg = security ? colors.warningContainer : colors.dangerContainer;
     final fg = security ? colors.onWarningContainer : colors.onDangerContainer;
+    // A ban hides its one fixed sentence behind the live countdown.
+    final text = error.banRemaining != null && _banSeconds != null
+        ? l10n.pairedErrBanned(_banSeconds!)
+        : error.message;
     return DecoratedBox(
       decoration: ShapeDecoration(color: bg, shape: Squircle.border(AppShape.md)),
       child: Padding(
@@ -165,7 +218,7 @@ class _LinkErrorBoxState extends State<LinkErrorBox> {
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text(error.message, style: theme.textTheme.bodyMedium?.copyWith(color: fg, height: 1.55)),
+                  child: Text(text, style: theme.textTheme.bodyMedium?.copyWith(color: fg, height: 1.55)),
                 ),
               ],
             ),
@@ -193,7 +246,9 @@ class _LinkErrorBoxState extends State<LinkErrorBox> {
                 if (widget.action case (final label, final onTap))
                   TextButton(
                     style: TextButton.styleFrom(foregroundColor: fg, minimumSize: const Size(0, 36)),
-                    onPressed: onTap,
+                    // While a ban counts down, retrying would only dial a
+                    // sleeping gateway, so the button is withheld until it lapses.
+                    onPressed: _banned ? null : onTap,
                     child: Text(label),
                   ),
               ],

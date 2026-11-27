@@ -18610,6 +18610,9 @@ class L10nZh extends L10n {
   String get pairedErrNeedsRepair => '配对凭据已失效，需要重新配对';
 
   @override
+  String get pairedErrIdentityChanged => '那台电脑的身份变了，需要重新配对';
+
+  @override
   String get pairedErrComputer => '那台电脑没能确认这次访问：请到电脑上确认 DSH 已启动、访问入口已启用';
 
   @override

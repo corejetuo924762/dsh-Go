@@ -85,6 +85,41 @@ void main() {
     expect(record.entry.authority, '192.168.1.5:3088');
   });
 
+  test('the renewal code is kept, survives a rename, and is dropped on remove', () async {
+    final entry = entryOf('http://192.168.1.5:3088/?auth=ABCD2345');
+    final id = pairedHostId(entry.authority);
+
+    await store.save(PairedHostRecord(id: id, entry: entry));
+    await store.saveRenewal(id, 'ABCD2345');
+    expect(await store.loadRenewal(id), 'ABCD2345');
+    expect(secrets.values.keys, contains(PairedHostStore.renewalKey(id)));
+
+    // A rename reaches save() with no code: the renewal code must not move.
+    await store.save(PairedHostRecord(id: id, entry: entry, name: '书房'));
+    expect(await store.loadRenewal(id), 'ABCD2345');
+
+    // A new code replaces it.
+    await store.saveRenewal(id, 'WXYZ6789');
+    expect(await store.loadRenewal(id), 'WXYZ6789');
+
+    await store.clearRenewal(id);
+    expect(await store.loadRenewal(id), isNull);
+
+    // remove() wipes the renewal key with the rest.
+    await store.saveRenewal(id, 'ABCD2345');
+    await store.remove(id);
+    expect(await store.loadRenewal(id), isNull);
+    expect(secrets.values, isEmpty);
+  });
+
+  test('a blank or missing renewal value reads as no code', () async {
+    final entry = entryOf('http://192.168.1.5:3088/?auth=ABCD2345');
+    final id = pairedHostId(entry.authority);
+    expect(await store.loadRenewal(id), isNull);
+    secrets.values[PairedHostStore.renewalKey(id)] = '   ';
+    expect(await store.loadRenewal(id), isNull);
+  });
+
   test('an unreadable record is skipped without hiding the rest', () async {
     final good = entryOf('http://192.168.1.5:3088/?auth=ABCD2345');
     final goodId = pairedHostId(good.authority);

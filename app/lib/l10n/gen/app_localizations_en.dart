@@ -19632,6 +19632,9 @@ class L10nEn extends L10n {
   String get pairedErrNeedsRepair => 'This phone’s pairing has expired. Pair with the computer again.';
 
   @override
+  String get pairedErrIdentityChanged => 'That computer’s identity changed. Pair with it again.';
+
+  @override
   String get pairedErrComputer =>
       'The computer couldn’t confirm this access. Check that DSH is running there and its access entry is on.';
 

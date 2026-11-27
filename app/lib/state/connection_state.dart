@@ -216,6 +216,10 @@ final pairedLinkFactoryProvider = Provider<PairedLinkFactory>(
       // A code the person just scanned or typed, spent on this first connect.
       code: hosts.codeFor(record.id),
       onCodeUsed: () => hosts.clearCode(record.id),
+      // The code the access link carried, kept on disk: re-exchanged silently
+      // when the ticket lapses, so the computer can stay paired for months.
+      loadRenewal: () => hosts.loadRenewal(record.id),
+      clearRenewal: () => hosts.clearRenewal(record.id),
       kicks: ref.read(networkKicksProvider),
     );
   },

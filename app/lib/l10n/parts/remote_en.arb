@@ -487,6 +487,7 @@
     }
   },
   "pairedErrNeedsRepair": "This phone’s pairing has expired. Pair with the computer again.",
+  "pairedErrIdentityChanged": "That computer’s identity changed. Pair with it again.",
   "pairedErrComputer": "The computer couldn’t confirm this access. Check that DSH is running there and its access entry is on.",
   "pairedErrEntryRefused": "The entry refused this access ({status}). Check the address and network, then pair again.",
   "@pairedErrEntryRefused": {

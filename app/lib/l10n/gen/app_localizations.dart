@@ -34176,6 +34176,12 @@ abstract class L10n {
   /// **'配对凭据已失效，需要重新配对'**
   String get pairedErrNeedsRepair;
 
+  /// No description provided for @pairedErrIdentityChanged.
+  ///
+  /// In zh, this message translates to:
+  /// **'那台电脑的身份变了，需要重新配对'**
+  String get pairedErrIdentityChanged;
+
   /// No description provided for @pairedErrComputer.
   ///
   /// In zh, this message translates to:

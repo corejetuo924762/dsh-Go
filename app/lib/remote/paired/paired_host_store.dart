@@ -2,10 +2,13 @@
 /// is, the name the person gave it, and the gateway ticket that keeps it paired
 /// for 30 days.
 ///
-/// All three live in the encrypted [SecretStore] under keys of their own
+/// They live in the encrypted [SecretStore] under keys of their own
 /// (`paired.<id>.entry`, `paired.<id>.name`, `paired.<id>.session`, plus an
-/// index at `paired.hosts`). Nothing here reads, rewrites or deletes the SSH,
-/// forum or workshop keys that share the same store.
+/// index at `paired.hosts`). A fifth key, `paired.<id>.renewal`, keeps the code
+/// that the access link carried (a permanent token or a fresh pairing code) so a
+/// later connect can silently re-exchange once the ticket lapses; it is only
+/// touched when a new code arrives, so renaming never clears it. Nothing here
+/// reads, rewrites or deletes the SSH, forum or workshop keys in the same store.
 library;
 
 import 'dart:convert';
@@ -62,6 +65,9 @@ class PairedHostStore {
 
   static String sessionKey(String id) => 'paired.$id.session';
 
+  /// The code the access link carried, kept for silent re-exchange later.
+  static String renewalKey(String id) => 'paired.$id.renewal';
+
   /// Every stored host, older additions first. Unreadable records are skipped;
   /// one bad value never hides the rest.
   Future<List<PairedHostRecord>> loadAll() async {
@@ -117,12 +123,30 @@ class PairedHostStore {
   Future<void> saveSession(String id, DshRemoteSession session) =>
       _secrets.write(sessionKey(id), jsonEncode(session.toJson()));
 
+  /// The renewal code for [id], or null when none was kept or it is unreadable.
+  /// A blank value is "no code": the gateway never mints one.
+  Future<String?> loadRenewal(String id) async {
+    final raw = await _read(renewalKey(id));
+    if (raw == null) return null;
+    final code = raw.trim();
+    return code.isEmpty ? null : code;
+  }
+
+  /// Stores the code an access link carried. Callers only pass a fresh code, so
+  /// a rename or a plain save never reaches here and never overwrites it.
+  Future<void> saveRenewal(String id, String code) =>
+      _secrets.write(renewalKey(id), code.trim());
+
+  /// Drops the renewal code, e.g. after the gateway rejected it once. A refused
+  /// delete is reported for the same reason [remove] reports one.
+  Future<void> clearRenewal(String id) => _secrets.delete(renewalKey(id));
+
   /// Drops [id] and its ticket. A refused delete is reported rather than
   /// swallowed: the caller told the person the computer was forgotten, so a
   /// ticket left behind must not be silently claimed gone.
   Future<void> remove(String id) async {
     final failures = <Object>[];
-    for (final key in [entryKey(id), nameKey(id), sessionKey(id)]) {
+    for (final key in [entryKey(id), nameKey(id), sessionKey(id), renewalKey(id)]) {
       try {
         await _secrets.delete(key);
       } catch (error) {

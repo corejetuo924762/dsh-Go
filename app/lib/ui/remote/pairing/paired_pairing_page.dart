@@ -156,7 +156,9 @@ class _PairedPairingPageState extends ConsumerState<PairedPairingPage> {
   /// phone.
   static String _sentence(HostLinkError error) => switch (error.diagnosticCode) {
     HostLinkDiagnosticCode.pairedTicketRejected => appL10n.remotePairErrCodeStale,
-    HostLinkDiagnosticCode.pairedBanned => appL10n.pairedErrBanned(_firstNumber(error.message)),
+    HostLinkDiagnosticCode.pairedBanned => appL10n.pairedErrBanned(
+      error.banRemaining?.inSeconds ?? _firstNumber(error.message),
+    ),
     HostLinkDiagnosticCode.pairedComputerFailed => appL10n.pairedErrComputer,
     HostLinkDiagnosticCode.pairedGatewayRefused => appL10n.pairedErrEntryRefused(_firstNumber(error.message)),
     HostLinkDiagnosticCode.pairedUnreachable => appL10n.remoteErrHostUnreachable,
