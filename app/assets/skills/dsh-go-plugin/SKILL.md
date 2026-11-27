@@ -223,7 +223,7 @@ presentationMeta: (args, value) => {
 - 效果：`effects.pickFile('selected', { maxFiles: 2 })` 或 `effects.pickImage(...)`；不用 SDK 时返回 `{ type: 'pickFile', action: 'selected', maxFiles: 2 }`。`maxFiles` 默认 1，只收 1–4。
 - 回调在同一个面板的 `actions[action]`，或回落到 `ctx.dshGo.on(贡献 id, handler)`；`event.value` 是 `{ status: 'selected', files: [{ handle, name, bytes, mediaType, access }] }`、`cancelled` 或 `error`。
 - 在回调内用 `ctx.dshGo.readPickedFile(handle)` 取字节（独立副本）。句柄只在这一个待处理回调内有效：回调结束、超时、卸载或断线后就读不到；不要保存句柄，也不要拿 `name` 拼路径。
-- 旧 App、旧桥、没有 dsh-go 桥接的主机不协商此能力，面板照常打开。`dshGo.v` 仍是 `1`，不要填 `1.3`。
+- 旧 App、旧桥、DSH Remote 中转不协商此能力，面板照常打开。`dshGo.v` 仍是 `1`，不要填 `1.3`。
 - 发起选择的调用必须来自用户手势（`userGesture`），不能在后台自行触发。
 
 ## 声音与字幕（v1.2，可选）
