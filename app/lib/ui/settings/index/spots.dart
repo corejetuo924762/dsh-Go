@@ -1316,6 +1316,7 @@ final _rows = <SettingSpot>[
   Spots.engineReset,
   Spots.engineUninstall,
   Spots.addSshHost,
+  Spots.addPairedComputer,
   Spots.remoteAutoConnect,
   Spots.subagentDepth,
   Spots.parallelCalls,
