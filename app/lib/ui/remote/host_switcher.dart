@@ -19,6 +19,7 @@ import '../theme/app_icons.dart';
 import '../theme/theme.dart';
 import 'host_key_dialog.dart';
 import 'host_status.dart';
+import 'pairing/paired_host_actions.dart';
 
 /// Drawer-header chip: `● 本机 · 运行中 ⌄` / `● 电脑 · 已连接 ⌄`. Opens the
 /// host sheet.
@@ -146,6 +147,8 @@ class HostSheet extends ConsumerWidget {
                       subtitle: h.entry.authority,
                       active: active == HostRef.paired(h.id, name: h.name),
                       onTap: () => pick(HostRef.paired(h.id, name: h.name)),
+                      // 改名与移除在这一行自己的菜单里，不占行内位置。
+                      onManage: () => unawaited(showPairedHostActions(context, h)),
                     ),
                   for (final h in relayHosts)
                     _HostRow(
@@ -211,7 +214,8 @@ class _HostRow extends ConsumerWidget {
     required this.active,
     required this.onTap,
     this.relay,
-  });
+    this.onManage,
+  }) : assert(relay == null || onManage == null, '一行只挂一种管理入口');
 
   final HostRef host;
   final String title;
@@ -219,6 +223,9 @@ class _HostRow extends ConsumerWidget {
   final bool active;
   final VoidCallback onTap;
   final RelayHost? relay;
+
+  /// A computer this phone paired: what can be done to it, on a long press.
+  final VoidCallback? onManage;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -231,28 +238,47 @@ class _HostRow extends ConsumerWidget {
         : relay != null
         ? HostStatusView.ofRelayHost(relay!)
         : null;
+    final manage = onManage;
+    final row = manage == null
+        ? SettingsTile(
+            icon: hostKindIcon(host.kind),
+            tinted: false,
+            title: title,
+            subtitle: subtitle,
+            onTap: onTap,
+            value: view == null ? null : _state(view),
+            trailing: _activeMark(scheme),
+          )
+        // A paired computer carries its own management: a long press opens it,
+        // and the row keeps its one tap for switching.
+        : SettingsTile(
+            icon: hostKindIcon(host.kind),
+            tinted: false,
+            title: title,
+            subtitle: subtitle,
+            onTap: onTap,
+            onLongPress: manage,
+            value: view == null ? null : _state(view),
+            trailing: _activeMark(scheme),
+          );
     return Semantics(
       key: ValueKey('host-row-${host.kind.name}-${host.id}'),
       selected: active,
       inMutuallyExclusiveGroup: true,
-      child: SettingsTile(
-        icon: hostKindIcon(host.kind),
-        tinted: false,
-        title: title,
-        subtitle: subtitle,
-        onTap: onTap,
-        value: view == null
-            ? null
-            : Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedStatusDot(tone: view.tone, size: 7),
-                  const SizedBox(width: 6),
-                  Text(view.label),
-                ],
-              ),
-        trailing: active ? Icon(AppIcons.selected, size: 20, color: scheme.primary) : const SizedBox(width: 20),
-      ),
+      hint: manage == null ? null : context.l10n.pairedHostManage,
+      child: row,
     );
   }
+
+  Widget? _state(HostStatusView view) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      AnimatedStatusDot(tone: view.tone, size: 7),
+      const SizedBox(width: 6),
+      Text(view.label),
+    ],
+  );
+
+  Widget _activeMark(ColorScheme scheme) =>
+      active ? Icon(AppIcons.selected, size: 20, color: scheme.primary) : const SizedBox(width: 20);
 }

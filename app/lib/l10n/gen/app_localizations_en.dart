@@ -19821,6 +19821,130 @@ class L10nEn extends L10n {
       'Paired, but this phone couldn’t store the computer’s fingerprint. Show a new pairing code on the computer and scan it again.';
 
   @override
+  String get remotePairAddPairedComputer => 'Add a paired computer';
+
+  @override
+  String get remotePairAddPairedComputerHint => 'Add a computer with the pairing code its access entry shows';
+
+  @override
+  String get remotePairScan => 'Scan';
+
+  @override
+  String get remotePairPaste => 'Paste link';
+
+  @override
+  String get remotePairCode => 'Type code';
+
+  @override
+  String get remotePairTypeCode => 'Type the 8-character code';
+
+  @override
+  String get remotePairFromClipboard => 'Read clipboard';
+
+  @override
+  String get remotePairSubmit => 'Pair';
+
+  @override
+  String get remotePairLinkHint =>
+      'Paste the pairing link the computer shows, e.g. http://192.168.1.5:3088/?auth=ABCD2345';
+
+  @override
+  String get remotePairCodeHintBody => 'The code is on the computer’s access entry: 8 characters, upper or lower case.';
+
+  @override
+  String get remotePairScanHintBody => 'Point the camera at the pairing QR code the computer’s access entry shows';
+
+  @override
+  String get remotePairFallbackDenied => 'The camera can’t be used, so paste the link or type the code instead';
+
+  @override
+  String get remotePairFallbackFailed => 'The camera didn’t open, so paste the link or type the code instead';
+
+  @override
+  String remotePairProgressTitle(String name) {
+    return 'Pairing with “$name”';
+  }
+
+  @override
+  String remotePairConnected(String name) {
+    return 'Connected to “$name”';
+  }
+
+  @override
+  String get remotePairStageParse => 'Read the pairing input';
+
+  @override
+  String get remotePairStageExchange => 'Exchange the code';
+
+  @override
+  String get remotePairStageConnect => 'Connect to the computer';
+
+  @override
+  String get remotePairLifetimeCode =>
+      'The code is good for 5 minutes and only once; show a new one on the computer when it lapses';
+
+  @override
+  String get remotePairLifetimeTicket => 'Once connected, this computer stays paired for 30 days without another code';
+
+  @override
+  String get remotePairErrNotPairing =>
+      'That isn’t a pairing link or code. Paste the whole link the computer shows and try again.';
+
+  @override
+  String get remotePairErrBareCode =>
+      'A code alone needs a computer already known here. Paste the computer’s pairing link first.';
+
+  @override
+  String get remotePairErrCodeStale =>
+      'The code has lapsed or was already used. Go back to the computer and refresh the pairing code.';
+
+  @override
+  String get remotePairErrNotConnected =>
+      'The computer is in the list but didn’t connect. Tap it there to try once more.';
+
+  @override
+  String get remotePairTryAgain => 'Try again';
+
+  @override
+  String get pairedHostRename => 'Rename computer';
+
+  @override
+  String get pairedHostName => 'Computer name';
+
+  @override
+  String get pairedHostNameRequired => 'Give this computer a name';
+
+  @override
+  String get pairedHostRemove => 'Remove this computer';
+
+  @override
+  String pairedHostRemoveTitle(String name) {
+    return 'Remove “$name”?';
+  }
+
+  @override
+  String get pairedHostRemoveBody =>
+      'The computer leaves the list and its pairing credentials are erased. To use it again, pair with it on the computer.';
+
+  @override
+  String get pairedHostManage => 'Manage this computer';
+
+  @override
+  String get remotePairedComputers => 'Paired computers';
+
+  @override
+  String get remotePairedPageTitle => 'Pair a computer';
+
+  @override
+  String get remotePairedComputersHint =>
+      'No DSH Remote account needed: connect with the pairing code the computer shows';
+
+  @override
+  String pairedHostRenamed(String name) {
+    return 'Renamed to “$name”';
+  }
+
+  @override
   String get stateWorkspaceFilesHint => 'Files uploaded to the current workspace:';
 
   @override

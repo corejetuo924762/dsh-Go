@@ -11251,6 +11251,70 @@
   "remotePairSwitchFailedBody": "但没能切换到这台电脑。可以重试，或者回到「远程主机」里点这台电脑。",
   "remotePairDone": "完成",
   "remotePairErrPinSave": "已经配对，但没能在手机上保存这台电脑的指纹。请在电脑上重新生成二维码，再扫一次",
+  "remotePairAddPairedComputer": "添加配对电脑",
+  "remotePairAddPairedComputerHint": "用电脑上访问入口显示的配对码，把这台电脑加进来",
+  "remotePairScan": "扫码",
+  "remotePairPaste": "粘贴链接",
+  "remotePairCode": "手输配对码",
+  "remotePairTypeCode": "手输 8 位配对码",
+  "remotePairFromClipboard": "读取剪贴板",
+  "remotePairSubmit": "配对",
+  "remotePairLinkHint": "粘贴电脑上显示的配对链接，例如 http://192.168.1.5:3088/?auth=ABCD2345",
+  "remotePairCodeHintBody": "配对码在电脑的访问入口上，8 位，大小写都行。",
+  "remotePairScanHintBody": "对准电脑访问入口显示的配对二维码",
+  "remotePairFallbackDenied": "相机用不了，改用粘贴链接或手输配对码",
+  "remotePairFallbackFailed": "相机没打开，改用粘贴链接或手输配对码",
+  "remotePairProgressTitle": "正在配对「{name}」",
+  "@remotePairProgressTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remotePairConnected": "已连上「{name}」",
+  "@remotePairConnected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remotePairStageParse": "解析配对信息",
+  "remotePairStageExchange": "兑换配对码",
+  "remotePairStageConnect": "连接电脑",
+  "remotePairLifetimeCode": "配对码 5 分钟内有效，只能用一次；过期了回电脑上刷新",
+  "remotePairLifetimeTicket": "连上之后这台电脑保持 30 天，不用每次输入配对码",
+  "remotePairErrNotPairing": "这不像配对链接或配对码：粘贴电脑上显示的完整链接再试",
+  "remotePairErrBareCode": "只输配对码要先有一台已知的电脑；先粘贴电脑上的配对链接",
+  "remotePairErrCodeStale": "配对码已失效或已被使用，请回到电脑上刷新配对码",
+  "remotePairErrNotConnected": "这台电脑已加进列表，但还没连上；到列表里点它再试一次",
+  "remotePairTryAgain": "再试一次",
+  "pairedHostRename": "重命名电脑",
+  "pairedHostName": "电脑名字",
+  "pairedHostNameRequired": "给这台电脑起个名字",
+  "pairedHostRemove": "移除这台电脑",
+  "pairedHostRemoveTitle": "移除「{name}」？",
+  "@pairedHostRemoveTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pairedHostRemoveBody": "这台电脑会从列表里消失，配对凭据也一并抹去。要再用就回电脑上重新配对。",
+  "pairedHostManage": "管理这台电脑",
+  "remotePairedComputers": "配对电脑",
+  "remotePairedPageTitle": "配对电脑",
+  "remotePairedComputersHint": "不用 DSH Remote 账号，直接用电脑上的配对码连上",
+  "pairedHostRenamed": "已改名为「{name}」",
+  "@pairedHostRenamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "stateWorkspaceFilesHint": "已上传到当前工作区的文件：",
   "stateRemoteUploadNameInvalid": "文件名不受主机支持，请去掉特殊字符或缩短后再试",
   "stateRemoteUploadWorkspaceUnavailable": "当前对话没有可写的工作目录",

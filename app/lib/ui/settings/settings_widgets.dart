@@ -119,6 +119,7 @@ class SettingsTile extends StatelessWidget {
     this.value,
     this.trailing,
     this.onTap,
+    this.onLongPress,
     this.tint = 0,
     this.danger = false,
     this.chevron,
@@ -143,6 +144,9 @@ class SettingsTile extends StatelessWidget {
   /// Replaces the chevron (switches, spinners).
   final Widget? trailing;
   final VoidCallback? onTap;
+
+  /// A second way into a row's own menu; the row has no chevron for it.
+  final VoidCallback? onLongPress;
   final int tint;
   final bool danger;
 
@@ -169,6 +173,7 @@ class SettingsTile extends StatelessWidget {
       spot,
       InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         splashFactory: rowSplash(context),
         highlightColor: scheme.onSurface.withValues(alpha: 0.05),
         child: ConstrainedBox(

@@ -12,6 +12,8 @@ import '../../state/account_api.dart' show AccountProfile;
 import '../../state/app_info.dart';
 import '../../state/connection_state.dart';
 import '../../state/hosts_state.dart';
+import '../../remote/paired/paired_host_store.dart';
+import '../../state/paired_hosts_state.dart';
 import '../account/account_widgets.dart' show AccountAvatar;
 import '../common/app_dialog.dart';
 import '../common/ask_ai.dart';
@@ -26,6 +28,8 @@ import 'host_key_dialog.dart';
 import 'host_status.dart';
 import 'link_progress.dart';
 import 'network_details_sheet.dart';
+import 'pairing/paired_host_actions.dart';
+import 'pairing/paired_pairing_page.dart';
 import 'pairing_page.dart';
 import 'relay_credit.dart';
 import 'relay_login_sheet.dart';
@@ -134,6 +138,7 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final ssh = ref.watch(hostsProvider.select((s) => s.ssh));
+    final paired = ref.watch(pairedHostsProvider).records;
     final active = ref.watch(activeHostProvider);
     final (signedIn, refreshing) = ref.watch(
       relayAccountProvider.select((a) => (a.value?.signedIn ?? false, a.value?.refreshing ?? false)),
@@ -172,6 +177,28 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
               spot: Spots.addSshHost,
               subtitle: ssh.isEmpty ? l10n.remoteSshDirect : null,
               onTap: () => unawaited(_addSsh()),
+            ),
+          ],
+        ),
+        // Paired computers stand next to SSH hosts: a phone reaches either the
+        // same way, and neither needs the DSH Remote account.
+        SettingsSection(
+          title: l10n.remotePairedComputers,
+          footer: Text(l10n.remotePairedComputersHint),
+          children: [
+            for (final h in paired)
+              _PairedRow(
+                record: h,
+                active: active == HostRef.paired(h.id, name: h.name),
+                onTap: () => unawaited(_use(HostRef.paired(h.id, name: h.name))),
+                onManage: () => unawaited(showPairedHostActions(context, h)),
+              ),
+            SettingsTile(
+              icon: AppIcons.qrCode,
+              tinted: false,
+              title: l10n.remotePairAddPairedComputer,
+              subtitle: paired.isEmpty ? l10n.remotePairAddPairedComputerHint : null,
+              onTap: () => push(const PairedPairingPage()),
             ),
           ],
         ),
@@ -569,6 +596,53 @@ class _RelayHostsSection extends ConsumerWidget {
             onTap: () => Navigator.of(context).push(RemotePairingPage.route()),
           ),
       ],
+    );
+  }
+}
+
+/// A paired computer: the name the person gave it and the address its link
+/// named. No fingerprint, and no confirmation on the first connect — pairing
+/// already said which computer this is.
+class _PairedRow extends ConsumerWidget {
+  const _PairedRow({required this.record, required this.active, required this.onTap, required this.onManage});
+
+  final PairedHostRecord record;
+  final bool active;
+  final VoidCallback onTap;
+  final VoidCallback onManage;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final host = HostRef.paired(record.id, name: record.name);
+    final status = active ? ref.watch(hostLinkStatusProvider(host)).value : null;
+    final view = status == null ? null : HostStatusView.ofLink(status);
+    return Semantics(
+      key: ValueKey('remote-paired-${record.id}'),
+      selected: active,
+      inMutuallyExclusiveGroup: true,
+      hint: l10n.pairedHostManage,
+      child: SettingsTile(
+        icon: hostKindIcon(HostKind.paired),
+        tinted: false,
+        title: record.name ?? l10n.commonRemoteHost,
+        subtitle: record.entry.authority,
+        onTap: onTap,
+        onLongPress: onManage,
+        value: view == null
+            ? null
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedStatusDot(tone: view.tone, size: 7),
+                  const SizedBox(width: 6),
+                  Text(view.label),
+                ],
+              ),
+        trailing: active ? Icon(AppIcons.selected, size: 20, color: scheme.primary) : const SizedBox(width: 20),
+        chevron: false,
+      ),
     );
   }
 }

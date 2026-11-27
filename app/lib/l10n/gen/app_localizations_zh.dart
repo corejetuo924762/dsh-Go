@@ -18787,6 +18787,122 @@ class L10nZh extends L10n {
   String get remotePairErrPinSave => '已经配对，但没能在手机上保存这台电脑的指纹。请在电脑上重新生成二维码，再扫一次';
 
   @override
+  String get remotePairAddPairedComputer => '添加配对电脑';
+
+  @override
+  String get remotePairAddPairedComputerHint => '用电脑上访问入口显示的配对码，把这台电脑加进来';
+
+  @override
+  String get remotePairScan => '扫码';
+
+  @override
+  String get remotePairPaste => '粘贴链接';
+
+  @override
+  String get remotePairCode => '手输配对码';
+
+  @override
+  String get remotePairTypeCode => '手输 8 位配对码';
+
+  @override
+  String get remotePairFromClipboard => '读取剪贴板';
+
+  @override
+  String get remotePairSubmit => '配对';
+
+  @override
+  String get remotePairLinkHint => '粘贴电脑上显示的配对链接，例如 http://192.168.1.5:3088/?auth=ABCD2345';
+
+  @override
+  String get remotePairCodeHintBody => '配对码在电脑的访问入口上，8 位，大小写都行。';
+
+  @override
+  String get remotePairScanHintBody => '对准电脑访问入口显示的配对二维码';
+
+  @override
+  String get remotePairFallbackDenied => '相机用不了，改用粘贴链接或手输配对码';
+
+  @override
+  String get remotePairFallbackFailed => '相机没打开，改用粘贴链接或手输配对码';
+
+  @override
+  String remotePairProgressTitle(String name) {
+    return '正在配对「$name」';
+  }
+
+  @override
+  String remotePairConnected(String name) {
+    return '已连上「$name」';
+  }
+
+  @override
+  String get remotePairStageParse => '解析配对信息';
+
+  @override
+  String get remotePairStageExchange => '兑换配对码';
+
+  @override
+  String get remotePairStageConnect => '连接电脑';
+
+  @override
+  String get remotePairLifetimeCode => '配对码 5 分钟内有效，只能用一次；过期了回电脑上刷新';
+
+  @override
+  String get remotePairLifetimeTicket => '连上之后这台电脑保持 30 天，不用每次输入配对码';
+
+  @override
+  String get remotePairErrNotPairing => '这不像配对链接或配对码：粘贴电脑上显示的完整链接再试';
+
+  @override
+  String get remotePairErrBareCode => '只输配对码要先有一台已知的电脑；先粘贴电脑上的配对链接';
+
+  @override
+  String get remotePairErrCodeStale => '配对码已失效或已被使用，请回到电脑上刷新配对码';
+
+  @override
+  String get remotePairErrNotConnected => '这台电脑已加进列表，但还没连上；到列表里点它再试一次';
+
+  @override
+  String get remotePairTryAgain => '再试一次';
+
+  @override
+  String get pairedHostRename => '重命名电脑';
+
+  @override
+  String get pairedHostName => '电脑名字';
+
+  @override
+  String get pairedHostNameRequired => '给这台电脑起个名字';
+
+  @override
+  String get pairedHostRemove => '移除这台电脑';
+
+  @override
+  String pairedHostRemoveTitle(String name) {
+    return '移除「$name」？';
+  }
+
+  @override
+  String get pairedHostRemoveBody => '这台电脑会从列表里消失，配对凭据也一并抹去。要再用就回电脑上重新配对。';
+
+  @override
+  String get pairedHostManage => '管理这台电脑';
+
+  @override
+  String get remotePairedComputers => '配对电脑';
+
+  @override
+  String get remotePairedPageTitle => '配对电脑';
+
+  @override
+  String get remotePairedComputersHint => '不用 DSH Remote 账号，直接用电脑上的配对码连上';
+
+  @override
+  String pairedHostRenamed(String name) {
+    return '已改名为「$name」';
+  }
+
+  @override
   String get stateWorkspaceFilesHint => '已上传到当前工作区的文件：';
 
   @override

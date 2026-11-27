@@ -51,5 +51,69 @@
   "remotePairSwitchFailedTitle": "Paired with {name}",
   "remotePairSwitchFailedBody": "But switching to it didn’t work. Try again, or pick it under Remote hosts.",
   "remotePairDone": "Done",
-  "remotePairErrPinSave": "Paired, but this phone couldn’t store the computer’s fingerprint. Show a new pairing code on the computer and scan it again."
+  "remotePairErrPinSave": "Paired, but this phone couldn’t store the computer’s fingerprint. Show a new pairing code on the computer and scan it again.",
+  "remotePairAddPairedComputer": "Add a paired computer",
+  "remotePairAddPairedComputerHint": "Add a computer with the pairing code its access entry shows",
+  "remotePairScan": "Scan",
+  "remotePairPaste": "Paste link",
+  "remotePairCode": "Type code",
+  "remotePairTypeCode": "Type the 8-character code",
+  "remotePairFromClipboard": "Read clipboard",
+  "remotePairSubmit": "Pair",
+  "remotePairLinkHint": "Paste the pairing link the computer shows, e.g. http://192.168.1.5:3088/?auth=ABCD2345",
+  "remotePairCodeHintBody": "The code is on the computer’s access entry: 8 characters, upper or lower case.",
+  "remotePairScanHintBody": "Point the camera at the pairing QR code the computer’s access entry shows",
+  "remotePairFallbackDenied": "The camera can’t be used, so paste the link or type the code instead",
+  "remotePairFallbackFailed": "The camera didn’t open, so paste the link or type the code instead",
+  "remotePairProgressTitle": "Pairing with “{name}”",
+  "@remotePairProgressTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remotePairConnected": "Connected to “{name}”",
+  "@remotePairConnected": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "remotePairStageParse": "Read the pairing input",
+  "remotePairStageExchange": "Exchange the code",
+  "remotePairStageConnect": "Connect to the computer",
+  "remotePairLifetimeCode": "The code is good for 5 minutes and only once; show a new one on the computer when it lapses",
+  "remotePairLifetimeTicket": "Once connected, this computer stays paired for 30 days without another code",
+  "remotePairErrNotPairing": "That isn’t a pairing link or code. Paste the whole link the computer shows and try again.",
+  "remotePairErrBareCode": "A code alone needs a computer already known here. Paste the computer’s pairing link first.",
+  "remotePairErrCodeStale": "The code has lapsed or was already used. Go back to the computer and refresh the pairing code.",
+  "remotePairErrNotConnected": "The computer is in the list but didn’t connect. Tap it there to try once more.",
+  "remotePairTryAgain": "Try again",
+  "pairedHostRename": "Rename computer",
+  "pairedHostName": "Computer name",
+  "pairedHostNameRequired": "Give this computer a name",
+  "pairedHostRemove": "Remove this computer",
+  "pairedHostRemoveTitle": "Remove “{name}”?",
+  "@pairedHostRemoveTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pairedHostRemoveBody": "The computer leaves the list and its pairing credentials are erased. To use it again, pair with it on the computer.",
+  "pairedHostManage": "Manage this computer",
+  "remotePairedComputers": "Paired computers",
+  "remotePairedPageTitle": "Pair a computer",
+  "remotePairedComputersHint": "No DSH Remote account needed: connect with the pairing code the computer shows",
+  "pairedHostRenamed": "Renamed to “{name}”",
+  "@pairedHostRenamed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

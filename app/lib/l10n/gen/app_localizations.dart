@@ -34506,6 +34506,222 @@ abstract class L10n {
   /// **'已经配对，但没能在手机上保存这台电脑的指纹。请在电脑上重新生成二维码，再扫一次'**
   String get remotePairErrPinSave;
 
+  /// No description provided for @remotePairAddPairedComputer.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加配对电脑'**
+  String get remotePairAddPairedComputer;
+
+  /// No description provided for @remotePairAddPairedComputerHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'用电脑上访问入口显示的配对码，把这台电脑加进来'**
+  String get remotePairAddPairedComputerHint;
+
+  /// No description provided for @remotePairScan.
+  ///
+  /// In zh, this message translates to:
+  /// **'扫码'**
+  String get remotePairScan;
+
+  /// No description provided for @remotePairPaste.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴链接'**
+  String get remotePairPaste;
+
+  /// No description provided for @remotePairCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'手输配对码'**
+  String get remotePairCode;
+
+  /// No description provided for @remotePairTypeCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'手输 8 位配对码'**
+  String get remotePairTypeCode;
+
+  /// No description provided for @remotePairFromClipboard.
+  ///
+  /// In zh, this message translates to:
+  /// **'读取剪贴板'**
+  String get remotePairFromClipboard;
+
+  /// No description provided for @remotePairSubmit.
+  ///
+  /// In zh, this message translates to:
+  /// **'配对'**
+  String get remotePairSubmit;
+
+  /// No description provided for @remotePairLinkHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴电脑上显示的配对链接，例如 http://192.168.1.5:3088/?auth=ABCD2345'**
+  String get remotePairLinkHint;
+
+  /// No description provided for @remotePairCodeHintBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'配对码在电脑的访问入口上，8 位，大小写都行。'**
+  String get remotePairCodeHintBody;
+
+  /// No description provided for @remotePairScanHintBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'对准电脑访问入口显示的配对二维码'**
+  String get remotePairScanHintBody;
+
+  /// No description provided for @remotePairFallbackDenied.
+  ///
+  /// In zh, this message translates to:
+  /// **'相机用不了，改用粘贴链接或手输配对码'**
+  String get remotePairFallbackDenied;
+
+  /// No description provided for @remotePairFallbackFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'相机没打开，改用粘贴链接或手输配对码'**
+  String get remotePairFallbackFailed;
+
+  /// No description provided for @remotePairProgressTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在配对「{name}」'**
+  String remotePairProgressTitle(String name);
+
+  /// No description provided for @remotePairConnected.
+  ///
+  /// In zh, this message translates to:
+  /// **'已连上「{name}」'**
+  String remotePairConnected(String name);
+
+  /// No description provided for @remotePairStageParse.
+  ///
+  /// In zh, this message translates to:
+  /// **'解析配对信息'**
+  String get remotePairStageParse;
+
+  /// No description provided for @remotePairStageExchange.
+  ///
+  /// In zh, this message translates to:
+  /// **'兑换配对码'**
+  String get remotePairStageExchange;
+
+  /// No description provided for @remotePairStageConnect.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接电脑'**
+  String get remotePairStageConnect;
+
+  /// No description provided for @remotePairLifetimeCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'配对码 5 分钟内有效，只能用一次；过期了回电脑上刷新'**
+  String get remotePairLifetimeCode;
+
+  /// No description provided for @remotePairLifetimeTicket.
+  ///
+  /// In zh, this message translates to:
+  /// **'连上之后这台电脑保持 30 天，不用每次输入配对码'**
+  String get remotePairLifetimeTicket;
+
+  /// No description provided for @remotePairErrNotPairing.
+  ///
+  /// In zh, this message translates to:
+  /// **'这不像配对链接或配对码：粘贴电脑上显示的完整链接再试'**
+  String get remotePairErrNotPairing;
+
+  /// No description provided for @remotePairErrBareCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'只输配对码要先有一台已知的电脑；先粘贴电脑上的配对链接'**
+  String get remotePairErrBareCode;
+
+  /// No description provided for @remotePairErrCodeStale.
+  ///
+  /// In zh, this message translates to:
+  /// **'配对码已失效或已被使用，请回到电脑上刷新配对码'**
+  String get remotePairErrCodeStale;
+
+  /// No description provided for @remotePairErrNotConnected.
+  ///
+  /// In zh, this message translates to:
+  /// **'这台电脑已加进列表，但还没连上；到列表里点它再试一次'**
+  String get remotePairErrNotConnected;
+
+  /// No description provided for @remotePairTryAgain.
+  ///
+  /// In zh, this message translates to:
+  /// **'再试一次'**
+  String get remotePairTryAgain;
+
+  /// No description provided for @pairedHostRename.
+  ///
+  /// In zh, this message translates to:
+  /// **'重命名电脑'**
+  String get pairedHostRename;
+
+  /// No description provided for @pairedHostName.
+  ///
+  /// In zh, this message translates to:
+  /// **'电脑名字'**
+  String get pairedHostName;
+
+  /// No description provided for @pairedHostNameRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'给这台电脑起个名字'**
+  String get pairedHostNameRequired;
+
+  /// No description provided for @pairedHostRemove.
+  ///
+  /// In zh, this message translates to:
+  /// **'移除这台电脑'**
+  String get pairedHostRemove;
+
+  /// No description provided for @pairedHostRemoveTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'移除「{name}」？'**
+  String pairedHostRemoveTitle(String name);
+
+  /// No description provided for @pairedHostRemoveBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'这台电脑会从列表里消失，配对凭据也一并抹去。要再用就回电脑上重新配对。'**
+  String get pairedHostRemoveBody;
+
+  /// No description provided for @pairedHostManage.
+  ///
+  /// In zh, this message translates to:
+  /// **'管理这台电脑'**
+  String get pairedHostManage;
+
+  /// No description provided for @remotePairedComputers.
+  ///
+  /// In zh, this message translates to:
+  /// **'配对电脑'**
+  String get remotePairedComputers;
+
+  /// No description provided for @remotePairedPageTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'配对电脑'**
+  String get remotePairedPageTitle;
+
+  /// No description provided for @remotePairedComputersHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'不用 DSH Remote 账号，直接用电脑上的配对码连上'**
+  String get remotePairedComputersHint;
+
+  /// No description provided for @pairedHostRenamed.
+  ///
+  /// In zh, this message translates to:
+  /// **'已改名为「{name}」'**
+  String pairedHostRenamed(String name);
+
   /// No description provided for @stateWorkspaceFilesHint.
   ///
   /// In zh, this message translates to:
