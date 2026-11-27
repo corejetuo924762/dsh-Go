@@ -369,7 +369,7 @@ void main() {
       });
     }
 
-    testWidgets('relay hosts get the command to copy', (tester) async {
+    testWidgets('a host that cannot install gets the command to copy', (tester) async {
       final relayCarrier = FakePluginCarrier(allowInstall: false);
       final relayClient = DshClient.withCarrier(relayCarrier);
       addTearDown(relayClient.close);
@@ -379,7 +379,7 @@ void main() {
         tab: PluginsTab.market,
         host: fakeHost(relayClient, kind: HostKind.paired, label: '家里的 Mac · 远程'),
       );
-      expect(find.text('家里的 Mac · 远程 · 经中转只能开关，安装请在那台电脑上进行'), findsOneWidget);
+      expect(find.text('家里的 Mac · 远程 · 这台主机只能开关，安装请在那台电脑上进行'), findsOneWidget);
       await openSheet(tester, 'novel-writer');
       await tester.tap(find.text('获取安装命令'));
       await tester.pumpAndSettle();
