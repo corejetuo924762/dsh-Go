@@ -176,7 +176,7 @@
     },
     {
       "path": "packages/dsh_client/test/support/fake_dsh.dart",
-      "sha256": "d6f8509eb65feb2a94294f8947c2687b916e801ae041e04fac93584a2d9d223d"
+      "sha256": "e7f2b2cafd04b33966e986204a5ec38b854de593943bae313a59d5e1447f8c27"
     },
     {
       "path": "packages/dsh_client/test/support/old_memory_schema.dart",

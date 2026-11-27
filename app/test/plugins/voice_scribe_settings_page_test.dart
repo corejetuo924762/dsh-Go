@@ -240,7 +240,10 @@ void main() {
     });
   }
 
-  voiceTest('a paired computer states the real unavailable reason and performs no REST request', (tester) async {
+  // A paired computer is a plain HTTP entry, so the page is fully usable on it:
+  // the same settings the phone's own engine offers, not the unsupported notice
+  // that only ever spoke for the removed relay.
+  voiceTest('a paired computer offers the real voice settings and reads them', (tester) async {
     late VoiceServer server;
     late DshClient client;
     await tester.runAsync(() async {
@@ -262,11 +265,9 @@ void main() {
         home: VoiceScribeSettingsPage(source: source, entryId: 'include:voice'),
       ),
     );
-    await network(tester);
-    expect(find.text(appL10n.voiceScribeUnsupported), findsOneWidget);
-    expect(find.text('识别语言'), findsNothing);
-    expect(find.byTooltip('刷新'), findsNothing);
-    expect(server.requests, isEmpty);
+    await voiceReady(tester, () => find.text('识别语言').evaluate().isNotEmpty, 'paired voice settings');
+    expect(find.text(appL10n.voiceScribeUnsupported), findsNothing);
+    expect(server.requests, isNotEmpty);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
     client.connection.close(force: true);

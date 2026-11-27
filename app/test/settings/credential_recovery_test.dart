@@ -191,7 +191,7 @@ void main() {
       vault.failure = 'secrets_unreadable';
       await pumpPrivacy(tester, 'ohos');
       await openDialog(tester);
-      for (final words in ['API key', 'DSH Remote 登录', 'SSH 密码', '重新填写', '对话和主机列表会保留']) {
+      for (final words in ['API key', 'SSH 密码', '重新填写', '对话和主机列表会保留']) {
         expect(_zh.harmonyCredentialsClearBody, contains(words));
       }
       final button = tester.widget<FilledButton>(find.widgetWithText(FilledButton, _zh.harmonyCredentialsClearAction));

@@ -140,6 +140,9 @@ class HostsController extends Notifier<HostsState> {
       // No preferences backend (tests) or a corrupt entry: start empty.
     }
     await _purgeRelaySecrets();
+    // The purge awaits secure storage; a provider disposed meanwhile (tests
+    // tearing down, a rebuild) must not have its state written.
+    if (!ref.mounted) return;
     state = HostsState(ssh: hosts, loaded: true);
   }
 

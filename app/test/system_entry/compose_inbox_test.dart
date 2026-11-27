@@ -236,10 +236,11 @@ void main() {
     // A carrier that serves no upload protocol can't stage, whatever its kind.
     final noUpload = HostConnection(client: DshClient.withCarrier(_NoUploadCarrier()), isLocal: false, kind: HostKind.paired);
     expect(canStageFiles(noUpload, HostRef.paired(pairedHostId('192.168.1.5:3080'))), isFalse);
-    // Nothing connected yet: 本机 stages for the engine about to start, a remote
-    // host waits to be asked instead of guessing from its kind.
+    // Nothing connected yet: 本机 stages for the engine about to start and an SSH
+    // host keeps staging as it always did; a paired computer waits to be asked
+    // rather than guessing from its kind.
     expect(canStageFiles(null, HostRef.local), isTrue);
-    expect(canStageFiles(null, const HostRef.ssh('a')), isFalse);
+    expect(canStageFiles(null, const HostRef.ssh('a')), isTrue);
     expect(canStageFiles(null, const HostRef.paired('r')), isFalse);
     expect(canStageFiles(null, HostRef.paired(pairedHostId('192.168.1.5:3080'))), isFalse);
   });

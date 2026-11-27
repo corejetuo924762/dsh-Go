@@ -255,7 +255,7 @@ class RunnerContract(unittest.TestCase):
                         gates.verify_flutter_packages(root)
             entry['packageUri'] = 'lib/'
         config.write_text(json.dumps({'packages': packages}))
-        self.assertEqual(len(gates.verify_flutter_packages(root)), 3)
+        self.assertEqual(len(gates.verify_flutter_packages(root)), 2)
         lib = root / 'packages/dsh_client/lib'
         saved = lib.with_name('saved-lib'); lib.rename(saved)
         lib.symlink_to(saved, target_is_directory=True)

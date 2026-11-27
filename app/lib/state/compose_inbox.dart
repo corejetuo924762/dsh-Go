@@ -204,10 +204,11 @@ final readyComposeProvider = Provider<ComposeRequest?>((ref) {
 /// The active host can stage attachments: the live connection's own
 /// capability decides, never the host kind. A paired computer dials `dsh web`
 /// straight over HTTP, so it uploads exactly what that Host supports. Before
-/// anything is connected, 本机 still stages for the engine that is about to
-/// start; a remote host waits to be asked rather than assuming.
+/// anything is connected, 本机 stages for the engine that is about to start and
+/// an SSH host keeps staging as it always did — its link reports the same
+/// capability once it is up.
 bool canStageFiles(HostConnection? connection, HostRef host) =>
-    connection?.client.supportsFileUpload ?? host.isLocal;
+    connection?.client.supportsFileUpload ?? host.kind != HostKind.paired;
 
 /// The composer after a fill.
 class MergedDraft {
