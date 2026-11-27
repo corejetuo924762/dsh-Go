@@ -8,7 +8,7 @@ import 'support/fake_dsh.dart';
 
 /// The gateway's ticket, as it appears in `Set-Cookie` and in the stored
 /// `dsh_remote_session` cookie value.
-const ticket = 'v1.1750000000.1752592000.c2lnbmF0dXJl';
+const ticket = 'v1.1750000000000.1752592000000.c2lnbmF0dXJl';
 const authority = '127.0.0.1:3088';
 
 void main() {
@@ -17,7 +17,6 @@ void main() {
       final session = DshRemoteSession.tryParse(ticket, authority: authority)!;
       expect(session.value, ticket);
       expect(session.authority, authority);
-      expect(session.name, 'dsh_remote_session');
       expect(session.header, 'dsh_remote_session=$ticket');
       expect(session.issuedAt, DateTime.utc(2025, 6, 15, 15, 6, 40));
       expect(session.expiresAt, DateTime.utc(2025, 7, 15, 15, 6, 40));
@@ -33,14 +32,14 @@ void main() {
     test('malformed values fail instead of guessing', () {
       for (final bad in <String>[
         '',
-        'v2.1750000000.1752592000.sig',
-        'v1.1750000000.1752592000',
-        'v1.1750000000.1752592000.sig.extra',
-        'v1..1752592000.sig',
-        'v1.1750000000..sig',
-        'v1.1750000000.1752592000.',
-        'v1.not-a-time.1752592000.sig',
-        'v1.1750000000.soon.sig',
+        'v2.1750000000000.1752592000000.sig',
+        'v1.1750000000000.1752592000000',
+        'v1.1750000000000.1752592000000.sig.extra',
+        'v1..1752592000000.sig',
+        'v1.1750000000000..sig',
+        'v1.1750000000000.1752592000000.',
+        'v1.not-a-time.1752592000000.sig',
+        'v1.1750000000000.soon.sig',
       ]) {
         expect(DshRemoteSession.tryParse(bad, authority: authority), isNull, reason: bad);
       }
@@ -54,15 +53,12 @@ void main() {
       expect(session.header, 'dsh_remote_session=$ticket');
       expect(session.expiresAt, DateTime.utc(2025, 7, 15, 15, 6, 40));
 
-      expect(
-        DshRemoteSession.fromSetCookie('dsh-auth-abc=v1.payload.sig; Path=/', authority: authority),
-        isNull,
-      );
+      expect(DshRemoteSession.fromSetCookie('dsh-auth-abc=v1.payload.sig; Path=/', authority: authority), isNull);
       expect(DshRemoteSession.fromSetCookie('dsh_remote_session=; Path=/', authority: authority), isNull);
     });
 
     test('a ticket without an expiry keeps no expiry', () {
-      final session = DshRemoteSession.tryParse('v1.1750000000.0.sig', authority: authority)!;
+      final session = DshRemoteSession.tryParse('v1.1750000000000.0.sig', authority: authority)!;
       expect(session.issuedAt, DateTime.utc(2025, 6, 15, 15, 6, 40));
       expect(session.expiresAt, isNull);
       expect(session.isExpiredAt(DateTime.utc(2100)), isFalse);
@@ -87,12 +83,8 @@ void main() {
 
     const muxOptions = MuxOptions(readyTimeout: Duration(seconds: 2), retryCaps: [Duration(milliseconds: 20)]);
 
-    Future<DshClient> client() => DshClient.connect(
-      baseUri: host.baseUri,
-      token: FakeDsh.token,
-      muxOptions: muxOptions,
-      startMux: false,
-    );
+    Future<DshClient> client() =>
+        DshClient.connect(baseUri: host.baseUri, token: FakeDsh.token, muxOptions: muxOptions, startMux: false);
 
     test('the cookie header carries both cookies, login first', () async {
       final connected = await client();
@@ -180,12 +172,7 @@ void main() {
 
       host.trustedOrigins.add(tunnelOrigin);
       final tunneled = DshClient(
-        DshConnection(
-          host.baseUri,
-          originHeader: tunnelOrigin,
-          cookie: lan.connection.cookie,
-          remoteSession: remote(),
-        ),
+        DshConnection(host.baseUri, originHeader: tunnelOrigin, cookie: lan.connection.cookie, remoteSession: remote()),
       );
       addTearDown(tunneled.close);
       await tunneled.listSessions();

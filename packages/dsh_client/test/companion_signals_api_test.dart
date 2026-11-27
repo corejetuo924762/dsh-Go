@@ -336,7 +336,7 @@ void main() {
     expect(receipt.provenance.current, isTrue);
     expect(identical(client.mux.provenanceFor(receipt.event), receipt.provenance), isTrue);
   });
-  test('a pairing entry sends the ticket beside the login cookie and the tunnel origin', () async {
+  test('a pairing entry carries both cookies and the tunnel origin on the signal stream', () async {
     const ticket = 'v1.1750000000.1752592000.c2lnbmF0dXJl';
     const tunnel = 'https://unsigned-unlimited-show-bumper.trycloudflare.com';
     final paired = await host.connect(

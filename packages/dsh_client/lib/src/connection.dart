@@ -1,6 +1,7 @@
 /// Physical carrier for one `dsh web` Host: launch-token login, the
 /// authority-bound session cookie, plain HTTP exchanges and the WebSocket
-/// upgrade, all sent with the right `Host` header and never an `Origin`.
+/// upgrade, all sent with the right `Host` header. An `Origin` is sent only
+/// when [DshConnection.originHeader] names one for the entry in use.
 library;
 
 import 'dart:async';
@@ -63,14 +64,15 @@ class DshCookie {
 
 /// Session ticket minted by the PC-side pairing gateway for this phone.
 ///
-/// The gateway writes it as `dsh_remote_session=v1.<issuedAt>.<expiresAt>.<hmac>`
-/// on the browser-navigation exchange, and re-mints it on every later exchange
-/// (30 days by default). It is a channel of its own: it never enters
-/// [DshCookie]'s launch-token login, parsing or refresh, and both cookies are
-/// sent side by side when present.
+/// The gateway writes it as
+/// `dsh_remote_session=v1.<issuedAtMs>.<expiresAtMs>.<mac>` on the
+/// browser-navigation exchange (`Max-Age` for the remaining lifetime, 30 days
+/// by default), and re-mints it on every later exchange. It is a channel of its
+/// own: it never enters [DshCookie]'s launch-token login, parsing or refresh,
+/// and both cookies are sent side by side when present.
 ///
-/// The signature is opaque here; only the two stamp segments are read. Stamps
-/// are epoch numbers (seconds, or milliseconds if that large) and `0` in the
+/// The signature is opaque here; only the two stamps are read. The gateway
+/// stamps both with `Date.now()`, so they are epoch milliseconds; `0` in the
 /// expiry position means "no expiry" (the device-ticket form).
 class DshRemoteSession {
   const DshRemoteSession({required this.value, required this.authority, this.issuedAt, this.expiresAt});
@@ -80,7 +82,7 @@ class DshRemoteSession {
 
   static const _version = 'v1';
 
-  /// `v1.<issuedAt>.<expiresAt>.<hmac>`; opaque to the client.
+  /// `v1.<issuedAtMs>.<expiresAtMs>.<mac>`; opaque to the client.
   final String value;
 
   /// `host:port` the gateway minted this ticket for. Kept so a stored ticket
@@ -92,8 +94,6 @@ class DshRemoteSession {
   /// device-ticket form (`expiresAt` segment `0`).
   final DateTime? expiresAt;
 
-  String get name => cookieName;
-
   String get header => '$cookieName=$value';
 
   bool isExpiredAt(DateTime now) => expiresAt != null && !now.isBefore(expiresAt!);
@@ -101,12 +101,11 @@ class DshRemoteSession {
   factory DshRemoteSession.fromJson(Map<String, Object?> json) => DshRemoteSession(
     value: asString(json['value']) ?? '',
     authority: asString(json['authority']) ?? '',
-    issuedAt: _epochMs(asInt(json['issuedAt'])),
-    expiresAt: _epochMs(asInt(json['expiresAt'])),
+    issuedAt: _stamp(json['issuedAt']),
+    expiresAt: _stamp(json['expiresAt']),
   );
 
   Map<String, Object?> toJson() => {
-    'name': cookieName,
     'value': value,
     'authority': authority,
     if (issuedAt != null) 'issuedAt': issuedAt!.millisecondsSinceEpoch,
@@ -117,10 +116,10 @@ class DshRemoteSession {
   /// exactly the four-segment ticket (`dsh-auth-*` values are three).
   static DshRemoteSession? tryParse(String cookieValue, {required String authority}) {
     final parts = cookieValue.split('.');
-    if (parts.length != 4 || parts.first != _version) return null;
+    if (parts.length != 4 || parts.first != _version || parts[3].isEmpty) return null;
     final issuedAt = _stamp(parts[1]);
     final expiresAt = parts[2] == '0' ? null : _stamp(parts[2]);
-    if (issuedAt == null || parts[3].isEmpty || (expiresAt == null && parts[2] != '0')) return null;
+    if (issuedAt == null || (expiresAt == null && parts[2] != '0')) return null;
     return DshRemoteSession(value: cookieValue, authority: authority, issuedAt: issuedAt, expiresAt: expiresAt);
   }
 
@@ -135,15 +134,11 @@ class DshRemoteSession {
     return tryParse(value, authority: authority);
   }
 
-  static DateTime? _stamp(String raw) {
-    final value = int.tryParse(raw);
+  static DateTime? _stamp(Object? raw) {
+    final value = raw is int ? raw : int.tryParse(raw is String ? raw : '');
     if (value == null || value <= 0) return null;
-    // Seconds up to the year 5138; anything larger is already milliseconds.
-    return _epochMs(value >= 100000000000 ? value : value * 1000);
+    return DateTime.fromMillisecondsSinceEpoch(value, isUtc: true);
   }
-
-  static DateTime? _epochMs(int? ms) =>
-      ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
 
   @override
   String toString() => 'DshRemoteSession($cookieName for $authority, expires $expiresAt)';
@@ -383,10 +378,7 @@ class DshConnection {
   /// login cookie first, then the remote session ticket. `null` when neither
   /// is present. Hand-built requests must use this instead of reading [cookie].
   String? get cookieHeader {
-    final parts = [
-      if (cookie case final login?) login.header,
-      if (remoteSession case final remote?) remote.header,
-    ];
+    final parts = [if (cookie case final login?) login.header, if (remoteSession case final remote?) remote.header];
     return parts.isEmpty ? null : parts.join('; ');
   }
 
@@ -610,9 +602,7 @@ class DshConnection {
       final req = await http.getUrl(uri);
       req.followRedirects = false;
       req.persistentConnection = false;
-      _applyHost(req.headers);
-      _applyOrigin(req.headers);
-      if (cookieHeader case final cookies?) req.headers.set(HttpHeaders.cookieHeader, cookies);
+      applyHeaders(req.headers);
       final response = await req.close();
       if (response.statusCode >= 300 && response.statusCode < 400) {
         throw DshHttpException(response.statusCode, 'GET ${uri.path}: redirects are not followed');
@@ -817,6 +807,16 @@ class DshConnection {
     headers.port = parsed.hasPort ? parsed.port : 80;
   }
 
+  /// Applies this connection's request headers to a hand-built request:
+  /// `Host` ([hostHeader]), `Cookie` (both cookies, login first) and `Origin`
+  /// ([originHeader], only when set). Hand-built requests must use this rather
+  /// than reading [cookie] or [remoteSession] themselves.
+  void applyHeaders(HttpHeaders headers) {
+    _applyHost(headers);
+    _applyOrigin(headers);
+    if (cookieHeader case final cookies?) headers.set(HttpHeaders.cookieHeader, cookies);
+  }
+
   void _applyOrigin(HttpHeaders headers) {
     final origin = originHeader;
     if (origin != null) headers.set('Origin', origin);
@@ -935,9 +935,7 @@ final class _DshHttpStream {
       throw _reason ?? const DshClosedException('HTTP request cancelled');
     }
     request.followRedirects = false;
-    connection._applyHost(request.headers);
-    connection._applyOrigin(request.headers);
-    if (connection.cookieHeader case final cookies?) request.headers.set(HttpHeaders.cookieHeader, cookies);
+    connection.applyHeaders(request.headers);
     request.headers.contentType = ContentType.json;
     request.contentLength = payload.length;
     request.add(payload);

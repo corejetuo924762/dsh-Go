@@ -119,9 +119,7 @@ class DsBotHttpTransport implements DsBotTransport {
             req.abort();
             return;
           }
-          _applyHost(req.headers);
-          if (connection.cookieHeader case final cookies?) req.headers.set(HttpHeaders.cookieHeader, cookies);
-          if (connection.originHeader case final origin?) req.headers.set('Origin', origin);
+          connection.applyHeaders(req.headers);
           req.headers.set(HttpHeaders.acceptHeader, 'text/event-stream');
           req.followRedirects = false;
           final response = await req.close().timeout(connection.connectTimeout);
@@ -173,15 +171,6 @@ class DsBotHttpTransport implements DsBotTransport {
       },
     );
     return controller.stream;
-  }
-
-  void _applyHost(HttpHeaders headers) {
-    final override = connection.hostHeader;
-    if (override == null) return;
-    final parsed = Uri.tryParse('http://$override');
-    if (parsed == null || parsed.host.isEmpty) return;
-    headers.host = parsed.host;
-    headers.port = parsed.hasPort ? parsed.port : 80;
   }
 
   @override

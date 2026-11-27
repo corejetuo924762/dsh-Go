@@ -617,7 +617,7 @@ void main() {
     expect(DsBotApi.of(local)!.transport, isA<DsBotHttpTransport>());
   });
 
-  test('a pairing entry sends the ticket beside the login cookie and the tunnel origin', () async {
+  test('a pairing entry carries both cookies and the tunnel origin on the DS Bot feed', () async {
     const ticket = 'v1.1750000000.1752592000.c2lnbmF0dXJl';
     const tunnel = 'https://unsigned-unlimited-show-bumper.trycloudflare.com';
     final connection = DshConnection(

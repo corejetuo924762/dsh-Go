@@ -211,9 +211,7 @@ final class _RunWatch {
       request.followRedirects = false;
       request.persistentConnection = false;
       request.headers.set(HttpHeaders.acceptHeader, 'text/event-stream');
-      if (connection.hostHeader != null) request.headers.set(HttpHeaders.hostHeader, connection.hostHeader!);
-      if (connection.cookieHeader case final cookies?) request.headers.set(HttpHeaders.cookieHeader, cookies);
-      if (connection.originHeader case final origin?) request.headers.set('Origin', origin);
+      connection.applyHeaders(request.headers);
       final response = await request.close();
       if (!current()) return;
       if (response.statusCode != 200 || response.headers.contentType?.mimeType != 'text/event-stream') {
