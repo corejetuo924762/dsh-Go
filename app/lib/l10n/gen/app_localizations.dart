@@ -34938,6 +34938,12 @@ abstract class L10n {
   /// **'SSH,添加主机,连接电脑'**
   String get searchKwAddSshHost;
 
+  /// No description provided for @searchKwAddPairedComputer.
+  ///
+  /// In zh, this message translates to:
+  /// **'配对,扫码配对,添加配对电脑,配对码'**
+  String get searchKwAddPairedComputer;
+
   /// No description provided for @searchKwRemoteAutoConnect.
   ///
   /// In zh, this message translates to:

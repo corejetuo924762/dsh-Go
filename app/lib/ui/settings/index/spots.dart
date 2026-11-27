@@ -1176,6 +1176,12 @@ abstract final class Spots {
     title: (l) => l.remoteAddSshHost,
     keywords: (l) => l.searchKwAddSshHost,
   );
+  static final addPairedComputer = SettingSpot(
+    'add-paired-computer',
+    page: SettingsPageId.remote,
+    title: (l) => l.remotePairAddPairedComputer,
+    keywords: (l) => l.searchKwAddPairedComputer,
+  );
   static final remoteAutoConnect = SettingSpot(
     'remote-auto-connect',
     page: SettingsPageId.remote,

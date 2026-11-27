@@ -18997,6 +18997,9 @@ class L10nZh extends L10n {
   String get searchKwAddSshHost => 'SSH,添加主机,连接电脑';
 
   @override
+  String get searchKwAddPairedComputer => '配对,扫码配对,添加配对电脑,配对码';
+
+  @override
   String get searchKwRemoteAutoConnect => '自动连接,启动时连接';
 
   @override

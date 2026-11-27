@@ -135,6 +135,7 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
             SettingsTile(
               icon: AppIcons.qrCode,
               tinted: false,
+              spot: Spots.addPairedComputer,
               title: l10n.remotePairAddPairedComputer,
               subtitle: paired.isEmpty ? l10n.remotePairAddPairedComputerHint : null,
               onTap: () => push(const PairedPairingPage()),
