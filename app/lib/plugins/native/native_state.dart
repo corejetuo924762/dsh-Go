@@ -126,7 +126,7 @@ class ClientNativeBridge implements NativeBridge {
     final url = connection.resolve('/dsh-go/v1/assets/${segments(pkg)}/${segments(path)}');
     return NetworkImage(
       url.toString(),
-      headers: {'cookie': ?connection.cookie?.header, 'host': ?connection.hostHeader},
+      headers: {'cookie': ?connection.cookieHeader, 'host': ?connection.hostHeader, 'origin': ?connection.originHeader},
     );
   }
 }

@@ -40,6 +40,9 @@ void main() {
         'v1.1750000000000.1752592000000.',
         'v1.not-a-time.1752592000000.sig',
         'v1.1750000000000.soon.sig',
+        // Expires at or before it was issued: the gateway rejects these.
+        'v1.1752592000000.1750000000000.sig',
+        'v1.1750000000000.1750000000000.sig',
       ]) {
         expect(DshRemoteSession.tryParse(bad, authority: authority), isNull, reason: bad);
       }
@@ -101,6 +104,21 @@ void main() {
 
       connection.remoteSession = null;
       expect(connection.cookieHeader, isNull);
+    });
+
+    test('a login response that also carries the gateway ticket saves it', () async {
+      host.loginExtraCookie = 'dsh_remote_session=$ticket; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax';
+      final connection = DshConnection(host.baseUri);
+      addTearDown(connection.close);
+
+      final login = await connection.login(FakeDsh.token);
+
+      expect(login.name, FakeDsh.cookieName);
+      expect(login.value, FakeDsh.cookieValue);
+      expect(login.authority, '127.0.0.1:${host.port}');
+      expect(login.expiresAt!.isAfter(DateTime.now().add(const Duration(days: 29))), isTrue);
+      expect(connection.remoteSession!.value, ticket);
+      expect(connection.cookieHeader, '${login.header}; dsh_remote_session=$ticket');
     });
 
     test('requests carry both cookies and still carry no Origin', () async {

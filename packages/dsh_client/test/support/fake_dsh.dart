@@ -54,6 +54,10 @@ class FakeDsh {
 
   String? acceptedAuthority;
   String indexHtml = '';
+
+  /// Extra `Set-Cookie` this Host adds to the launch-token redirect, e.g. a
+  /// pairing gateway ticket riding along with the login cookie.
+  String? loginExtraCookie;
   bool gzipIndex = false;
   Future<void> Function()? beforeIndex;
 
@@ -109,6 +113,7 @@ class FakeDsh {
             '$cookieName=$cookieValue; Max-Age=2592000; Path=/; '
                 'Expires=Sat, 21 Nov 2099 19:10:16 GMT; HttpOnly; SameSite=Strict',
           );
+        if (loginExtraCookie case final extra?) response.headers.add('set-cookie', extra);
         await response.close();
         return;
       }

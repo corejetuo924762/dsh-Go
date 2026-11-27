@@ -154,6 +154,8 @@ void main() {
       expect((hello.boot, hello.seq, hello.revision, hello.readOnly), ('b1', 4, 12, null));
       expect(host.requests.single['path'], '/api/bot');
       expect(host.requests.single['host'], '127.0.0.1:${host.port}');
+      expect(host.requests.single['cookie'], FakeDsBot.cookie);
+      expect(host.requests.single['origin'], isNull);
       expect(host.calls.single['endpoint'], 'hello');
     });
 

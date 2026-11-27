@@ -120,6 +120,8 @@ class DshRemoteSession {
     final issuedAt = _stamp(parts[1]);
     final expiresAt = parts[2] == '0' ? null : _stamp(parts[2]);
     if (issuedAt == null || (expiresAt == null && parts[2] != '0')) return null;
+    // The gateway rejects a ticket that expires at or before it was issued.
+    if (expiresAt != null && !expiresAt.isAfter(issuedAt)) return null;
     return DshRemoteSession(value: cookieValue, authority: authority, issuedAt: issuedAt, expiresAt: expiresAt);
   }
 
@@ -431,7 +433,8 @@ class DshConnection {
   /// Host answers `303 Location: ./` with
   /// `Set-Cookie: dsh-auth-...=v1....; Max-Age=2592000; Path=/; HttpOnly; SameSite=Strict`.
   /// A wrong token, a token from another process, or a token sent on another
-  /// path answers 401.
+  /// path answers 401. A response that also carries a pairing ticket saves it
+  /// in [remoteSession] without touching the login cookie's own parsing.
   Future<DshCookie> login(String token) async {
     final uri = resolve('/', {'token': token});
     _trace('out', 'http', {'method': 'GET', 'path': '/?token=<redacted>'});
@@ -452,6 +455,11 @@ class DshConnection {
       throw const DshProtocolException('login redirect carried no dsh-auth cookie');
     }
     cookie = minted;
+    final ticket = response.setCookies
+        .map((raw) => DshRemoteSession.fromSetCookie(raw, authority: authority))
+        .whereType<DshRemoteSession>()
+        .firstOrNull;
+    if (ticket != null) remoteSession = ticket;
     return minted;
   }
 
