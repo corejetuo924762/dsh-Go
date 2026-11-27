@@ -54,10 +54,12 @@ class FakeDsBot {
       'path': request.uri.path,
       'host': request.headers.value('host'),
       'cookie': request.headers.value(HttpHeaders.cookieHeader),
+      'origin': request.headers.value('origin'),
       'accept': request.headers.value(HttpHeaders.acceptHeader),
     });
     final response = request.response;
-    if (request.headers.value(HttpHeaders.cookieHeader) != cookie) {
+    final sentCookies = (request.headers.value(HttpHeaders.cookieHeader) ?? '').split(';').map((part) => part.trim());
+    if (!sentCookies.contains(cookie)) {
       response.statusCode = 401;
       await response.close();
       return;
@@ -613,6 +615,35 @@ void main() {
   test('a client on the HTTP carrier uses the route', () {
     final local = DshClient(DshConnection(host.baseUri));
     expect(DsBotApi.of(local)!.transport, isA<DsBotHttpTransport>());
+  });
+
+  test('a pairing entry sends the ticket beside the login cookie and the tunnel origin', () async {
+    const ticket = 'v1.1750000000.1752592000.c2lnbmF0dXJl';
+    const tunnel = 'https://unsigned-unlimited-show-bumper.trycloudflare.com';
+    final connection = DshConnection(
+      host.baseUri,
+      originHeader: tunnel,
+      cookie: DshCookie(name: 'dsh-auth-test', value: 'v1.payload.sig', authority: '127.0.0.1:${host.port}'),
+      remoteSession: DshRemoteSession.tryParse(ticket, authority: '127.0.0.1:${host.port}'),
+    );
+    final paired = DsBotApi(DsBotHttpTransport(connection, feedIdle: const Duration(seconds: 5)));
+    addTearDown(paired.close);
+    host.feeds.add([
+      sse('hello', {'revision': 1, 'api': 1, 'boot': 'b1', 'seq': 0}),
+    ]);
+    final feed = DsBotFeed(paired.transport, backoff: const [Duration(milliseconds: 10)]);
+    final hello = Completer<void>();
+    final sub = feed.events.listen((event) {
+      if (event is DsBotFeedHello) hello.complete();
+    });
+    feed.start();
+    await hello.future.timeout(const Duration(seconds: 5));
+    await sub.cancel();
+    await feed.close();
+
+    final request = host.requests.firstWhere((row) => row['path'] == '/api/bot/feed');
+    expect(request['cookie'], 'dsh-auth-test=v1.payload.sig; dsh_remote_session=$ticket');
+    expect(request['origin'], tunnel);
   });
 }
 

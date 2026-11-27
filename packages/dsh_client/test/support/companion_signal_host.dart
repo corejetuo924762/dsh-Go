@@ -73,6 +73,7 @@ class CompanionSignalTestHost {
   Uri get baseUri => Uri.parse('http://127.0.0.1:${server.port}');
   final paths = <String>[];
   final cookies = <String?>[];
+  final origins = <String?>[];
   final sockets = <WebSocket>[];
   final streams = <HttpResponse>[];
   final _eventIds = <WebSocket, String>{};
@@ -87,11 +88,13 @@ class CompanionSignalTestHost {
   Completer<void> streamOpened = Completer<void>();
   int generation = 0, streamOpens = 0;
 
-  Future<DshClient> connect({bool startMux = true}) async {
+  Future<DshClient> connect({bool startMux = true, DshRemoteSession? remoteSession, String? originHeader}) async {
     final client = await DshClient.connect(
       baseUri: baseUri,
       token: 'test',
       startMux: startMux,
+      remoteSession: remoteSession,
+      originHeader: originHeader,
       muxOptions: const MuxOptions(autoReconnect: false),
     );
     clients.add(client);
@@ -109,7 +112,9 @@ class CompanionSignalTestHost {
     }
     paths.add(req.uri.path);
     cookies.add(req.headers.value('cookie'));
-    if (req.headers.value('cookie') != 'dsh-auth-signal=v1.test') {
+    origins.add(req.headers.value('origin'));
+    final sentCookies = (req.headers.value('cookie') ?? '').split(';').map((part) => part.trim());
+    if (!sentCookies.contains('dsh-auth-signal=v1.test')) {
       req.response.statusCode = 401;
       await req.response.close();
       return;

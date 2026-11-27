@@ -336,4 +336,24 @@ void main() {
     expect(receipt.provenance.current, isTrue);
     expect(identical(client.mux.provenanceFor(receipt.event), receipt.provenance), isTrue);
   });
+  test('a pairing entry sends the ticket beside the login cookie and the tunnel origin', () async {
+    const ticket = 'v1.1750000000.1752592000.c2lnbmF0dXJl';
+    const tunnel = 'https://unsigned-unlimited-show-bumper.trycloudflare.com';
+    final paired = await host.connect(
+      remoteSession: DshRemoteSession.tryParse(ticket, authority: '127.0.0.1:${host.server.port}'),
+      originHeader: tunnel,
+    );
+    final cap = (await paired.readCompanionSignalCapabilities())!;
+    final first = Completer<CompanionRunReceipt>();
+    final sub = paired.watchCompanionRunSignals(cap, hostKey: 'h', isAllowed: () => true).listen(first.complete);
+    await host.streamOpened.future;
+    host.run(signalTestEnvelope());
+    await first.future;
+    await sub.cancel();
+
+    final streamIndex = host.paths.lastIndexOf('/dsh-go/v1/companion/signals/stream');
+    expect(streamIndex, greaterThanOrEqualTo(0));
+    expect(host.cookies[streamIndex], 'dsh-auth-signal=v1.test; dsh_remote_session=$ticket');
+    expect(host.origins[streamIndex], tunnel);
+  });
 }

@@ -192,15 +192,20 @@ class DshClient {
        mux = DshMux(carrier, options: muxOptions);
 
   /// Builds a connection, logs in when a token is given (otherwise uses
-  /// [cookie]) and waits for the first ready mux generation.
+  /// [cookie] or [remoteSession]) and waits for the first ready mux generation.
   ///
   /// [launchUrl] accepts the `dsh web: http://...?token=...` line.
+  /// [remoteSession] and [originHeader] carry a pairing entry: the gateway
+  /// ticket is sent beside any login cookie, and [originHeader] is only for a
+  /// tunnel entry (a LAN entry leaves it `null`).
   static Future<DshClient> connect({
     Uri? baseUri,
     String? token,
     String? launchUrl,
     DshCookie? cookie,
+    DshRemoteSession? remoteSession,
     String? hostHeader,
+    String? originHeader,
     MuxOptions muxOptions = const MuxOptions(),
     DshTracer? tracer,
     bool backgroundSessionLists = false,
@@ -217,7 +222,14 @@ class DshClient {
       launchToken ??= parsed.token;
     }
     if (base == null) throw ArgumentError('baseUri or launchUrl is required');
-    final connection = DshConnection(base, hostHeader: hostHeader, cookie: cookie, tracer: tracer);
+    final connection = DshConnection(
+      base,
+      hostHeader: hostHeader,
+      originHeader: originHeader,
+      cookie: cookie,
+      remoteSession: remoteSession,
+      tracer: tracer,
+    );
     final client = DshClient(
       connection,
       muxOptions: muxOptions,
@@ -227,8 +239,8 @@ class DshClient {
     try {
       if (launchToken != null) {
         await connection.login(launchToken);
-      } else if (cookie == null) {
-        throw ArgumentError('token, launchUrl or cookie is required');
+      } else if (cookie == null && remoteSession == null) {
+        throw ArgumentError('token, launchUrl, cookie or remoteSession is required');
       }
       if (startMux) await client.mux.ready(timeout: readyTimeout);
       return client;

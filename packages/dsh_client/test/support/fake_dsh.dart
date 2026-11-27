@@ -57,6 +57,10 @@ class FakeDsh {
   bool gzipIndex = false;
   Future<void> Function()? beforeIndex;
 
+  /// Origins this Host answers besides `http://<Host>` itself. A tunnel entry
+  /// presents its public origin while the Host header names the upstream.
+  final Set<String> trustedOrigins = {};
+
   // Test gates that hold an RPC or the mux ready event; the real login/RPC/WebSocket path is unchanged.
   Future<void> Function(String endpoint, Map<String, Object?> args)? beforeRpc;
   Future<void> Function()? beforeEventsReady;
@@ -75,6 +79,8 @@ class FakeDsh {
   }
 
   Future<void> _handle(HttpRequest request) async {
+    final headerNames = <String>[];
+    request.headers.forEach((name, _) => headerNames.add(name.toLowerCase()));
     requests.add({
       'method': request.method,
       'path': request.uri.path,
@@ -82,10 +88,11 @@ class FakeDsh {
       'host': request.headers.value('host'),
       'origin': request.headers.value('origin'),
       'cookie': request.headers.value(HttpHeaders.cookieHeader),
+      'headerNames': headerNames,
     });
     final response = request.response;
     final origin = request.headers.value('origin');
-    if (origin != null && origin != 'http://${request.headers.value('host')}') {
+    if (origin != null && origin != 'http://${request.headers.value('host')}' && !trustedOrigins.contains(origin)) {
       response.statusCode = 403;
       await response.close();
       return;
