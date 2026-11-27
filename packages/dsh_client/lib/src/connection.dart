@@ -234,12 +234,18 @@ class DshHttpResponse {
     this.body, {
     this.setCookies = const [],
     this.contentTypeParameters = const {},
+    this.headers = const {},
   });
 
   final int statusCode;
 
   /// Raw `Set-Cookie` header values.
   final List<String> setCookies;
+
+  /// Lower-cased response headers the caller asked for; only the ones a
+  /// caller names are kept, so a large header set never rides along. Empty
+  /// for every exchange that does not request any.
+  final Map<String, String> headers;
 
   /// Lower-cased media type without parameters (`application/json`).
   final String contentType;
@@ -548,6 +554,27 @@ class DshConnection {
     Duration? timeout,
     bool followRedirects = true,
     int? maxResponseBytes,
+  }) => getCapturing(
+    path,
+    query: query,
+    headers: headers,
+    timeout: timeout,
+    followRedirects: followRedirects,
+    maxResponseBytes: maxResponseBytes,
+  );
+
+  /// [get] that also reads back the response headers named in [headerNames]
+  /// (lower-cased, only those). A caller that must read one header instead of
+  /// guessing from the body uses this; [get] keeps its signature so adapters
+  /// stay untouched.
+  Future<DshHttpResponse> getCapturing(
+    String path, {
+    Map<String, String>? query,
+    Map<String, String>? headers,
+    List<String> headerNames = const [],
+    Duration? timeout,
+    bool followRedirects = true,
+    int? maxResponseBytes,
   }) {
     return _exchange(
       'GET',
@@ -556,6 +583,7 @@ class DshConnection {
       timeout: timeout,
       followRedirects: followRedirects,
       maxResponseBytes: maxResponseBytes,
+      headerNames: headerNames,
     );
   }
 
@@ -712,6 +740,7 @@ class DshConnection {
     int? maxResponseBytes,
     Duration? timeout,
     DshHttpAbort? abort,
+    List<String>? headerNames,
   }) async {
     if (abort?.isAborted == true) throw const DshClosedException('HTTP request cancelled');
     HttpClientRequest? request;
@@ -777,6 +806,7 @@ class DshConnection {
         builder.takeBytes(),
         setCookies: setCookies,
         contentTypeParameters: type?.parameters ?? const {},
+        headers: headerNames == null || headerNames.isEmpty ? const {} : _namedHeaders(response.headers, headerNames),
       );
     }
 
@@ -802,6 +832,15 @@ class DshConnection {
       settled = true;
       unsubscribe?.call();
     }
+  }
+
+  static Map<String, String> _namedHeaders(HttpHeaders headers, List<String> names) {
+    final picked = <String, String>{};
+    for (final name in names) {
+      final value = headers.value(name);
+      if (value != null) picked[name.toLowerCase()] = value;
+    }
+    return picked;
   }
 
   void _applyHost(HttpHeaders headers) {

@@ -42,6 +42,7 @@ export 'src/goals_api.dart';
 export 'src/messages_api.dart';
 export 'src/models.dart';
 export 'src/mux.dart';
+export 'src/pairing_session.dart';
 export 'src/phone_callback.dart';
 export 'src/phone_session.dart';
 export 'src/plugin_config_api.dart';
