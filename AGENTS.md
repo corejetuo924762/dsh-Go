@@ -9,7 +9,6 @@ app/                         Flutter App：原生界面、Riverpod 状态、l10n
 app/lib/l10n/parts/          界面文案的中英文 ARB 输入
 app/ohos/                    鸿蒙 ArkTS 宿主工程（Android 不读）
 packages/dsh_client/         纯 Dart 客户端：HTTP/SSE、mux、会话与删除 API
-packages/dsh_remote/         远程传输：WebRTC / LAN / TURN / 中继
 runtime/                     打补丁的 DSH 引擎运行时
 runtime/bridge/dsh-go-bridge/  App ↔ 引擎的 HTTP 桥（/dsh-go/v1/*，含会话删除路由）
 runtime/patches/             引擎补丁及其 pins.json（补丁与版本钉死，targetSets 分 android / ohos）
@@ -26,7 +25,6 @@ docs/                        架构、发布、路线图、用户指南（鸿蒙
 ```bash
 (cd app && flutter pub get && flutter analyze && flutter test)   # Flutter 应用
 (cd packages/dsh_client && dart pub get && dart analyze && dart test)
-(cd packages/dsh_remote && dart pub get && dart analyze && dart test)
 (cd sdk/plugin-kit && npm install && npm test)
 node --test runtime/tests/*.test.mjs                               # 引擎桥/补丁测试
 python3 app/tool/l10n_merge.py --check                             # 文案生成检查

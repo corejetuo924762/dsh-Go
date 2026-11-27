@@ -4,9 +4,9 @@
 //   blob = "DSG1" ‖ IV (12 bytes) ‖ AES-256-GCM(gzip(file), no AAD) incl. 16-byte tag
 //
 // The key is 32 random bytes, carried as base64url (no padding) after `#k=`
-// in the link. Pure Dart (package:cryptography's Dart implementation, as
-// packages/dsh_remote uses), so it runs the same in tests and isolates; the
-// web viewer decrypts the same bytes with WebCrypto (site/share/viewer.js).
+// in the link. Pure Dart (package:cryptography's Dart implementation), so it
+// runs the same in tests and isolates; the web viewer decrypts the same bytes
+// with WebCrypto (site/share/viewer.js).
 
 import 'dart:convert';
 import 'dart:io' show gzip, GZipCodec;

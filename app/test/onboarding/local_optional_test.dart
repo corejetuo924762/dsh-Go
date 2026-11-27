@@ -36,7 +36,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../account/support.dart' show FakeBrowser, FixedAccount, NoConnection;
-import '../remote/support/fake_relay.dart';
 import '../remote/support/fake_ssh.dart';
 import '../shell/golden_harness.dart';
 import 'local_optional_support.dart';
@@ -294,7 +293,6 @@ void main() {
     List<Override> remote() => [
       secretStoreProvider.overrideWithValue(secrets),
       networkKicksProvider.overrideWithValue(const Stream.empty()),
-      relayBackendProvider.overrideWithValue(FakeRelayBackend()),
       sshTransportFactoryProvider.overrideWithValue(server.connect),
       hostLinkStatusProvider.overrideWith((ref, host) => Stream.value(HostLinkStatus.idle)),
     ];
@@ -596,8 +594,7 @@ void main() {
               () => RecordingLocalRuntime(const LocalRuntimeState(loaded: true, status: missingStatus)),
             ),
             secretStoreProvider.overrideWithValue(MemorySecretStore()),
-            relayBackendProvider.overrideWithValue(FakeRelayBackend()),
-            networkKicksProvider.overrideWithValue(const Stream.empty()),
+                  networkKicksProvider.overrideWithValue(const Stream.empty()),
             hostLinkStatusProvider.overrideWith((ref, host) => Stream.value(HostLinkStatus.idle)),
             footprint(roomyPhone),
           ],
@@ -659,8 +656,7 @@ void main() {
             settingsProvider.overrideWith(() => FakeSettings(const AppSettings(loaded: true))),
             sessionsProvider.overrideWith(() => FakeSessions(const [])),
             secretStoreProvider.overrideWithValue(MemorySecretStore()),
-            relayBackendProvider.overrideWithValue(FakeRelayBackend()),
-            networkKicksProvider.overrideWithValue(const Stream.empty()),
+                  networkKicksProvider.overrideWithValue(const Stream.empty()),
             hostLinkStatusProvider.overrideWith((ref, host) => Stream.value(HostLinkStatus.idle)),
             footprint(roomyPhone),
           ],

@@ -1,7 +1,7 @@
 {
   "featuresCordisSubtitle": "动态插件 · 引擎重启后清空",
   "featuresCordisUnavailable": "这个连接看不到 Cordis",
-  "featuresCordisRemoteUnavailable": "经 DSH Remote 中转时不可用",
+  "featuresCordisRemoteUnavailable": "这台主机不提供 Cordis 面板",
   "featuresCordisReadFailed": "没能读取插件",
   "featuresCordisEmpty": "还没有动态插件",
   "featuresCordisEmptyHint": "插件创建后会出现在这里",
@@ -658,7 +658,7 @@
   "featuresExportTitle": "导出对话日志",
   "featuresExportSubtitle": "打包成一个 ZIP，用于反馈或备份",
   "featuresExportUnavailable": "这个连接导不了",
-  "featuresExportRemoteHint": "经 DSH Remote 中转时拿不到日志，可以在电脑上的网页版导出",
+  "featuresExportRemoteHint": "这台主机拿不到日志，可以在电脑上的网页版导出",
   "featuresExportShareHint": "附在问题反馈里，或发给自己",
   "featuresExportSaveDownloads": "存到「下载」",
   "featuresExportDownloadsHint": "存进 下载/DSH-Go",

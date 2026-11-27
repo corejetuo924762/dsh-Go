@@ -468,7 +468,7 @@ void main() {
       final relayClient = DshClient.withCarrier(relayCarrier);
       addTearDown(relayClient.close);
       final relay = ProviderContainer(
-        overrides: pluginOverrides(fakeHost(relayClient, kind: HostKind.relay, label: '家里的 Mac · 远程')),
+        overrides: pluginOverrides(fakeHost(relayClient, kind: HostKind.paired, label: '家里的 Mac · 远程')),
       );
       addTearDown(relay.dispose);
       expect(relay.read(pluginHostProvider)!.canInstall, isFalse);

@@ -17,7 +17,6 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../shell/golden_harness.dart';
-import 'support/fake_relay.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -35,8 +34,6 @@ void main() {
   List<Override> overrides() => [
     secretStoreProvider.overrideWithValue(secrets),
     networkKicksProvider.overrideWithValue(const Stream.empty()),
-    relayBackendProvider.overrideWithValue(FakeRelayBackend()),
-    urlOpenerProvider.overrideWithValue((_) async => true),
     localRuntimeProvider.overrideWith(() => FakeRuntime(const LocalRuntimeState(loaded: true, status: runningStatus))),
     hostLinkStatusProvider.overrideWith((ref, host) => statuses.stream),
   ];

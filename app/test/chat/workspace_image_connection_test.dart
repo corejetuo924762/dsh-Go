@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:dsh_app/remote/relay/relay_backend.dart';
 import 'package:dsh_app/state/artifact_files.dart';
 import 'package:dsh_app/state/connection_state.dart';
 import 'package:dsh_app/state/hosts_state.dart';
+import 'package:dsh_app/state/paired_hosts_state.dart';
 import 'package:dsh_app/ui/chat/render/markdown_body.dart';
 import 'package:dsh_app/ui/chat/render/markdown_image.dart';
 import 'package:dsh_client/dsh_client.dart';
@@ -12,15 +12,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../media/support.dart' show drawPicture;
-import '../remote/support/fake_relay.dart';
+import '../remote/support/fake_host_link.dart';
 import 'support/harness.dart';
 
-const _host = HostRef.relay('mac');
 const _path = '/root/workspace/chart.png';
 
 class _SelectedHost extends ActiveHostController {
+  _SelectedHost(this.initial);
+
+  final HostRef initial;
+
   @override
-  HostRef build() => _host;
+  HostRef build() => initial;
 }
 
 class _Name extends Notifier<String> {
@@ -31,18 +34,28 @@ class _Name extends Notifier<String> {
 
 final _name = NotifierProvider<_Name, String>(_Name.new);
 
-class _Relay extends FakeRelayBackend {
-  _Relay() : super(user: sampleRelayUser);
-  late RelayStateCallback stateChanged;
+/// Counts closes so a test can tell the retired client from the live one.
+class _Tracked extends DshClient {
+  _Tracked(this.onClosed) : super(DshConnection(Uri.parse('http://127.0.0.1:9')));
+  final void Function(DshClient) onClosed;
+  bool closed = false;
 
   @override
-  Future<DshClient> connectHost(RelayHost host, {RelayStateCallback? onState}) {
-    stateChanged = onState!;
-    return super.connectHost(host, onState: onState);
+  Future<void> close() async {
+    closed = true;
+    onClosed(this);
+    await super.close();
   }
 }
 
-// Only image I/O is held. Connection publication runs through RelayHostLink,
+class _Link extends FakeHostLink {
+  final closedClients = <DshClient>[];
+
+  @override
+  Future<DshClient> connect() async => _Tracked(closedClients.add);
+}
+
+// Only image I/O is held. Connection publication runs through the host link,
 // RemoteConnectionController, activeConnectionProvider and ArtifactFiles.
 class _Reader implements WorkspaceImageReader {
   final calls = <(String, String)>[];
@@ -58,12 +71,14 @@ class _Reader implements WorkspaceImageReader {
 }
 
 class _Scene {
-  _Scene(this.backend, this.link, this.container, this.readers, this.published);
-  final _Relay backend;
-  final RelayHostLink link;
+  _Scene(this.link, this.container, this.readers, this.published, this.host);
+  final _Link link;
   final ProviderContainer container;
   final Map<DshClient, _Reader> readers;
   final List<DshClient> published;
+
+  /// The paired computer under test.
+  final HostRef host;
 
   DshClient get client => container.read(activeConnectionProvider).requireValue!.client;
   _Reader get reader {
@@ -72,8 +87,9 @@ class _Scene {
   }
 
   static Future<_Scene> mount(WidgetTester tester) async {
-    final backend = _Relay();
-    final link = RelayHostLink(backend: backend, hostId: _host.id, resolveHost: () async => sampleRelayHosts.first);
+    final paired = FakePairedHosts();
+    final host = paired.host;
+    final link = _Link();
     addTearDown(link.close);
     final published = <DshClient>[];
     final subscription = link.clients.listen(published.add);
@@ -93,7 +109,8 @@ class _Scene {
           ),
         ),
         overrides: [
-          activeHostProvider.overrideWith(_SelectedHost.new),
+          activeHostProvider.overrideWith(() => _SelectedHost(host)),
+          pairedHostsProvider.overrideWith(() => paired),
           hostLinkProvider.overrideWith((ref, host) => link),
           hostNameProvider.overrideWith((ref, host) => ref.watch(_name)),
           workspaceImageReaderProvider.overrideWith((ref) {
@@ -104,10 +121,10 @@ class _Scene {
       ),
     );
     final container = ProviderScope.containerOf(tester.element(find.byType(Scaffold)));
-    await container.read(remoteConnectionProvider(_host).future);
+    await container.read(remoteConnectionProvider(host).future);
     await tester.pump();
     await tester.pump();
-    final scene = _Scene(backend, link, container, readers, published);
+    final scene = _Scene(link, container, readers, published, host);
     expect(scene.reader.calls, [('s1', _path)]);
     return scene;
   }
@@ -115,17 +132,17 @@ class _Scene {
   Future<void> reconnect(WidgetTester tester) async {
     final before = client;
     final imageState = tester.state(find.byType(MarkdownImage));
-    backend.stateChanged(RelayConnectionState.failed, const HostLinkError(HostLinkErrorKind.other, 'closed'));
-    container.read(remoteConnectionProvider(_host).notifier).retry();
-    final next = await container.read(remoteConnectionProvider(_host).future);
+    link.drop();
+    container.read(remoteConnectionProvider(host).notifier).retry();
+    final next = await container.read(remoteConnectionProvider(host).future);
     await tester.pump();
     await tester.pump();
     expect(next!.client, isNot(same(before)));
     expect(client, same(next.client));
     expect(published, contains(same(next.client)));
-    expect(backend.closedClients, contains(before));
+    expect(link.closedClients, contains(before));
     expect(tester.state(find.byType(MarkdownImage)), same(imageState));
-    expect(container.read(activeHostProvider), _host);
+    expect(container.read(activeHostProvider), host);
   }
 }
 

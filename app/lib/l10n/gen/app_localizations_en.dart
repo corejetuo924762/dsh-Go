@@ -2584,7 +2584,7 @@ class L10nEn extends L10n {
   String get botsMentionMember => 'Mention member';
 
   @override
-  String get botsRelayUnavailable => 'Bots aren’t available over Relay';
+  String get botsRelayUnavailable => 'Bots aren’t available on this host';
 
   @override
   String get botsUseSsh => 'Connect to this computer over SSH to use bots';
@@ -5788,8 +5788,7 @@ class L10nEn extends L10n {
   String get companionMemoryUnsupported => 'This host can\'t keep her memories yet';
 
   @override
-  String get companionMemoryUnsupportedHint =>
-      'It isn\'t available over the DSH Remote relay, or this host\'s dsh-go bridge is older.';
+  String get companionMemoryUnsupportedHint => 'This host\'s dsh-go bridge is older and can\'t keep her memories yet.';
 
   @override
   String get companionMemoryLoadFailed => 'Couldn\'t load';
@@ -9350,7 +9349,7 @@ class L10nEn extends L10n {
   String get featuresCordisUnavailable => 'Cordis isn’t available here';
 
   @override
-  String get featuresCordisRemoteUnavailable => 'Unavailable over DSH Remote';
+  String get featuresCordisRemoteUnavailable => 'This host doesn’t offer the Cordis panel';
 
   @override
   String get featuresCordisReadFailed => 'Couldn’t load plugins';
@@ -10449,7 +10448,7 @@ class L10nEn extends L10n {
 
   @override
   String get featuresExportRemoteHint =>
-      'Logs aren’t available over DSH Remote. Export them from DSH Web on your computer.';
+      'Logs aren’t available on this host. Export them from DSH Web on your computer.';
 
   @override
   String get featuresExportShareHint => 'Attach to feedback or send to yourself';
@@ -10795,7 +10794,7 @@ class L10nEn extends L10n {
 
   @override
   String get harmonyCredentialsClearBody =>
-      'Trying again won’t help. Clearing removes the API keys, DSH Remote sign-in, SSH passwords and private keys, and forum sign-in the app has saved, and you’ll need to enter them or sign in again. Links you’ve already shared stay up, but this phone can no longer delete them. Conversations and the host list stay. This can’t be undone.';
+      'Trying again won’t help. Clearing removes the API keys, SSH passwords and private keys, and forum sign-in the app has saved, and you’ll need to enter them or sign in again. Links you’ve already shared stay up, but this phone can no longer delete them. Conversations and the host list stay. This can’t be undone.';
 
   @override
   String get harmonyCredentialsClearAction => 'Clear keys';
@@ -10974,12 +10973,6 @@ class L10nEn extends L10n {
   String get harmonyVoiceSystemUnavailable => 'The system\'s speech recognition isn\'t available';
 
   @override
-  String get harmonyNetworkRelayOnly => 'This version goes through the relay, end-to-end encrypted the whole way.';
-
-  @override
-  String get harmonyNetworkFallbackRelayOnly => 'This version only uses the relay';
-
-  @override
   String get harmonySetupStay => 'Stay on this page while it installs';
 
   @override
@@ -11067,13 +11060,6 @@ class L10nEn extends L10n {
 
   @override
   String get harmonyPluginVoiceUnavailable => 'This device can\'t listen for you';
-
-  @override
-  String get hostDetailsConnectionType => 'Connection type';
-
-  @override
-  String get hostDetailsSshNetworkHint =>
-      'Uses an SSH tunnel. LAN / P2P route inspection and latency measurements are not available for this connection.';
 
   @override
   String get hubSessionDetails => 'Chat details';
@@ -11950,7 +11936,7 @@ class L10nEn extends L10n {
 
   @override
   String get iosSpeechCallEndNoRecognizerSignedIn =>
-      'This connection can\'t use your signed-in account to recognize call recordings (for example, through DSH Remote). Add a DeepSeek API key or configure another available cloud recognizer. The local voice model is not available on iOS yet.';
+      'This connection can\'t use your signed-in account to recognize call recordings. Add a DeepSeek API key or configure another available cloud recognizer. The local voice model is not available on iOS yet.';
 
   @override
   String get iosPhoneLinkErrorPairingRejected =>
@@ -16816,7 +16802,7 @@ class L10nEn extends L10n {
 
   @override
   String pluginsRelayToggleOnly(String host) {
-    return '$host · Relay only supports turning plugins on or off. Install on that computer.';
+    return '$host · This host only supports turning plugins on or off. Install on that computer.';
   }
 
   @override
@@ -17414,7 +17400,7 @@ class L10nEn extends L10n {
 
   @override
   String pluginsRelayCommandInstruction(String host) {
-    return 'DSH Remote only supports turning plugins on or off. Run this in a terminal on $host:';
+    return 'This host only supports turning plugins on or off. Run this in a terminal on $host:';
   }
 
   @override
@@ -18072,81 +18058,13 @@ class L10nEn extends L10n {
   }
 
   @override
-  String get remoteErrInvalidServer => 'Invalid server address';
-
-  @override
-  String get remoteErrEmailPassword => 'Incorrect email or password';
-
-  @override
-  String get remoteErrHostNotInAccount => 'This host isn’t in your account';
-
-  @override
-  String get remoteHostFallback => 'This host';
-
-  @override
-  String get remoteErrHostOffline => 'Host is offline';
-
-  @override
-  String remoteErrHostRemoved(String name) {
-    return '$name is no longer in your DSH Remote account';
-  }
-
-  @override
-  String get remoteErrRelaySignInExpired => 'DSH Remote sign-in expired';
-
-  @override
-  String get remoteErrIdentityKeyChanged => 'Host identity key has changed';
-
-  @override
-  String get remoteErrIdentityUnconfirmed => 'Host identity fingerprint hasn’t been confirmed';
-
-  @override
-  String get remoteErrConnectionReplaced => 'Remote connection was replaced';
-
-  @override
-  String get remoteErrHostRejected => 'Host declined the connection';
-
-  @override
-  String get remoteErrHostNotOwned => 'Host isn’t in your DSH Remote account';
-
-  @override
-  String get remoteErrUpdateNeeded => 'Version mismatch. Update DSH Go and the host’s remote plugin';
-
-  @override
-  String get remoteErrVersionIncompatible => 'Update DSH or the remote plugin on the host';
-
-  @override
-  String get remoteErrSignInTimeout => 'Sign-in timed out';
-
-  @override
-  String get remoteSignInCancelled => 'Sign-in cancelled';
-
-  @override
-  String get remoteErrBrowserSignInUnsupported => 'Server doesn’t support browser sign-in';
-
-  @override
-  String get remoteErrTooManyRequests => 'Too many requests';
-
-  @override
   String get remoteErrHostUnreachable => 'Can’t reach the remote host';
 
   @override
   String get remoteErrRemoteConnection => 'Couldn’t connect remotely';
 
   @override
-  String get remoteOnline => 'Online';
-
-  @override
-  String get remoteOffline => 'Offline';
-
-  @override
   String get remoteUnavailable => 'Unavailable';
-
-  @override
-  String get remoteErrHostNotFound => 'Host not found';
-
-  @override
-  String get remoteConnectionStopped => 'Remote connection stopped';
 
   @override
   String remoteBootstrapReusePort(int port) {
@@ -18777,25 +18695,6 @@ class L10nEn extends L10n {
   String get remoteHostKeyTrustConnect => 'Trust and connect';
 
   @override
-  String get remoteHostKeyChangedTitle => 'Identity fingerprint changed';
-
-  @override
-  String remoteRelayKeyChangedBody(String name) {
-    return 'The identity key for “$name” has changed. Continue only if you’ve reinstalled the remote plugin on this host. Someone may be impersonating it.';
-  }
-
-  @override
-  String remoteRelayKeyFirstBody(String name) {
-    return 'First connection to “$name”. Check that the identity fingerprint matches the one shown by the host’s remote plugin before continuing.';
-  }
-
-  @override
-  String get remoteHostKeyChangeWarning => 'DSH will refuse to connect if the fingerprint changes.';
-
-  @override
-  String get remoteHostKeyTrustAgain => 'Trust again';
-
-  @override
   String get remoteHostKeyReading => 'Reading host fingerprint…';
 
   @override
@@ -18810,53 +18709,16 @@ class L10nEn extends L10n {
   String get remoteThisPhoneDsh => 'DSH on this phone';
 
   @override
-  String get remoteRemoteLabel => 'Remote';
-
-  @override
-  String remoteRemotePlatform(String platform) {
-    return 'Remote · $platform';
-  }
-
-  @override
-  String get remoteRelaySwitchWarning =>
-      'DSH Remote connects to one host at a time. Switching disconnects the previous host.';
-
-  @override
   String get remoteConnectComputer => 'Connect a computer or server';
 
   @override
   String get remoteManageHosts => 'Manage remote hosts';
 
   @override
-  String get remoteConnectionMethods => 'Via SSH or DSH Remote';
-
-  @override
-  String get remoteRelayLoginRequired => 'Enter the server address, email and password';
-
-  @override
-  String get remoteErrSignIn => 'Couldn’t sign in';
-
-  @override
-  String get remoteSelfHostedServer => 'Self-hosted server';
-
-  @override
-  String get remoteSelfHostedSignInHelp =>
-      'Enter your server address. Sign in with email and password, or use this server to choose another sign-in method.';
-
-  @override
-  String get remoteUseServer => 'Use this server';
-
-  @override
-  String get remoteServerAddress => 'Server address';
-
-  @override
-  String get remoteEmail => 'Email';
+  String get remoteConnectionMethods => 'Via SSH or a paired computer';
 
   @override
   String get remotePassword => 'Password';
-
-  @override
-  String get remoteRestoreServer => 'Restore default server dsh.r2049.cn';
 
   @override
   String get remoteConsole => 'Remote console';
@@ -18891,13 +18753,7 @@ class L10nEn extends L10n {
   String get remoteSwitchToPhone => 'Use this phone';
 
   @override
-  String get remoteSignInAgain => 'Sign in again';
-
-  @override
   String get remoteHostSettings => 'Host settings';
-
-  @override
-  String get remoteReconnect => 'Reconnect';
 
   @override
   String get remoteReconnectingEllipsis => 'Reconnecting…';
@@ -18908,85 +18764,9 @@ class L10nEn extends L10n {
   }
 
   @override
-  String get remoteConnectedEncrypted => 'Connected · End-to-end encrypted';
-
-  @override
-  String remoteConnectedVia(String path) {
-    return 'Connected · $path · End-to-end encrypted';
-  }
-
-  @override
-  String get remotePathDirect => 'Direct';
-
-  @override
-  String get remotePathTurn => 'TURN';
-
-  @override
-  String get remotePathRelay => 'Relay';
-
-  @override
   String remoteConnectedSsh(String address) {
     return 'Connected · SSH $address';
   }
-
-  @override
-  String get remoteErrRefreshHosts => 'Couldn’t refresh host list';
-
-  @override
-  String get remoteSwitchWarning => 'Connects to one host at a time. Switching disconnects the previous host.';
-
-  @override
-  String remoteHostOfflineHint(String name) {
-    return '“$name” is offline. Open DSH on that computer and try again.';
-  }
-
-  @override
-  String get remoteRefreshHosts => 'Refresh hosts';
-
-  @override
-  String get remoteSignOut => 'Sign out';
-
-  @override
-  String get remoteErrHostsRetry => 'Couldn’t load hosts · Tap to retry';
-
-  @override
-  String get remoteNoHosts => 'No hosts yet';
-
-  @override
-  String get remoteRelaySetupHelp => 'Install the remote plugin in the host’s DSH and sign in';
-
-  @override
-  String get remoteRelaySignOutTitle => 'Sign out of DSH Remote?';
-
-  @override
-  String get remoteRelaySignOutBody =>
-      'This phone will be removed from your account. DSH and chats on the host stay. You can sign in again anytime.';
-
-  @override
-  String get remoteRelaySignInTitle => 'Sign in to DSH Remote';
-
-  @override
-  String get remoteRelaySignInHelp => 'No network setup. End-to-end encrypted connection.';
-
-  @override
-  String get remoteBrowserSignIn => 'Sign in in browser';
-
-  @override
-  String remoteSignInWithProvider(String provider) {
-    return 'Continue with $provider';
-  }
-
-  @override
-  String get remoteComingSoon => 'Coming soon';
-
-  @override
-  String get remoteSelfHostedEmailSignIn => 'Self-hosted server · Email sign-in';
-
-  @override
-  String get remoteBrowserSignInPending => 'Finish signing in in your browser…';
-
-  @override
-  String get remoteCopySignInLink => 'Copy sign-in link';
 
   @override
   String get remoteSshAddressRequired => 'Enter a host address (IP or domain)';
@@ -19475,107 +19255,9 @@ class L10nEn extends L10n {
   }
 
   @override
-  String remoteRelayProvider(String project) {
-    return 'Service by $project';
-  }
-
-  @override
-  String remoteRelayProviderServer(String project, String server) {
-    return 'Service by $project · Current server: $server';
-  }
-
-  @override
-  String remoteQuotedHostName(String name) {
-    return '“$name”';
-  }
-
-  @override
   String remoteErrorDetail(String message, String detail) {
     return '$message ($detail)';
   }
-
-  @override
-  String get remotePathLan => 'LAN';
-
-  @override
-  String get remotePathP2p => 'P2P';
-
-  @override
-  String get remoteNetworkDetails => 'Network details';
-
-  @override
-  String get remoteNetworkAutomatic =>
-      'Automatically tries LAN → P2P → TURN → Relay, with end-to-end encryption throughout.';
-
-  @override
-  String get remoteNetworkCurrentPath => 'Current path';
-
-  @override
-  String get remoteNetworkConnectDuration => 'Connection time';
-
-  @override
-  String get remoteNetworkRoundTripTime => 'Round-trip time (RTT)';
-
-  @override
-  String get remoteNetworkUnmeasured => 'Not measured';
-
-  @override
-  String get remoteNetworkUnknownPath => 'Not confirmed';
-
-  @override
-  String remoteNetworkMilliseconds(int value) {
-    return '$value ms';
-  }
-
-  @override
-  String get remoteNetworkMeasure => 'Refresh network / measure latency';
-
-  @override
-  String get remoteNetworkMeasuring => 'Measuring…';
-
-  @override
-  String get remoteNetworkMeasureFailed => 'Couldn’t measure latency. Try again later.';
-
-  @override
-  String get remoteNetworkDisconnected => 'Disconnected. Reconnect to measure latency.';
-
-  @override
-  String get remoteNetworkFallback => 'Fallback reason';
-
-  @override
-  String get remoteNetworkFallbackUnknown =>
-      'A direct connection wasn’t available; an available route was selected automatically.';
-
-  @override
-  String get remoteNetworkFallbackWebrtcUnavailable => 'WebRTC is unavailable on this device; using Relay.';
-
-  @override
-  String get remoteNetworkFallbackDirectFailed => 'LAN / P2P couldn’t connect; tried the next available route.';
-
-  @override
-  String get remoteNetworkFallbackDirectTimeout => 'LAN / P2P timed out; tried the next available route.';
-
-  @override
-  String get remoteNetworkFallbackDirectRecentlyFailed =>
-      'A recent direct attempt failed; using an available relay for this connection.';
-
-  @override
-  String get remoteNetworkFallbackTurnUnavailable => 'TURN is unavailable; using Relay.';
-
-  @override
-  String get remoteNetworkFallbackTurnFailed => 'TURN couldn’t connect; using Relay.';
-
-  @override
-  String get remoteNetworkFallbackTurnTimeout => 'TURN timed out; using Relay.';
-
-  @override
-  String get remoteNetworkFallbackPathUnverified => 'The WebRTC route type hasn’t been confirmed.';
-
-  @override
-  String get remoteNetworkSnapshotHint => 'Shows the last confirmed route and latency. Refresh to check again.';
-
-  @override
-  String get remoteNetworkObservedAt => 'Last checked';
 
   @override
   String get remoteHostedLoadFailed => 'Couldn’t read saved links. Please retry.';
@@ -19599,29 +19281,6 @@ class L10nEn extends L10n {
 
   @override
   String get remoteHostedStopFailed => 'Couldn’t stop sharing. The link is still active. Please retry.';
-
-  @override
-  String get remoteNetworkLocalIpVersion => 'Phone ICE IP version';
-
-  @override
-  String get remoteNetworkRemoteIpVersion => 'Host ICE IP version';
-
-  @override
-  String get remoteNetworkIceProtocol => 'ICE protocol';
-
-  @override
-  String get remoteCompactHistory => 'Compact history';
-
-  @override
-  String get remoteErrHistoryModeChanged =>
-      'The Host no longer supports compact history. Switch to another host and back, or restart the app, to reload history.';
-
-  @override
-  String get remoteCompactHistoryHint =>
-      'Reduces historical tool details on supporting DSH Remote Hosts; live replies and approvals stay unchanged. Switch hosts or restart the app to apply. Older Hosts keep full history.';
-
-  @override
-  String get searchKwRemoteCompactHistory => 'compact slim lite history tools transfer bandwidth remote';
 
   @override
   String pairedErrBanned(int seconds) {
@@ -19939,8 +19598,7 @@ class L10nEn extends L10n {
   String get remotePairedPageTitle => 'Pair a computer';
 
   @override
-  String get remotePairedComputersHint =>
-      'No DSH Remote account needed: connect with the pairing code the computer shows';
+  String get remotePairedComputersHint => 'No account needed: connect with the code the computer\'s access entry shows';
 
   @override
   String pairedHostRenamed(String name) {
@@ -19969,51 +19627,6 @@ class L10nEn extends L10n {
 
   @override
   String get stateRemoteUploadTooLarge => 'The file exceeds the remote upload protocol\'s size limit';
-
-  @override
-  String get remoteWebTitle => 'DSH Web';
-
-  @override
-  String get remoteWebOpening => 'Opening DSH Web…';
-
-  @override
-  String get remoteWebFailed => 'Couldn’t open DSH Web';
-
-  @override
-  String get remoteWebRefresh => 'Refresh home page';
-
-  @override
-  String get remoteWebBusy => 'Too many people are using this right now. Please try again later.';
-
-  @override
-  String get remoteWebPairingRequired => 'Connection authorization expired. Reconnect or pair the Host again.';
-
-  @override
-  String get remoteWebHostNotReady =>
-      'The Host web page is not ready. Start DSH Web and update the Remote plugin to 0.6.6 or later.';
-
-  @override
-  String get remoteWebReconnect => 'Disconnected. Reconnect to the Host before reopening.';
-
-  @override
-  String get remoteWebUnsafeUrl =>
-      'The web address could not be verified. Opening was stopped. Check the Host configuration.';
-
-  @override
-  String get remoteWebExchangeRejected => 'Access verification failed. Try again.';
-
-  @override
-  String get remoteWebSessionExpired => 'The web connection expired. Try again.';
-
-  @override
-  String get remoteWebPlatformUnavailable =>
-      'This platform does not yet support this web entry. Use the native remote interface.';
-
-  @override
-  String get remoteWebTryAgain => 'Temporarily unable to open the page. Check the Host connection and try again.';
-
-  @override
-  String get remoteWebUnavailable => 'Temporarily unable to open. Please try again later.';
 
   @override
   String get riskDontShowAgain => 'Don’t show again';
@@ -20246,7 +19859,7 @@ class L10nEn extends L10n {
   String get searchKwAccount => 'account,balance,top up,sign in,sign out,api key,usage,DeepSeek';
 
   @override
-  String get searchKwRemote => 'remote,ssh,computer,server,DSH Remote,connect';
+  String get searchKwRemote => 'remote,ssh,computer,server,connect';
 
   @override
   String get searchKwPermission => 'permissions,approval,don\'t ask,read only,full access,auto-run commands';
@@ -20601,109 +20214,6 @@ class L10nEn extends L10n {
   @override
   String get selfUpdateEndWaitingNote =>
       'End this wait only after confirming the system is no longer installing. Clearing the record does not cancel a system installation or retry/switch routes. Native confirmation is required again.';
-
-  @override
-  String get backupRecordFailed =>
-      'The phone could not save the restore record. Keep the conversation ID above and check the target; do not import again.';
-
-  @override
-  String get backupSearchKeywords => 'backup,restore,migrate,copy conversations,sync';
-
-  @override
-  String get backupTitle => 'Conversation backups';
-
-  @override
-  String get backupHint =>
-      'Back up to this phone, then switch hosts to restore into an existing workspace. Each restore creates a new conversation; attachments, source files and cross-session relationships are not included.';
-
-  @override
-  String get backupCancelled => 'Cancelled. Backups already verified and saved remain available.';
-
-  @override
-  String get backupUnknown =>
-      'Result needs checking. Reconnect to the original target to query, or check on that host first. No automatic re-import.';
-
-  @override
-  String backupFailed(String code) {
-    return 'Operation failed ($code). Check the connection or storage before retrying.';
-  }
-
-  @override
-  String backupSaved(int count) {
-    return 'Saved $count backups.';
-  }
-
-  @override
-  String backupSavedCloseFailed(int count) {
-    return 'Saved $count backups. The source export handle could not be closed; disconnection or inactivity will release it.';
-  }
-
-  @override
-  String backupRestoreConfirm(String title, String workspace) {
-    return 'Restore “$title” into “$workspace”? This creates a new conversation without merging or overwriting existing history.';
-  }
-
-  @override
-  String backupRestored(String id) {
-    return 'Restored. New conversation: $id';
-  }
-
-  @override
-  String backupRestoredDetached(String id) {
-    return 'History restored but not attached to the workspace. Conversation ID: $id. Find it on the target; do not import again.';
-  }
-
-  @override
-  String get backupOriginalDevice =>
-      'Use the original Remote device identity to connect to the original target and query the commit result.';
-
-  @override
-  String get backupStorageFailed =>
-      'Cannot read backups. Check app storage and the system key. Existing backups will not be reset or overwritten.';
-
-  @override
-  String get backupConnectHost => 'Connect a paired Remote host to back up or restore conversations.';
-
-  @override
-  String get backupNoWorkspace => 'Waiting for host workspaces. If none exist, create one on the host first.';
-
-  @override
-  String get backupWorkspace => 'Entire workspace';
-
-  @override
-  String get backupToPhone => 'Back up to phone';
-
-  @override
-  String get backupExportUnsupported => 'This host does not offer session export. Update its Remote plugin.';
-
-  @override
-  String get backupImportUnsupported => 'This host does not offer session import. Update its Remote plugin.';
-
-  @override
-  String get backupPending => 'Restores to check';
-
-  @override
-  String get backupCheck => 'Check';
-
-  @override
-  String get backupAcknowledge => 'Checked on the target';
-
-  @override
-  String get backupAcknowledgeConfirm =>
-      'Have you checked the target? Clearing this pending record permits another manual import, which may create a duplicate conversation.';
-
-  @override
-  String get backupOnPhone => 'Backups on this phone';
-
-  @override
-  String get backupEmpty => 'No backups yet. Backups stay on this phone and are lost when the app is uninstalled.';
-
-  @override
-  String get backupRestore => 'Restore to current workspace';
-
-  @override
-  String get backupDeleteConfirm =>
-      'Delete this local backup and its restore records? Conversations on hosts will not be deleted.';
 
   @override
   String get shellDeletePermanently => 'Delete permanently';
@@ -21911,7 +21421,7 @@ class L10nEn extends L10n {
 
   @override
   String get speechAccountUnusable =>
-      'Your signed-in account can\'t pay for DeepSeek speech here: the DSH you\'re connected to is older (updating fixes it), or you\'re going through DSH Remote. Add a DeepSeek API key in Settings to use it';
+      'Your signed-in account can\'t pay for DeepSeek speech here: the DSH you\'re connected to is older (updating fixes it). Add a DeepSeek API key in Settings to use it';
 
   @override
   String get speechSignIn =>
@@ -22084,7 +21594,7 @@ class L10nEn extends L10n {
 
   @override
   String get speechCallEndNoRecognizerSignedIn =>
-      'A call needs a way to recognize speech. Your signed-in account can\'t pay for DeepSeek speech here (the DSH you\'re connected to is older, or you\'re going through DSH Remote): add a DeepSeek API key in Settings, or download the voice model in Settings › Voice';
+      'A call needs a way to recognize speech. Your signed-in account can\'t pay for DeepSeek speech here (the DSH you\'re connected to is older): add a DeepSeek API key in Settings, or download the voice model in Settings › Voice';
 
   @override
   String get speechCallEndNoRecognizer =>
@@ -22905,12 +22415,6 @@ class L10nEn extends L10n {
   String get stateSshHost => 'SSH host';
 
   @override
-  String get stateHostBrowserFailed => 'Couldn’t open the browser. Copy the sign-in link and open it in a browser.';
-
-  @override
-  String get stateSignInFailed => 'Couldn’t sign in';
-
-  @override
   String get stateMarketTooLarge => 'Plugin catalog is too large. Download stopped.';
 
   @override
@@ -23049,7 +22553,7 @@ class L10nEn extends L10n {
   String get statePluginRemoteForbidden => 'This host doesn’t allow remote installation';
 
   @override
-  String get statePluginRelayToggleOnly => 'Relay connections can only turn plugins on or off';
+  String get statePluginRelayToggleOnly => 'This host can only turn plugins on or off';
 
   @override
   String get statePluginManagementUnsupported => 'Host doesn’t support plugin management';
@@ -23191,7 +22695,7 @@ class L10nEn extends L10n {
   String get stateQuestionPending => 'Needs an answer';
 
   @override
-  String get stateExportRelayUnsupported => 'Export isn’t available over Relay yet';
+  String get stateExportRelayUnsupported => 'Export isn’t available on this host yet';
 
   @override
   String get stateExportChatMissing => 'Chat not found';
@@ -23479,11 +22983,6 @@ class L10nEn extends L10n {
   @override
   String stateHostPairedLabel(String name) {
     return '$name · Paired';
-  }
-
-  @override
-  String stateHostRemoteLabel(String name) {
-    return '$name · Remote';
   }
 
   @override
@@ -30085,9 +29584,6 @@ class L10nEn extends L10n {
 
   @override
   String get webSshAppOnly => 'SSH tunnel links only open in the app';
-
-  @override
-  String get webRelayUnavailable => 'DSH Web isn’t available through DSH Remote. Open it on that computer.';
 
   @override
   String get webSshHost => 'SSH host';

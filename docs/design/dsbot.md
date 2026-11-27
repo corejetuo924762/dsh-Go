@@ -5,9 +5,9 @@
 ## 0. 结论
 
 - **手机是 DS Bot 的一等客户端，原生画，不嵌网页。** Bot 首页、私聊、群聊、Bot 详情、群详情、新建 Bot / 群聊都是原生页。
-- **协议走 DS Bot 自己的通道**：本机和 SSH 走 `POST /api/bot` + `GET /api/bot/feed`（SSE），和它的桌面应用一样；同一套调用也注册成 DSH Remote 方法 `dsBot/call` + `dsBot/feed`（流），给只转发 Remote 方法的中继用。上面是「移动端 API v1」（握手、群聊条目、提醒补发、头像引用、直接改记忆、用量汇总），两边都改了。
+- **协议走 DS Bot 自己的通道**：本机、SSH 和配对电脑都走 `POST /api/bot` + `GET /api/bot/feed`（SSE），和它的桌面应用一样。上面是「移动端 API v1」（握手、群聊条目、提醒补发、头像引用、直接改记忆、用量汇总）。
 - **跟着当前主机走**：主机切换器选本机，Bot 页就是手机里那个 DSH 的团队；选 NAS，就是 NAS 上的团队。本机没装就一键「安装 DS Bot」。
-- **SSH 能用；中继走 Remote 方法**：手机在中继上通过 `dsBot/call` 和 `dsBot/feed` 访问 DS Bot。远端需启用 DS Bot，并使用包含 [ds-harness-remote #605](https://github.com/liguobao/ds-harness-remote/pull/605) 的 Host 插件版本；发布版 `0.6.8` 尚未包含这一改动。
+- **SSH 和配对电脑都能用**：两边都是普通 HTTP，DS Bot 只需在远端启用。主机不提供这些路由时，Bot 页会说明原因。
 - **通知由 Bot 自己发**：DS Bot 的提醒（Bot 说话、群里发言、交活、等你回答 / 批准）变成「Chief：……」这样的系统通知；通用的「一轮完成」通知跳过 DS Bot 的会话，不然一句话会响好几次。
 
 ## 1. 两种形态
@@ -15,7 +15,7 @@
 | | 本机 | 远程（NAS / 电脑） |
 |---|---|---|
 | DS Bot 在哪 | 手机里 DSH 的 `ds-bot` 插件 | DS Bot 的 Docker 镜像，或电脑上 `dsh web` + 插件 |
-| 怎么连 | 本机 HTTP（现有 `DshHttpCarrier`） | SSH 隧道：同一个 `DshHttpCarrier`，原样可用；中继：Remote 方法 `dsBot/call` / `dsBot/feed`，白名单放行后可用 |
+| 怎么连 | 本机 HTTP（现有 `DshHttpCarrier`） | SSH 隧道或配对电脑的直连：同一个 `DshHttpCarrier`，原样可用 |
 | 没装时 | 「安装 DS Bot」：走插件页同一条安装流程（`runPluginInstall`，包名 `ds-bot`），装完提示重启引擎 | 显示在那台电脑上要执行的命令，不远程装（远程装插件要重启对方的 DSH） |
 | 版本太旧 | 「更新 DS Bot」：同一条流程，`replaceInstalled` | 提示到那台电脑上更新 |
 | 后台 | 本机引擎有前台服务，feed 一直连着 | 尽力而为：App 进程活着、链路通时才收得到（与现有远程通知一致） |
@@ -24,7 +24,7 @@
 
 ## 2. 协议契约（App 依赖的部分）
 
-传输：HTTP carrier 上用 `DsBotHttpTransport`（`DshConnection` 的地址、`Host` 头和会话 cookie，`connection.dart` 不改）；其他 carrier 上只要放行了 `dsBot/call` 和 `dsBot/feed`，就用 `DsBotRpcTransport`（`rpc.call` + `mux.open`），回答和错误与 HTTP 一样。都不通时 `DsBotApi.of(client)` 返回 null；中继拒绝（`METHOD_NOT_ALLOWED`）也算「中继」。两种情况页面都显示「中继连接暂不支持 Bot」。
+传输：HTTP carrier 上用 `DsBotHttpTransport`（`DshConnection` 的地址、`Host` 头和会话 cookie，`connection.dart` 不改）；其他 carrier 上只要放行了 `dsBot/call` 和 `dsBot/feed`，就用 `DsBotRpcTransport`（`rpc.call` + `mux.open`），回答和错误与 HTTP 一样。本机、SSH 和配对电脑都走前者，后者留给只转发 Remote 方法的自定义 carrier。都不通时 `DsBotApi.of(client)` 返回 null；carrier 拒绝这些路由（`METHOD_NOT_ALLOWED`）也算不支持。两种情况页面都显示主机不支持 Bot。
 
 | 用途 | 接口 / 事件 | 来源 |
 |---|---|---|
@@ -38,7 +38,7 @@
 | 管理 | `create-bot` / `update-bot` / `delete-bot` / `set-main` / `create-room` / `update-room` / `delete-room` / `stop-member-work` | 已有 |
 | 记忆 | `memory-view` / `memory-forget`；`memory-add` / `memory-edit`（不经模型） | 已有 + 新增 |
 | 用量 | `usage-summary {botId}` → 近 24 小时 / 7 天 / 30 天、按模型 | 新增 |
-| 中继 | Remote 方法 `dsBot/call {endpoint, payload}`、流 `dsBot/feed {}`（每项 `{event, data}`）；`hello.rpc`、能力 `rpc` | 新增 |
+| Remote 方法 | `dsBot/call {endpoint, payload}`、流 `dsBot/feed {}`（每项 `{event, data}`）；`hello.rpc`、能力 `rpc`（自定义 carrier 用） | 已有 |
 
 **版本规则**（两边都按这个演进）：
 
@@ -100,7 +100,7 @@
 **dsh-go**
 
 - `packages/dsh_client/lib/src/dsbot_api.dart`（新）：两种传输（HTTP 路由、Remote 方法）、模型、全部接口、自动重连的 feed、Bot 颜色算法（与 DS Bot 的 `defaultColor` 同一结果，有对照测试）。
-- `app/lib/state/bots_state.dart`（新）：当前主机的 DS Bot 状态（未装 / 太旧 / 中继不支持 / 就绪 / 出错）、团队与 live 状态、feed 与补读、私聊和群聊控制器、未读与 Bot 通知、头像缓存、记忆与用量。
+- `app/lib/state/bots_state.dart`（新）：当前主机的 DS Bot 状态（未装 / 太旧 / 主机不支持 / 就绪 / 出错）、团队与 live 状态、feed 与补读、私聊和群聊控制器、未读与 Bot 通知、头像缓存、记忆与用量。
 - `app/lib/ui/bots/`（新）：`bots_page`（首页）、`bot_chat_page` / `room_chat_page`（聊天）、`bot_chat_kit`（顶栏、页面框架、消息行、提问卡 / 视图卡 / 选模型卡）、`bot_details_page` / `room_details_page`、`memory_card`、`new_bot_page`、`new_room_sheet`、`bot_mention`（@ 选择条）、`bot_avatar`、`install_card`、`bot_sheets`、`bot_alerts`（外壳接线用）、`drawer_row`（抽屉里的「DS Bot」一行）、`bot_format`。
 - 测试 `app/test/bots/`：状态与纯函数、页面流程、几何、8 组浅色 + 深色 golden。另外用真实的一次性 DSH（`ds-bot` 分支 + 它的 mock 模型）跑过一遍状态层：发消息 → 回复 → 后台通知 → 未读，群聊一轮 → 带发言人的条目。
 
@@ -112,7 +112,6 @@
 | `notify_state.dart` `ChatAlertsController._onAlert` 第一行 | `if (ref.read(dsBotSessionFilterProvider)(alert.host, alert.sessionId)) return;` | 通用「一轮完成」等通知跳过 DS Bot 的会话 |
 | `ui/notify/chat_alert_host.dart` `_onTap` 的 `if (!mounted) return;` 之后 | `if (openDsBotTap(context, tap)) return;` | 点 Bot 通知打开 Bot / 群聊页 |
 | `ui/shell/sessions_drawer.dart` 取会话列表处 | `final hidden = ref.watch(dsBotOwnedSessionsProvider);` 再 `.where((s) => !hidden.contains(s.sessionId))`，列表最前放 `DsBotDrawerRow(onOpen: …)`（`ui/bots/drawer_row.dart`，没有 DS Bot 时不占位） | Bot 的会话折成一行「DS Bot · 3 个 Bot」，带未读数 / 运行点 |
-| `packages/dsh_remote/lib/src/carrier/tunnel_carrier.dart` 的 `harnessRemoteAllowlist` | 放行 `dsBot/call` 和 `dsBot/feed` | 旧 Host 仍可拒绝；本机和 SSH 的 HTTP 路径不变 |
 | `ui/shell/home_shell.dart` 外壳的 Stack 里（`ChatAlertHost` 旁） | `const BotAlertsHost(),` | Bot 通知跟着外壳活着，回到前台时重连 feed |
 | `ui/chat/composer.dart` | 加 `final String? hintText;`（构造里 `this.hintText,`），`hint` 的最后一支改成 `: widget.hintText ?? '给 DSH 发消息…',`；然后 `bot_chat_page.dart` 的 `Composer(` 里加 `hintText: '给 ${bot.name} 发消息…',`，`room_chat_page.dart` 里加 `hintText: '在群里说点什么…',` | Bot 页的占位文字 |
 
@@ -127,7 +126,7 @@
 
 ## 8. 已定（2026-10-24，owner 委托决定）
 
-1. **中继**：DS Bot 的接口同时做成 DSH Remote 方法（`dsBot/call`、`dsBot/feed`），本机 / SSH 仍走 HTTP；中继上 `DsBotApi.of` 自动用 Remote 方法。双方白名单都必须放行这两个方法（§6）。
+1. **传输**：DS Bot 的接口同时留一条 Remote 方法通道（`dsBot/call`、`dsBot/feed`）给只转发 Remote 方法的自定义 carrier；本机、SSH 和配对电脑都走 HTTP。
 2. **推送**：先不做；远程 Bot 的消息在 App 活着时到。
 3. **抽屉**：Bot 的会话不散在列表里，折成一行「DS Bot」（`DsBotDrawerRow`），点进 Bot 首页。
 4. **预装**：不预装，保留一键安装。
@@ -135,5 +134,5 @@
 
 ## 9. 仍然开放
 
-- 中继端到端验证需要部署包含 #605 的 Host 插件；旧 Host 返回 `METHOD_NOT_ALLOWED` 时仍显示中继不支持。
+- 自定义 carrier 上的 Bot 端到端验证尚未做；那类 carrier 未放行 `dsBot/call` 时，Bot 页显示主机不支持。
 - Remote 方法走 Gateway 的源码模式：参数和回答只校验是 JSON，不按生成的类型校验。DSH 若给插件开放生成器或手写描述的注册方式，再换成严格模式。

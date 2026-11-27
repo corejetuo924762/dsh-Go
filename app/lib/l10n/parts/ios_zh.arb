@@ -97,7 +97,7 @@
   "iosPhoneLinkErrorPairingRequired": "先导入配对凭据。",
   "iosPhoneLinkErrorTunnel": "连不上本机服务。先确认用于本机连接的 LocalDevVPN 已接通、开发者模式已打开，再检查连接。",
   "iosSpeechCallEndNoRecognizer": "语音通话需要能识别录音的方式：登录 DeepSeek 账号、填写 API Key，或配置其他可用的云端识别。iOS 暂不提供本地语音模型下载。",
-  "iosSpeechCallEndNoRecognizerSignedIn": "当前连接不能用已登录账号识别通话录音（例如经 DSH Remote 中继）；请填写 DeepSeek API Key 或配置其他可用的云端识别。iOS 暂不提供本地语音模型下载。",
+  "iosSpeechCallEndNoRecognizerSignedIn": "当前连接不能用已登录账号识别通话录音；请填写 DeepSeek API Key 或配置其他可用的云端识别。iOS 暂不提供本地语音模型下载。",
   "iosPhoneLinkErrorPairingRejected": "手机不认这份配对凭据。重新生成一份再导入。",
   "iosPhoneLinkErrorDdiNeeded": "需要先准备开发者镜像。",
   "iosPhoneLinkErrorDdiDownload": "镜像下载没成功。检查网络后再试。",

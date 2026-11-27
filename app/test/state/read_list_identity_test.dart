@@ -52,22 +52,6 @@ class _Account extends AccountController {
   void set(AccountState value) => state = value;
 }
 
-class _Relay extends RelayAccountController {
-  _Relay(this.initial);
-  final RelayAccountState initial;
-  @override
-  Future<RelayAccountState> build() async => initial;
-  void set(RelayAccountState value) => state = AsyncData(value);
-}
-
-class _Server extends RelayServerController {
-  _Server(this.value);
-  final String? value;
-  @override
-  String? build() => value;
-  void set(String? value) => state = value;
-}
-
 const ssh = SshHostConfig(
   id: 'same-id',
   name: 'Work',
@@ -211,44 +195,6 @@ void main() {
     expect(c.read(readListIdentityProvider), isNull);
     account.set(const AccountState(phase: AccountPhase.signingIn));
     expect(c.read(readListIdentityProvider), isNull);
-  });
-
-  test('relay server/account/pinned device fingerprint all isolate snapshots', () async {
-    RelayAccountState relay({
-      String user = 'u',
-      String key = 'key',
-      String? version,
-      RelayTrust trust = RelayTrust.pinned,
-    }) => RelayAccountState(
-      available: true,
-      user: RelayUser(id: user, displayName: 'User'),
-      hosts: [
-        RelayHost(id: 'device', name: 'Device', online: true, fingerprint: key, trust: trust, harnessVersion: version),
-      ],
-    );
-    final account = _Relay(relay());
-    final server = _Server('https://relay-one.invalid');
-    final c = container([
-      activeHostProvider.overrideWith(() => _Host(const HostRef.relay('device'))),
-      relayServerProvider.overrideWith(() => server),
-      relayAccountProvider.overrideWith(() => account),
-    ]);
-    expect(c.read(readListIdentityProvider), isNull);
-    await c.read(relayAccountProvider.future);
-    final first = c.read(readListIdentityProvider)!;
-    server.set('https://relay-two.invalid');
-    expect(c.read(readListIdentityProvider), isNot(first));
-    server.set('https://relay-one.invalid');
-    account.set(relay(user: 'another-account'));
-    expect(c.read(readListIdentityProvider), isNot(first));
-    account.set(relay(version: 'v2'));
-    expect(c.read(readListIdentityProvider), isNot(first));
-    account.set(relay(key: 'new-key'));
-    expect(c.read(readListIdentityProvider), isNot(first));
-    for (final trust in [RelayTrust.unknown, RelayTrust.unpinned, RelayTrust.keyChanged]) {
-      account.set(relay(trust: trust));
-      expect(c.read(readListIdentityProvider), isNull);
-    }
   });
 
   test('unknown SSH local fallback and AsyncLoading previous client are not live proof', () async {

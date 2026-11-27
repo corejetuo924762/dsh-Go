@@ -19,4 +19,4 @@ The current callable app and bridge interfaces contain no verified operation to 
 
 A reload without restarting the engine first needs a supported HMR interface or configuration verified on the target DSH version: directory-to-module identity, source cache invalidation, cancellation of old fibers/subscriptions/async work, and explicit completion and failure signals. The app also needs a host-specific call path and testable failure recovery. An issue's observation of `config.root: []` is not proof that every host uses it.
 
-A local path on SSH / DSH Remote belongs to that host. This entry does not restart remote DSH; use that host's existing development and restart workflow.
+A local path on SSH / a paired computer belongs to that host. This entry does not restart remote DSH; use that host's existing development and restart workflow.

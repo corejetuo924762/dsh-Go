@@ -1,7 +1,7 @@
 {
   "featuresCordisSubtitle": "Dynamic plugins · Cleared when the engine restarts",
   "featuresCordisUnavailable": "Cordis isn’t available here",
-  "featuresCordisRemoteUnavailable": "Unavailable over DSH Remote",
+  "featuresCordisRemoteUnavailable": "This host doesn’t offer the Cordis panel",
   "featuresCordisReadFailed": "Couldn’t load plugins",
   "featuresCordisEmpty": "No dynamic plugins yet",
   "featuresCordisEmptyHint": "Plugins appear here once created",
@@ -332,7 +332,7 @@
   "featuresExportTitle": "Export chat logs",
   "featuresExportSubtitle": "A ZIP for feedback or backup",
   "featuresExportUnavailable": "Can’t export over this connection",
-  "featuresExportRemoteHint": "Logs aren’t available over DSH Remote. Export them from DSH Web on your computer.",
+  "featuresExportRemoteHint": "Logs aren’t available on this host. Export them from DSH Web on your computer.",
   "featuresExportShareHint": "Attach to feedback or send to yourself",
   "featuresExportSaveDownloads": "Save to Downloads",
   "featuresExportDownloadsHint": "Save in Downloads/DSH-Go",

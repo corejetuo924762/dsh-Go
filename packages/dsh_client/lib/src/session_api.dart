@@ -166,8 +166,7 @@ final class SessionControlProjection extends SessionControlUpdate {
 ///
 /// The same API runs over any [DshCarrier]: [DshClient.new] and [connect]
 /// use the local HTTP/WebSocket carrier, [DshClient.withCarrier] /
-/// [connectCarrier] accept others (for example the encrypted tunnel from
-/// `package:dsh_remote`).
+/// [connectCarrier] accept others (for example an SSH tunnel).
 class DshClient {
   /// Local `dsh web` over HTTP + WebSocket ([DshHttpCarrier]).
   DshClient(

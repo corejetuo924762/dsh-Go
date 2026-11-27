@@ -240,7 +240,7 @@ void main() {
     // host waits to be asked instead of guessing from its kind.
     expect(canStageFiles(null, HostRef.local), isTrue);
     expect(canStageFiles(null, const HostRef.ssh('a')), isFalse);
-    expect(canStageFiles(null, const HostRef.relay('r')), isFalse);
+    expect(canStageFiles(null, const HostRef.paired('r')), isFalse);
     expect(canStageFiles(null, HostRef.paired(pairedHostId('192.168.1.5:3080'))), isFalse);
   });
 

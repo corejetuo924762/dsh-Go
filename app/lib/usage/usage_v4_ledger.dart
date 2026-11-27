@@ -17,8 +17,6 @@ enum UsageOperation {
   sshReconnect('ssh_reconnect'),
   pairedInitial('paired_initial'),
   pairedReconnect('paired_reconnect'),
-  relayInitial('relay_initial'),
-  relayReconnect('relay_reconnect'),
   chatTurnLocal('chat_turn_local'),
   chatTurnRemote('chat_turn_remote'),
   chatFirstTextLocal('chat_first_text_local'),

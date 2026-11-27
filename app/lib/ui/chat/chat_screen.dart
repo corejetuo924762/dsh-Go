@@ -1738,7 +1738,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with WidgetsBindingObse
     };
     final approval = chat?.approval;
     final question = chat?.question;
-    final remoteStatus = local ? null : watchHostStatus(ref, host, showRelayPath: true);
+    final remoteStatus = local ? null : watchHostStatus(ref, host);
     // The link and the conversation recover separately, even on the same client.
     final linkReady = remoteStatus?.tone == StatusTone.ok;
     // The live region reads out what is waiting, or how the turn ended.

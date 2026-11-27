@@ -104,7 +104,7 @@ void main() {
       final client = DshClient.withCarrier(_RelayCarrier());
       addTearDown(client.close);
       final container = ProviderContainer(
-        overrides: [activeConnectionProvider.overrideWithValue(AsyncData(fakeHost(client, kind: HostKind.relay)))],
+        overrides: [activeConnectionProvider.overrideWithValue(AsyncData(fakeHost(client, kind: HostKind.paired)))],
       );
       addTearDown(container.dispose);
       expect(container.read(cordisReachProvider), CordisReach.unsupported);

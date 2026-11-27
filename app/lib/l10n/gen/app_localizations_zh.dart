@@ -2432,7 +2432,7 @@ class L10nZh extends L10n {
   String get botsMentionMember => '提到成员';
 
   @override
-  String get botsRelayUnavailable => '经中转连接时用不了 Bot';
+  String get botsRelayUnavailable => '这台主机用不了 Bot';
 
   @override
   String get botsUseSsh => '用 SSH 连接这台电脑即可使用';
@@ -5433,7 +5433,7 @@ class L10nZh extends L10n {
   String get companionMemoryUnsupported => '这台主机还不能保存她的记忆';
 
   @override
-  String get companionMemoryUnsupportedHint => '经 DSH Remote 中继连接时用不了，或者这台主机的 dsh-go 桥接比较旧。';
+  String get companionMemoryUnsupportedHint => '这台主机的 dsh-go 桥接比较旧，还读不了她的记忆。';
 
   @override
   String get companionMemoryLoadFailed => '没读到';
@@ -8827,7 +8827,7 @@ class L10nZh extends L10n {
   String get featuresCordisUnavailable => '这个连接看不到 Cordis';
 
   @override
-  String get featuresCordisRemoteUnavailable => '经 DSH Remote 中转时不可用';
+  String get featuresCordisRemoteUnavailable => '这台主机不提供 Cordis 面板';
 
   @override
   String get featuresCordisReadFailed => '没能读取插件';
@@ -9902,7 +9902,7 @@ class L10nZh extends L10n {
   String get featuresExportUnavailable => '这个连接导不了';
 
   @override
-  String get featuresExportRemoteHint => '经 DSH Remote 中转时拿不到日志，可以在电脑上的网页版导出';
+  String get featuresExportRemoteHint => '这台主机拿不到日志，可以在电脑上的网页版导出';
 
   @override
   String get featuresExportShareHint => '附在问题反馈里，或发给自己';
@@ -10204,7 +10204,7 @@ class L10nZh extends L10n {
 
   @override
   String get harmonyCredentialsClearBody =>
-      '重试没有用。清除后，App 保存的 API key、DSH Remote 登录、SSH 密码和私钥、论坛登录都会被删除，需要重新填写或登录。已发布的分享链接还在，但这台手机上删不掉了。对话和主机列表会保留。此操作无法撤销。';
+      '重试没有用。清除后，App 保存的 API key、SSH 密码和私钥、论坛登录都会被删除，需要重新填写或登录。已发布的分享链接还在，但这台手机上删不掉了。对话和主机列表会保留。此操作无法撤销。';
 
   @override
   String get harmonyCredentialsClearAction => '清除密钥';
@@ -10369,12 +10369,6 @@ class L10nZh extends L10n {
   String get harmonyVoiceSystemUnavailable => '系统语音识别不可用';
 
   @override
-  String get harmonyNetworkRelayOnly => '当前版本走 Relay 中继，全程端到端加密。';
-
-  @override
-  String get harmonyNetworkFallbackRelayOnly => '当前版本只走 Relay 中继';
-
-  @override
   String get harmonySetupStay => '安装时请留在这个页面';
 
   @override
@@ -10456,12 +10450,6 @@ class L10nZh extends L10n {
 
   @override
   String get harmonyPluginVoiceUnavailable => '这台设备不能听你开口';
-
-  @override
-  String get hostDetailsConnectionType => '连接方式';
-
-  @override
-  String get hostDetailsSshNetworkHint => '通过 SSH 隧道连接。此连接不提供 LAN / P2P 路径检测或延迟测量。';
 
   @override
   String get hubSessionDetails => '对话详情';
@@ -11284,7 +11272,7 @@ class L10nZh extends L10n {
 
   @override
   String get iosSpeechCallEndNoRecognizerSignedIn =>
-      '当前连接不能用已登录账号识别通话录音（例如经 DSH Remote 中继）；请填写 DeepSeek API Key 或配置其他可用的云端识别。iOS 暂不提供本地语音模型下载。';
+      '当前连接不能用已登录账号识别通话录音；请填写 DeepSeek API Key 或配置其他可用的云端识别。iOS 暂不提供本地语音模型下载。';
 
   @override
   String get iosPhoneLinkErrorPairingRejected => '手机不认这份配对凭据。重新生成一份再导入。';
@@ -15951,7 +15939,7 @@ class L10nZh extends L10n {
 
   @override
   String pluginsRelayToggleOnly(String host) {
-    return '$host · 经中转只能开关，安装请在那台电脑上进行';
+    return '$host · 这台主机只能开关，安装请在那台电脑上进行';
   }
 
   @override
@@ -16523,7 +16511,7 @@ class L10nZh extends L10n {
 
   @override
   String pluginsRelayCommandInstruction(String host) {
-    return '经 DSH Remote 中转时只能开关插件。在$host的终端里运行：';
+    return '这台主机只能开关插件。在$host的终端里运行：';
   }
 
   @override
@@ -17149,81 +17137,13 @@ class L10nZh extends L10n {
   }
 
   @override
-  String get remoteErrInvalidServer => '服务器地址无效';
-
-  @override
-  String get remoteErrEmailPassword => '邮箱或密码不对';
-
-  @override
-  String get remoteErrHostNotInAccount => '账号下找不到这台主机';
-
-  @override
-  String get remoteHostFallback => '这台主机';
-
-  @override
-  String get remoteErrHostOffline => '主机现在不在线';
-
-  @override
-  String remoteErrHostRemoved(String name) {
-    return '$name已不在你的 DSH Remote 账号下';
-  }
-
-  @override
-  String get remoteErrRelaySignInExpired => 'DSH Remote 登录已失效';
-
-  @override
-  String get remoteErrIdentityKeyChanged => '主机身份密钥和上次不一致';
-
-  @override
-  String get remoteErrIdentityUnconfirmed => '还没有确认主机身份指纹';
-
-  @override
-  String get remoteErrConnectionReplaced => '远程连接已被替换';
-
-  @override
-  String get remoteErrHostRejected => '主机拒绝了连接';
-
-  @override
-  String get remoteErrHostNotOwned => '主机不在你的 DSH Remote 账号下';
-
-  @override
-  String get remoteErrUpdateNeeded => '版本不匹配，请更新 DSH Go 和主机上的远程插件';
-
-  @override
-  String get remoteErrVersionIncompatible => '主机上的 DSH 或远程插件需要更新';
-
-  @override
-  String get remoteErrSignInTimeout => '登录超时';
-
-  @override
-  String get remoteSignInCancelled => '已取消登录';
-
-  @override
-  String get remoteErrBrowserSignInUnsupported => '服务器不支持浏览器登录';
-
-  @override
-  String get remoteErrTooManyRequests => '请求太频繁';
-
-  @override
   String get remoteErrHostUnreachable => '没能连上远程主机';
 
   @override
   String get remoteErrRemoteConnection => '远程连接失败';
 
   @override
-  String get remoteOnline => '在线';
-
-  @override
-  String get remoteOffline => '离线';
-
-  @override
   String get remoteUnavailable => '暂不可用';
-
-  @override
-  String get remoteErrHostNotFound => '找不到这台主机';
-
-  @override
-  String get remoteConnectionStopped => '远程连接已停止';
 
   @override
   String remoteBootstrapReusePort(int port) {
@@ -17822,25 +17742,6 @@ class L10nZh extends L10n {
   String get remoteHostKeyTrustConnect => '信任并连接';
 
   @override
-  String get remoteHostKeyChangedTitle => '身份指纹变了';
-
-  @override
-  String remoteRelayKeyChangedBody(String name) {
-    return '「$name」的身份密钥和上次不一样。只在确认这台主机重装过远程插件时继续，否则可能有人冒充它。';
-  }
-
-  @override
-  String remoteRelayKeyFirstBody(String name) {
-    return '首次连接「$name」。核对身份指纹，与主机上远程插件显示的一致再继续。';
-  }
-
-  @override
-  String get remoteHostKeyChangeWarning => '之后指纹一旦变化，App 会拒绝连接。';
-
-  @override
-  String get remoteHostKeyTrustAgain => '重新信任';
-
-  @override
   String get remoteHostKeyReading => '正在读取主机指纹…';
 
   @override
@@ -17855,51 +17756,16 @@ class L10nZh extends L10n {
   String get remoteThisPhoneDsh => '这台手机上的 DSH';
 
   @override
-  String get remoteRemoteLabel => '远程';
-
-  @override
-  String remoteRemotePlatform(String platform) {
-    return '远程 · $platform';
-  }
-
-  @override
-  String get remoteRelaySwitchWarning => 'DSH Remote 一次只连一台主机，切换会断开上一台';
-
-  @override
   String get remoteConnectComputer => '连接电脑或服务器';
 
   @override
   String get remoteManageHosts => '管理远程主机';
 
   @override
-  String get remoteConnectionMethods => '通过 SSH 或 DSH Remote';
-
-  @override
-  String get remoteRelayLoginRequired => '填写服务器地址、邮箱和密码';
-
-  @override
-  String get remoteErrSignIn => '没能登录';
-
-  @override
-  String get remoteSelfHostedServer => '自建服务器';
-
-  @override
-  String get remoteSelfHostedSignInHelp => '填写服务器地址，可用邮箱密码登录，也可先使用此服务器再选择其他登录方式。';
-
-  @override
-  String get remoteUseServer => '使用此服务器';
-
-  @override
-  String get remoteServerAddress => '服务器地址';
-
-  @override
-  String get remoteEmail => '邮箱';
+  String get remoteConnectionMethods => '通过 SSH 或配对电脑';
 
   @override
   String get remotePassword => '密码';
-
-  @override
-  String get remoteRestoreServer => '改回默认服务器 dsh.r2049.cn';
 
   @override
   String get remoteConsole => '远程控制台';
@@ -17934,13 +17800,7 @@ class L10nZh extends L10n {
   String get remoteSwitchToPhone => '切回本机';
 
   @override
-  String get remoteSignInAgain => '重新登录';
-
-  @override
   String get remoteHostSettings => '主机设置';
-
-  @override
-  String get remoteReconnect => '重新连接';
 
   @override
   String get remoteReconnectingEllipsis => '重新连接中…';
@@ -17951,84 +17811,9 @@ class L10nZh extends L10n {
   }
 
   @override
-  String get remoteConnectedEncrypted => '已连接 · 端到端加密';
-
-  @override
-  String remoteConnectedVia(String path) {
-    return '已连接 · $path · 端到端加密';
-  }
-
-  @override
-  String get remotePathDirect => '直连';
-
-  @override
-  String get remotePathTurn => 'TURN';
-
-  @override
-  String get remotePathRelay => 'Relay 中继';
-
-  @override
   String remoteConnectedSsh(String address) {
     return '已连接 · SSH $address';
   }
-
-  @override
-  String get remoteErrRefreshHosts => '没能刷新主机列表';
-
-  @override
-  String get remoteSwitchWarning => '一次只连一台主机，切换会断开上一台';
-
-  @override
-  String remoteHostOfflineHint(String name) {
-    return '「$name」现在不在线。在那台电脑上打开 DSH 后再试';
-  }
-
-  @override
-  String get remoteRefreshHosts => '刷新主机列表';
-
-  @override
-  String get remoteSignOut => '退出';
-
-  @override
-  String get remoteErrHostsRetry => '没能获取主机列表 · 轻点重试';
-
-  @override
-  String get remoteNoHosts => '还没有主机';
-
-  @override
-  String get remoteRelaySetupHelp => '在主机的 DSH 里装好远程插件并登录';
-
-  @override
-  String get remoteRelaySignOutTitle => '退出 DSH Remote？';
-
-  @override
-  String get remoteRelaySignOutBody => '这台手机会从账号中移除。主机上的 DSH 和对话不受影响，随时可以重新登录。';
-
-  @override
-  String get remoteRelaySignInTitle => '登录 DSH Remote';
-
-  @override
-  String get remoteRelaySignInHelp => '无需配置网络，连接端到端加密';
-
-  @override
-  String get remoteBrowserSignIn => '在浏览器中登录';
-
-  @override
-  String remoteSignInWithProvider(String provider) {
-    return '使用 $provider 登录';
-  }
-
-  @override
-  String get remoteComingSoon => '即将接入';
-
-  @override
-  String get remoteSelfHostedEmailSignIn => '自建服务器 · 邮箱登录';
-
-  @override
-  String get remoteBrowserSignInPending => '在浏览器里完成登录…';
-
-  @override
-  String get remoteCopySignInLink => '复制登录链接';
 
   @override
   String get remoteSshAddressRequired => '填写主机地址（IP 或域名）';
@@ -18460,104 +18245,9 @@ class L10nZh extends L10n {
   }
 
   @override
-  String remoteRelayProvider(String project) {
-    return '服务由 $project 提供';
-  }
-
-  @override
-  String remoteRelayProviderServer(String project, String server) {
-    return '服务由 $project 提供 · 当前服务器 $server';
-  }
-
-  @override
-  String remoteQuotedHostName(String name) {
-    return '「$name」';
-  }
-
-  @override
   String remoteErrorDetail(String message, String detail) {
     return '$message（$detail）';
   }
-
-  @override
-  String get remotePathLan => 'LAN 局域网';
-
-  @override
-  String get remotePathP2p => 'P2P 点对点';
-
-  @override
-  String get remoteNetworkDetails => '网络详情';
-
-  @override
-  String get remoteNetworkAutomatic => '自动依次尝试 LAN → P2P → TURN → Relay，连接全程端到端加密。';
-
-  @override
-  String get remoteNetworkCurrentPath => '当前路径';
-
-  @override
-  String get remoteNetworkConnectDuration => '连接耗时';
-
-  @override
-  String get remoteNetworkRoundTripTime => '往返延迟（RTT）';
-
-  @override
-  String get remoteNetworkUnmeasured => '未测量';
-
-  @override
-  String get remoteNetworkUnknownPath => '尚未确认';
-
-  @override
-  String remoteNetworkMilliseconds(int value) {
-    return '$value 毫秒';
-  }
-
-  @override
-  String get remoteNetworkMeasure => '刷新网络信息 / 测量延迟';
-
-  @override
-  String get remoteNetworkMeasuring => '正在测量…';
-
-  @override
-  String get remoteNetworkMeasureFailed => '暂时无法测量，可以稍后重试';
-
-  @override
-  String get remoteNetworkDisconnected => '连接已断开，重新连接后可测量';
-
-  @override
-  String get remoteNetworkFallback => '回落原因';
-
-  @override
-  String get remoteNetworkFallbackUnknown => '直连未能建立，已自动使用可用路径';
-
-  @override
-  String get remoteNetworkFallbackWebrtcUnavailable => '设备暂不支持 WebRTC，已使用 Relay 中继';
-
-  @override
-  String get remoteNetworkFallbackDirectFailed => 'LAN / P2P 直连未成功，已自动尝试后续路径';
-
-  @override
-  String get remoteNetworkFallbackDirectTimeout => 'LAN / P2P 直连超时，已自动尝试后续路径';
-
-  @override
-  String get remoteNetworkFallbackDirectRecentlyFailed => '近期直连未成功，本次先使用可用中继';
-
-  @override
-  String get remoteNetworkFallbackTurnUnavailable => 'TURN 服务暂不可用，已使用 Relay 中继';
-
-  @override
-  String get remoteNetworkFallbackTurnFailed => 'TURN 未能连接，已使用 Relay 中继';
-
-  @override
-  String get remoteNetworkFallbackTurnTimeout => 'TURN 连接超时，已使用 Relay 中继';
-
-  @override
-  String get remoteNetworkFallbackPathUnverified => '尚未确认 WebRTC 路径类型';
-
-  @override
-  String get remoteNetworkSnapshotHint => '显示最近一次确认的路径与延迟，刷新可重新检测。';
-
-  @override
-  String get remoteNetworkObservedAt => '最近观测';
 
   @override
   String get remoteHostedLoadFailed => '无法读取已保存的分享链接，请重试。';
@@ -18579,27 +18269,6 @@ class L10nZh extends L10n {
 
   @override
   String get remoteHostedStopFailed => '未能停止分享，链接仍然有效。请重试。';
-
-  @override
-  String get remoteNetworkLocalIpVersion => '手机 ICE IP 版本';
-
-  @override
-  String get remoteNetworkRemoteIpVersion => '主机 ICE IP 版本';
-
-  @override
-  String get remoteNetworkIceProtocol => 'ICE 协议';
-
-  @override
-  String get remoteCompactHistory => '精简历史';
-
-  @override
-  String get remoteErrHistoryModeChanged => '主机已不支持精简历史，请切换到其他主机后再连回来，或重启 App，重新加载历史';
-
-  @override
-  String get remoteCompactHistoryHint => '支持的 DSH Remote 主机会精简历史工具详情，实时回复和审批不变。切换主机或重启 App 后生效；旧主机仍传输完整历史。';
-
-  @override
-  String get searchKwRemoteCompactHistory => '精简 简洁 历史 工具 传输 流量 远程 compact slim lite';
 
   @override
   String pairedErrBanned(int seconds) {
@@ -18898,7 +18567,7 @@ class L10nZh extends L10n {
   String get remotePairedPageTitle => '配对电脑';
 
   @override
-  String get remotePairedComputersHint => '不用 DSH Remote 账号，直接用电脑上的配对码连上';
+  String get remotePairedComputersHint => '不用账号，直接用电脑上访问入口显示的配对码连上';
 
   @override
   String pairedHostRenamed(String name) {
@@ -18925,48 +18594,6 @@ class L10nZh extends L10n {
 
   @override
   String get stateRemoteUploadTooLarge => '文件超过远程上传协议的大小上限';
-
-  @override
-  String get remoteWebTitle => 'DSH Web';
-
-  @override
-  String get remoteWebOpening => '正在打开 DSH Web…';
-
-  @override
-  String get remoteWebFailed => '没能打开 DSH Web';
-
-  @override
-  String get remoteWebRefresh => '刷新首页';
-
-  @override
-  String get remoteWebBusy => '人太多了，请稍后重试';
-
-  @override
-  String get remoteWebPairingRequired => '连接授权失效，请重新连接或配对主机。';
-
-  @override
-  String get remoteWebHostNotReady => '主机网页版尚未就绪。请启动 DSH Web，并将 Remote 插件更新到 0.6.6 或更新版本。';
-
-  @override
-  String get remoteWebReconnect => '连接已断开，请重新连接主机后再打开。';
-
-  @override
-  String get remoteWebUnsafeUrl => '网页地址无法验证，已停止打开。请检查主机配置。';
-
-  @override
-  String get remoteWebExchangeRejected => '访问验证没有通过，请重试。';
-
-  @override
-  String get remoteWebSessionExpired => '网页连接已过期，请重试。';
-
-  @override
-  String get remoteWebPlatformUnavailable => '当前平台暂不支持此网页入口。请使用原生远程界面。';
-
-  @override
-  String get remoteWebTryAgain => '暂时无法打开网页，请检查主机连接后重试。';
-
-  @override
-  String get remoteWebUnavailable => '暂时无法打开，请稍后重试';
 
   @override
   String get riskDontShowAgain => '不再提示';
@@ -19187,7 +18814,7 @@ class L10nZh extends L10n {
   String get searchKwAccount => '账号,余额,充值,登录,退出登录,API Key,用量,DeepSeek';
 
   @override
-  String get searchKwRemote => '远程,SSH,电脑,服务器,DSH Remote,连接电脑';
+  String get searchKwRemote => '远程,SSH,电脑,服务器,连接电脑';
 
   @override
   String get searchKwPermission => '权限,别问我,确认,审批,自动允许,只读,完全权限,自动执行命令';
@@ -19533,102 +19160,6 @@ class L10nZh extends L10n {
 
   @override
   String get selfUpdateEndWaitingNote => '只有确认系统已不在安装时才结束等待。清除本次记录不等于取消系统安装；不会自动重试或切换路线，仍需再次原生确认。';
-
-  @override
-  String get backupRecordFailed => '手机未能保存恢复记录。请记下上面的对话 ID 并检查目标主机，不要重复导入。';
-
-  @override
-  String get backupSearchKeywords => '备份,恢复,迁移,复制对话,同步,backup,restore';
-
-  @override
-  String get backupTitle => '对话备份';
-
-  @override
-  String get backupHint => '备份到手机后，可切换主机恢复到已有工作区。每次恢复会新建对话；不含附件、源码和跨对话关系。';
-
-  @override
-  String get backupCancelled => '已取消，已校验保存的备份仍可恢复。';
-
-  @override
-  String get backupUnknown => '结果待核对：请连接原目标主机查询，或先在目标端检查。不会自动重新导入。';
-
-  @override
-  String backupFailed(String code) {
-    return '操作失败（$code）。请检查连接或存储后重试。';
-  }
-
-  @override
-  String backupSaved(int count) {
-    return '已保存 $count 条备份。';
-  }
-
-  @override
-  String backupSavedCloseFailed(int count) {
-    return '已保存 $count 条备份，源主机导出句柄未能关闭；断线或闲置后会自动释放。';
-  }
-
-  @override
-  String backupRestoreConfirm(String title, String workspace) {
-    return '将“$title”恢复到“$workspace”？会创建一条新对话，不合并或覆盖已有历史。';
-  }
-
-  @override
-  String backupRestored(String id) {
-    return '已恢复，新对话：$id';
-  }
-
-  @override
-  String backupRestoredDetached(String id) {
-    return '历史已恢复，未加入工作区。对话 ID：$id。请在目标端查找，不要重复导入。';
-  }
-
-  @override
-  String get backupOriginalDevice => '请使用原 Remote 设备身份连接原目标主机，再查询提交结果。';
-
-  @override
-  String get backupStorageFailed => '无法读取备份。请检查应用存储和系统密钥；不会重置或覆盖已有备份。';
-
-  @override
-  String get backupConnectHost => '连接一台已配对的 Remote 主机，即可备份或恢复。';
-
-  @override
-  String get backupNoWorkspace => '等待主机工作区列表；没有工作区时请先在主机上创建。';
-
-  @override
-  String get backupWorkspace => '整个工作区';
-
-  @override
-  String get backupToPhone => '备份到手机';
-
-  @override
-  String get backupExportUnsupported => '此主机未提供对话导出能力，请更新主机 Remote 插件。';
-
-  @override
-  String get backupImportUnsupported => '此主机未提供对话恢复能力，请更新主机 Remote 插件。';
-
-  @override
-  String get backupPending => '待核对的恢复';
-
-  @override
-  String get backupCheck => '查询';
-
-  @override
-  String get backupAcknowledge => '已在目标端核对';
-
-  @override
-  String get backupAcknowledgeConfirm => '确认已在目标端核对？清除此待确认记录后，可手动再导入，但可能创建重复对话。';
-
-  @override
-  String get backupOnPhone => '手机上的备份';
-
-  @override
-  String get backupEmpty => '还没有备份。备份仅保存在本机，卸载 App 会丢失。';
-
-  @override
-  String get backupRestore => '恢复到当前工作区';
-
-  @override
-  String get backupDeleteConfirm => '删除手机上的这条备份及其恢复记录？不会删除主机上的对话。';
 
   @override
   String get shellDeletePermanently => '永久删除';
@@ -20714,8 +20245,7 @@ class L10nZh extends L10n {
   String get speechNoCredential => '要先登录 DeepSeek 账号，或在设置里填 API Key';
 
   @override
-  String get speechAccountUnusable =>
-      '已登录的账号在这里付不了 DeepSeek 语音：当前连接的 DSH 版本较旧（更新后就行），或正经 DSH Remote 中继连接。在设置里填 DeepSeek API Key 就能用';
+  String get speechAccountUnusable => '已登录的账号在这里付不了 DeepSeek 语音：当前连接的 DSH 版本较旧，更新后就行。在设置里填 DeepSeek API Key 就能用';
 
   @override
   String get speechSignIn => 'DeepSeek 账号用不了语音（可能登录过期，或语音只认 API Key）。重新登录，或在设置里填上 API Key';
@@ -20880,7 +20410,7 @@ class L10nZh extends L10n {
 
   @override
   String get speechCallEndNoRecognizerSignedIn =>
-      '通话要能识别录音。已登录的账号在这里付不了 DeepSeek 语音（当前连接的 DSH 版本较旧，或经 DSH Remote 中继）：在设置里填 DeepSeek API Key，或在设置 › 语音里下载语音模型';
+      '通话要能识别录音。已登录的账号在这里付不了 DeepSeek 语音（当前连接的 DSH 版本较旧）：在设置里填 DeepSeek API Key，或在设置 › 语音里下载语音模型';
 
   @override
   String get speechCallEndNoRecognizer => '通话需要能识别录音的方式：登录 DeepSeek 账号、填 API Key，或下载语音模型';
@@ -21686,12 +21216,6 @@ class L10nZh extends L10n {
   String get stateSshHost => 'SSH 主机';
 
   @override
-  String get stateHostBrowserFailed => '没能打开浏览器，可以复制登录链接到浏览器里完成。';
-
-  @override
-  String get stateSignInFailed => '没能登录';
-
-  @override
   String get stateMarketTooLarge => '插件目录太大，已停止下载';
 
   @override
@@ -21830,7 +21354,7 @@ class L10nZh extends L10n {
   String get statePluginRemoteForbidden => '这台主机不允许远程安装';
 
   @override
-  String get statePluginRelayToggleOnly => '经中转连接只能开关插件';
+  String get statePluginRelayToggleOnly => '这台主机只能开关插件';
 
   @override
   String get statePluginManagementUnsupported => '主机不支持插件管理';
@@ -21971,7 +21495,7 @@ class L10nZh extends L10n {
   String get stateQuestionPending => '待回答';
 
   @override
-  String get stateExportRelayUnsupported => '经中转连接暂不支持导出';
+  String get stateExportRelayUnsupported => '这台主机暂不支持导出';
 
   @override
   String get stateExportChatMissing => '找不到这个对话了';
@@ -22196,11 +21720,6 @@ class L10nZh extends L10n {
   @override
   String stateHostPairedLabel(String name) {
     return '$name · 配对';
-  }
-
-  @override
-  String stateHostRemoteLabel(String name) {
-    return '$name · 远程';
   }
 
   @override
@@ -28498,9 +28017,6 @@ class L10nZh extends L10n {
 
   @override
   String get webSshAppOnly => '经 SSH 隧道的地址只能在 App 内打开';
-
-  @override
-  String get webRelayUnavailable => '经 DSH Remote 中转时打不开网页版，请在那台电脑上打开';
 
   @override
   String get webSshHost => 'SSH 主机';

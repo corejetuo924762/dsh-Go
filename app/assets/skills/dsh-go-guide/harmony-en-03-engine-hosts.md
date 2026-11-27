@@ -106,38 +106,18 @@ Managed mode refuses to replace a live instance whose start command differs or l
 
 To change or delete a host, tap **Edit** next to it to open **Edit host**; **Delete this host** is at the bottom. Deleting removes only the settings, password, key and launch token saved on this phone; DSH and chats on the host stay.
 
-## DSH Remote
+## Paired computers
 
-No network setup, end-to-end encrypted. Good for computers on another network.
+No account and no network setup: pair with the code its access entry shows on the computer; from then on the link is plain HTTP, not SSH.
 
-1. Install the remote plugin in the host's DSH and sign in.
-2. On the remote hosts page, choose the same sign-in provider you used on that host, for example “Continue with GitHub”, and sign in with the same account. If the page lists no providers and shows only **Sign in in browser**, tap that button.
-3. Select an online host. On first connection, check that the identity fingerprint matches the one the host's remote plugin shows, then tap **Trust and connect**.
+1. On that computer, open DSH's access entry so it shows the pairing QR code or code.
+2. On the remote hosts page tap **Add a paired computer**, then choose **Scan**, **Paste link** or **Type code**. On HarmonyOS, **Scan** opens the system scanner, which owns the camera, so DSH Go asks for no camera permission; pick a screenshot from photos inside that page. What it reads pairs and connects straight away.
+3. Once connected, select it under Paired computers. The code is good for 5 minutes and only once; after that the computer stays paired for 30 days without another code.
 
-When the server supports it, the remote hosts page shows **Pair a computer by scanning**: sign in to DeepSeek in the app, tap **Scan** to open the system scanner, scan the code shown by the computer’s Remote plugin, check the computer fingerprint, then enter the verification code as prompted. The scanner is the system’s own page and uses the camera itself, so DSH Go asks for no camera permission; if the code is in a screenshot, pick it from photos inside that page. You can also copy the pairing link and tap **Paste pairing link**. If the system scanner can't open, the app tells you to paste the link instead.
+Long-press a row to rename or remove it. Removing erases only the pairing credentials on this phone; the computer itself is untouched.
 
-This version goes through the relay, end-to-end encrypted the whole way, not over LAN, P2P or TURN. Tap the route label on the connection card or beside a Host to see the actual route, connection time and available round-trip latency. Unmeasured values are not shown as zero.
+If the system scanner can't open, use **Paste link** or **Type code** instead. Phone control's text recognition is a separate switch that scanning never changes; see the [FAQ](11-faq.md#local-text-recognition-and-google-ml-kit) for SDK statistics disclosures.
 
-<!-- nav: commonSettings,commonRemoteHost,remoteCompactHistory -->
-`Settings › Remote host › Compact history`
+## DSH Web on a remote host
 
-**Compact history** is off by default. Supporting DSH Remote Hosts summarize historical tool arguments and output to reduce history transfer; message text, live replies, approvals and original Host records stay unchanged. Switch to another host (or this phone) and back, or restart the app, to apply. The current client and its automatic reconnects retain their original mode to avoid mixing cached history. After turning it off, select the host again and reopen the chat to load full history. Older Hosts continue sending full history; SSH is unaffected.
-
-DSH Remote connects to one host at a time; switching disconnects the previous one. Over DSH Remote: you can send images only, DSH Web doesn't open in the app, plugins can only be turned on or off, and DS Bot and chat log export aren't available. Conversation backups use a separate session-transfer capability, not chat log export.
-
-## Conversation backups and restore
-
-<!-- nav: commonSettings,commonRemoteHost,backupTitle -->
-`Settings › Remote host › Conversation backups`
-
-Connect the source Remote host, select a workspace and either one conversation or **Entire workspace**, then tap **Back up to phone**. Switch to the target host, reopen this page, choose an existing target workspace and tap a local backup to restore. Export and import are checked independently against each host; older plugins without the respective capability are identified.
-
-Files and the catalog are encrypted in app-private storage, with the key protected by system secret storage. Uninstalling the app or clearing app data loses these backups. Only complete entries whose length and SHA-256 match are published; interrupting a batch keeps completed entries. Every restore creates a new full snapshot without merging later messages. Attachments, workspace source files and cross-session relationships are excluded.
-
-If a commit disconnects or its outcome is unclear, **Restores to check** keeps the pending record. Connect to the original target with the original Remote device identity and tap **Check**. The server retains results for about five minutes; if unknown, inspect the target first. The app never automatically imports again. After checking, you can acknowledge and clear the pending record; another import may create a duplicate. If history was restored but not attached to the workspace, find the shown conversation ID instead of importing again. Deleting a local backup never deletes conversations on hosts.
-
-Remote currently connects to one host at a time, so copying uses backup-to-phone followed by switching and restoring, rather than simultaneous host-to-host forwarding.
-
-## DSH Web on a Remote host
-
-On HarmonyOS, DSH Web can't open over DSH Remote yet; the web entries say so. Native conversations, workspaces and conversation backups are unaffected.
+On HarmonyOS, DSH Web can't open for a remote host yet; the web entries say so. Native conversations and workspaces are unaffected.

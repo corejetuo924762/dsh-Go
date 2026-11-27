@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:ui' show SemanticsAction;
 
 import 'package:dsh_app/l10n/l10n.dart';
-import 'package:dsh_app/remote/link_status.dart' show RelayPath;
 import 'package:dsh_app/runtime/runtime_bridge.dart';
 import 'package:dsh_app/runtime/runtime_state.dart';
 import 'package:dsh_app/state/attachments.dart';
@@ -49,7 +48,7 @@ ScrollPosition listPosition(WidgetTester tester) =>
     tester.widget<CustomScrollView>(find.byType(CustomScrollView)).controller!.position;
 
 class _RemoteHost extends ActiveHostController {
-  static const host = HostRef.relay('workstation');
+  static const host = HostRef.paired('workstation');
 
   @override
   HostRef build() => host;
@@ -199,14 +198,13 @@ void main() {
       expect(find.descendant(of: find.byType(IdentityBar), matching: find.text(label)), findsOneWidget);
     }
 
-    changes.add(const HostLinkStatus(HostLinkPhase.connected, path: RelayPath.p2p));
+    changes.add(const HostLinkStatus(HostLinkPhase.connected));
     await pumpFrames(tester);
-    expectLinkLabel(RelayPath.p2p.label);
+    expectLinkLabel(appL10n.remoteConnected);
 
-    changes.add(const HostLinkStatus(HostLinkPhase.reconnecting, path: RelayPath.p2p));
+    changes.add(const HostLinkStatus(HostLinkPhase.reconnecting));
     await pumpFrames(tester);
     expectLinkLabel(appL10n.remoteReconnecting);
-    expect(find.text(RelayPath.p2p.label), findsNothing);
 
     final chat = harness.controllers['s1']!;
     chat.emit(chat.state.copyWith(streamLost: true));
@@ -287,7 +285,7 @@ void main() {
     expect(await gap(true), closeTo(await gap(false), 0.1));
   });
 
-  testWidgets('relay attachment menu keeps two equal targets', (tester) async {
+  testWidgets('paired attachment menu keeps two equal targets', (tester) async {
     usePhoneView(tester);
     await tester.pumpWidget(
       testApp(

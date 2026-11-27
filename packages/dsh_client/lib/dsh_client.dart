@@ -3,7 +3,7 @@
 /// Layers, lowest first:
 /// * [DshCarrier] — pluggable transport: [DshHttpCarrier] over
 ///   [DshConnection] (launch-token login, session cookie, HTTP, WebSocket)
-///   by default; `package:dsh_remote` adds the encrypted remote tunnel.
+///   by default; callers may supply carriers of their own.
 /// * [DshRpc] — unary Typert Remote calls (`POST /api/<namespace>/<method>`
 ///   on HTTP).
 /// * [DshMux] — logical streams + `$events` generations (`/api/remote.mux`

@@ -191,7 +191,7 @@ void main() {
 
   test('ineligible state does not open a confirmation', () async {
     final f = await _fixture();
-    (f.container.read(activeHostProvider.notifier) as _Active).use(const HostRef.relay('remote'));
+    (f.container.read(activeHostProvider.notifier) as _Active).use(const HostRef.paired('remote'));
     final result = await f.container
         .read(localPluginReloadProvider.notifier)
         .reload(_bundle(), confirm: () => throw StateError('must not ask for an unavailable action'));

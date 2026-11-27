@@ -107,7 +107,7 @@
   "pairedHostManage": "Manage this computer",
   "remotePairedComputers": "Paired computers",
   "remotePairedPageTitle": "Pair a computer",
-  "remotePairedComputersHint": "No DSH Remote account needed: connect with the pairing code the computer shows",
+  "remotePairedComputersHint": "No account needed: connect with the code the computer's access entry shows",
   "pairedHostRenamed": "Renamed to “{name}”",
   "@pairedHostRenamed": {
     "placeholders": {

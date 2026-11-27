@@ -53,7 +53,7 @@ Flutter Dart ── MethodChannel ──> Swift（DshPlugin / EngineChannel）
 | 对话 | UI 订阅 session/follow 事件流，ChatTranscript 折叠成 ChatState | `state/chat_state.dart` → `dsh_client` `watch()` |
 | 插件 | 引擎桥 /dsh-go/v1/* 提供 contributions/invoke/stream，App 只读渲染 | `state/plugins_state.dart`、`plugins/` |
 | 手机操控 | 引擎发工具调用 → 各平台原生执行并按任务所有者结算结果 | Android `phone/`；iOS `IOSPhoneBridge`/`IOSPhoneRunner`；`state/phone_state.dart` |
-| 远程 | 另开一条加密隧道（SSH 或 WebRTC/中继），复用同一个 DshClient | `packages/dsh_remote`、`remote/` |
+| 远程 | 另开一条通道（SSH 隧道或配对电脑的 HTTP/WebSocket），复用同一个 DshClient | `remote/` |
 | 自更新 | Android 检查→下载→校验→安装（可走 Shizuku/ADB 特权） | `state/update_state.dart`、`update/`（Kotlin）；iOS 不复用 APK 安装器 |
 
 ## 1. 仓库地图
@@ -62,7 +62,6 @@ Flutter Dart ── MethodChannel ──> Swift（DshPlugin / EngineChannel）
 |---|---|---|---|
 | `app/` | Flutter App + Android/iOS 原生实现 | `lib/main.dart`、`android/.../MainActivity.kt`、`ios/Runner/AppDelegate.swift` | 本仓库主体 |
 | `packages/dsh_client/` | DSH Web API 纯 Dart 客户端（连接/RPC/mux/事件/各域 API） | `lib/dsh_client.dart`（barrel） | 不依赖 Flutter，可单测 |
-| `packages/dsh_remote/` | 远程传输：账号、SSH 宿主、Noise IK 加密通道、WebRTC/中继、隧道 carrier | `lib/dsh_remote.dart` | 依赖 dsh_client 的 carrier 抽象 |
 | `packages/dsh_tavern/` | SillyTavern 兼容酒馆引擎（纯 Dart，191 个测试文件） | `lib/dsh_tavern.dart` | 与 AGPL 上游同许可，来源见 NOTICES |
 | `packages/dartssh2/` | vendored dartssh2 4.1.0 + 补丁 | `VENDORED.md` | app 的 SSH 链路用它 |
 | `runtime/` | 引擎运行时：构建脚本、锁定补丁、桥、boot/direct 启动、iOS 特化与测试 | `build-runtime.sh`、`patches/series`、`bridge/`、`ios/` | Android 产物在 `runtime/out/<abi>/`；iOS 构建输出不入库 |
@@ -128,8 +127,8 @@ HomeShell = [ChatScreen] + [SessionsDrawer 左] + [QuickPanel 右] + [SystemEntr
 
 | 状态 | owner | 关键点 |
 |---|---|---|
-| 主机列表/SSH/ActiveHost/relay 账号 | `state/hosts_state.dart` | 写 prefs + 安全存储；`ActiveHostController` 唯一改当前主机 |
-| 三路连接装配 | `state/connection_state.dart` | `_connectionForHost()` 是唯一装配点（本机/SSH/relay）；`activeConnectionProvider` 给全 App 用 |
+| 主机列表/SSH/配对电脑/ActiveHost | `state/hosts_state.dart` | 写 prefs + 安全存储；`ActiveHostController` 唯一改当前主机 |
+| 三路连接装配 | `state/connection_state.dart` | `_connectionForHost()` 是唯一装配点（本机/SSH/配对）；`activeConnectionProvider` 给全 App 用 |
 | 单会话聊天 | `state/chat_state.dart` | `autoDispose.family(sessionId)`；mux 事件折叠、发送/停止、审批、inbox |
 | 会话列表 | `state/sessions_state.dart` | hostEvents 驱动刷新；删除是占位+确认流 |
 | 设置与密钥 | `state/settings_state.dart` | 普通偏好 prefs；API key/provider key 只走 secure storage |
@@ -160,7 +159,7 @@ HomeShell = [ChatScreen] + [SessionsDrawer 左] + [QuickPanel 右] + [SystemEntr
 | `phone/` | 手机操控 Dart 端（通道/审批/自检/技能录放） | `phone_channel.dart`、`phone_approval.dart` |
 | `diagnostics/` | 诊断快照/zip/脱敏/发布 | `diagnostics_bundle.dart`、`diagnostics_publish.dart` |
 | `share_code/` `share_hosted/` | 分享码/对话导出（打码）；加密托管链接 | `conversation_redact.dart`、`hosted_client.dart` |
-| `remote/` | 远程 UI 侧：链路状态、网络监测、WebRTC peer、SSH 转发 | `relay/webrtc_peer.dart`、`ssh/local_forward.dart` |
+| `remote/` | 远程 UI 侧：链路状态、SSH 转发、配对电脑链路 | `ssh/local_forward.dart`、`paired/paired_link.dart` |
 | `tavern/` `companion/` `pets/` | 酒馆逻辑、伙伴小屋、桌宠 overlay 桥 | 各自 `*_state.dart`/`*_bridge.dart` |
 | `links/` `launch/` `notify/` `voice/` `usage/` `performance/` `wallpaper/` `forum/` `workshop/` | 深链、开屏、通知、语音、用量、性能、壁纸、论坛、工坊 | 各自通道/服务 |
 | `dev/` | 开发探针入口（不进发行包） | `runtime_probe_main.dart` 等 |
@@ -315,24 +314,18 @@ DshConnection      单个 Host 的物理连接：launch-token → cookie、Host 
 - 错误类型 `DshRemoteException`（Host 决定）vs `DshCarrierRefusedException`（管道故障）要分清。
 - 没导出的内部件：`background_session_read`、`rpc_envelope` 等只供 `lib/src/` 内部 import（barrel 头注释只列 5 层，不列它们）。
 
-### 4.2 dsh_remote
+### 4.2 配对电脑（paired）
 
-`RemoteAccount`（登录/设备/Host 目录/key pinning）→ `RemoteServerApi`（REST）+
-`RelayTransport`（控制 WS）→ `WebRtcTransport`（LAN/P2P/TURN）或 Relay 数据面 → Noise IK `SecureChannel` →
-`RemoteRpcClient` → `RemoteTunnelCarrier`（实现 `DshCarrier`，交给普通 `DshClient`）。
-Control 已确认 lease 且独立数据面仍存活时，仅恢复 Control，保留 Noise/RPC/事件流；数据面断开或 recovery 被拒绝时，
-由既有 mux 建立新 tunnel、新 Noise 与新 `$events` 世代，不重放结果未知的 RPC。票据仅在 transport 内存保存，关闭/换 Host/登出时清除。
-端点白名单 `harnessRemoteAllowlist` 与上游 Host 插件版本耦合，新增端点前先看它。
+配对的电脑不需要账号或中继：`PairedHostLink`（`remote/paired/paired_link.dart`）用访问入口的
+配对码换一次网关票据（`dsh_remote_session` cookie，30 天），随后经 `DshHttpCarrier` 直连那台电脑的
+`dsh web`；票据拒绝时报告「需要重新配对」，不伪装成网络故障。配对记录与指纹存在
+`remote/paired/paired_host_store.dart`，主机身份由入口地址派生（`pairedHostId`），改名不换主机。
 
-对话备份走 `RemoteSessionTransfer` 的顶层 `session.transfer.*` Noise RPC，不经 Harness 端点白名单。
-`state/session_backup_state.dart` 连接当前会话与私有备份存储，`ui/remote/session_backup_page.dart` 提供单条／工作区备份和恢复；
-`remote/session_backup/backup_store.dart` 用系统安全存储中的随机密钥加密文件和清单，提交前持久保存待核对记录。
-Remote 一次只连一台主机，跨主机复制采用先备份、再切换恢复，不另建第二套设备身份。
+SSH 主机走 `remote/ssh/`：`SshHostLink` 建 SSH 连接、在远端启动或复用 `dsh web`，再经本地端口转发
+把 HTTP/WebSocket 交给普通 `DshClient`；`remote_bootstrap.dart` 负责启动/复用/令牌与失败归因。
 
-Remote WebUI 通过 `RemoteDshWeb` 在原 Noise 连接上串行调用 `dsh.web.open/close`，不经 Harness 业务白名单。
-`state/remote_web_state.dart` 观察当前会话能力，`ui/web/dsh_web_launcher.dart` 把它并入各个「网页版」入口（`RelayDshWeb`），`ui/remote/remote_web/` 负责同源自提交表单换票、同源导航与页面收尾；
-访问票据不进入 URL、日志或持久化存储，普通刷新只 GET 干净根地址。原生 WebView 的隔离能力按平台实际 API 使用，
-不清空全局 Cookie；RPC／HTTP 的明确 429 使用友好繁忙提示，其余连接失败不猜测成限流。
+两条链路都实现 `remote/link_status.dart` 的 `HostLink`，由 `state/connection_state.dart` 按
+`HostKind` 装配；错误类型沿用 `DshRemoteException`（Host 决定）与 `DshCarrierRefusedException`（管道故障）。
 
 ### 4.3 dsh_tavern / dartssh2
 
@@ -449,7 +442,7 @@ DSH npm 前缀（runtime/locks）→ rtbuild 按 series 应用目标平台的补
 | iOS 引擎 / guest | §3.6、`app/ios/README.md` | `EngineChannel.swift`、`runtime/ios/`、`tooling/ios/prepare-engine.sh` | iOS compile/guest CI + 真机启动 |
 | iOS 手机操控 | §3.6、`tooling/ios/phone-self-runner/README.md` | `IOSPhoneRunner.swift`、`IOSPhoneCoreDevice.swift`、`PhoneRunner/` | CoreDevice 服务探测、真机截图/输入/返回，逐项核对 |
 | iOS 小组件 / 语音 / PiP | §3.6、`tooling/ios/CHANNEL_COVERAGE.md` | `CompanionWidget/`、`VoiceChannel.swift`、`PetOverlay/` | 对应原生/Flutter 测试 + 真机行为 |
-| 远程连接 | `docs/testing/remote-*.md` | `packages/dsh_remote`、`app/lib/remote/` | `cd packages/dsh_remote && dart test` |
+| 远程连接 | `docs/testing/remote-*.md` | `app/lib/remote/{ssh,paired}`、`app/test/remote/` | `(cd app && flutter test test/remote)` |
 | 自更新 | `docs/design/self-update-installation.md` | `state/update_state.dart`、Kotlin `update/` | `dart test` + 真机 |
 | 插件 SDK | `docs/plugins/README.md`、`sdk/plugin-kit/README.md` | `sdk/plugin-kit/**` | 按序生成链（§9） |
 | 插件市场 | `docs/design/plugin-market.md` | `market/**`、`state/plugins/plugin_market.dart` | `cd market && npm test` |
@@ -482,7 +475,7 @@ DSH npm 前缀（runtime/locks）→ rtbuild 按 series 应用目标平台的补
 | 改动面 | 命令 |
 |---|---|
 | Flutter 应用 | `(cd app && flutter pub get && flutter analyze && flutter test)` |
-| Dart 包 | `(cd packages/dsh_client && dart pub get && dart analyze && dart test)`；dsh_remote / dsh_tavern 同理 |
+| Dart 包 | `(cd packages/dsh_client && dart pub get && dart analyze && dart test)`；dsh_tavern 同理 |
 | 桥/补丁 | `node --test runtime/tests/*.test.mjs`；`python3 -I runtime/tests/test_patch_dsh.py`；`bash runtime/tests/run-guard-tests.sh "$DSH_PREFIX"`、`bash runtime/tests/run-native-tests.sh "$DSH_PREFIX"` |
 | 插件 SDK | `(cd sdk/plugin-kit && npm install && npm test)`（含生成物过期检查） |
 | 生成链（改 SDK/bridge/schema 后按序） | `gen-types → sync-bridge → sync-messages → gen-parity → sync-skill` |

@@ -244,8 +244,8 @@ void main() {
   });
 
   group('gate', () {
-    test('relay never, SSH yes, on-device only with a verified guard', () {
-      expect(islandHostAllowed(HostKind.relay, override: true), isFalse);
+    test('a paired computer never, SSH yes, on-device only with a verified guard', () {
+      expect(islandHostAllowed(HostKind.paired, override: true), isFalse);
       expect(islandHostAllowed(HostKind.ssh), isTrue);
       expect(islandHostAllowed(HostKind.local), isFalse);
       expect(islandHostAllowed(HostKind.local, reported: true), isFalse, reason: 'self-report alone');

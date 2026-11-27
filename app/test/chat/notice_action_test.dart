@@ -405,5 +405,5 @@ class _UpToDate extends AppUpdateController {
 /// A DSH Remote host is the active one.
 class _RelayHost extends ActiveHostController {
   @override
-  HostRef build() => const HostRef.relay('r1', name: 'Mac');
+  HostRef build() => const HostRef.paired('r1', name: 'Mac');
 }

@@ -4,7 +4,7 @@ NA v1.3 的 `files` 能力让插件在用户点按后打开系统选择器。用
 
 ## 声明与降级
 
-清单中声明 `"capabilities": ["files"]`。清单按钮加 `"requires": ["files"]`；面板内的选择按钮只在 `caps.features?.includes('files')` 时显示。不支持时显示普通说明文字。旧 App、旧桥、未实现原生适配器的平台和 DSH Remote 中转连接不会协商此能力；普通面板仍能打开。
+清单中声明 `"capabilities": ["files"]`。清单按钮加 `"requires": ["files"]`；面板内的选择按钮只在 `caps.features?.includes('files')` 时显示。不支持时显示普通说明文字。旧 App、旧桥、未实现原生适配器的平台和没有 dsh-go 桥接的主机不会协商此能力；普通面板仍能打开。
 
 `files` 不改变视图格式。仅使用 v1 组件也能取文件。清单 `dshGo.v`、HTTP 路径和 WebSocket `v` 仍为 `1`，不能填写 `1.3`。
 
@@ -104,7 +104,7 @@ App 全局一次只允许一个选择流程。切换主机、插件不可用、�
 - 图片：Android 33 起用 `MediaStore.ACTION_PICK_IMAGES`，多选上限取请求数量与 `getPickImagesMaxLimit()` 的较小值；旧系统或没有 Photo Picker Activity 时退回 `ACTION_OPEN_DOCUMENT` + `image/*`。
 - 只请求临时读授权，不请求目录、写授权或新的存储权限，不调用 `takePersistableUriPermission`。读取走带 `CancellationSignal` 的 `ContentResolver.openAssetFileDescriptor(uri, "r", ...)`；不使用依赖库中先完整复制到缓存的路径。
 - 本地与 SSH 直连复用现有主机认证、HTTP carrier 和 SSH 隧道，在我们自己的 `/dsh-go/v1/files/` 路由上传，不改 DSH 引擎协议。旧 `fileUploads/upload` 只返回对话附件凭据，没有插件可读文件路径，因此不能伪装成可用的导入接口。
-- DSH Remote 中转当前不转发 `/dsh-go/*`，因此 `files` 为不可用；不会先打开选择器再假报成功。需要上游提供受认证的桥路由转发后，才能启用。
+- 主机上没有 dsh-go 桥接时（例如配对的电脑没装）不提供 `/dsh-go/*`，因此 `files` 为不可用；不会先打开选择器再假报成功。那台主机装上桥接后即可启用。
 
 Android API 依据：[Storage Access Framework](https://developer.android.com/training/data-storage/shared/documents-files)、[MediaStore Photo Picker](https://developer.android.com/reference/android/provider/MediaStore#ACTION_PICK_IMAGES)、[ContentResolver](https://developer.android.com/reference/android/content/ContentResolver#openAssetFileDescriptor(android.net.Uri,java.lang.String,android.os.CancellationSignal))。本轮通过真实 API jar 编译和跨层自动化测试；系统 UI、厂商提供方、进程重建及 SSH 实机链路仍需设备验证。
 

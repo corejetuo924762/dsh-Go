@@ -30,7 +30,6 @@ HostRef? petActionHost(Object? raw) {
     return switch (m['kind']) {
       'local' when m['id'] == 'local' => HostRef.local,
       'ssh' => HostRef.ssh(m['id'] as String),
-      'relay' => HostRef.relay(m['id'] as String),
       _ => null,
     };
   } catch (_) {
@@ -44,8 +43,6 @@ final petHostChoicesProvider = Provider<List<PetHostChoice>>((ref) {
     (HostRef.local, appL10n.commonThisPhone),
     for (final h in ref.watch(hostsProvider).ssh)
       if (h.hostKeyFingerprint != null) (HostRef.ssh(h.id), hostLabel(HostKind.ssh, h.name)),
-    for (final h in ref.watch(relayAccountProvider).value?.hosts ?? <RelayHost>[])
-      if (h.trust == RelayTrust.pinned) (HostRef.relay(h.id, name: h.name), hostLabel(HostKind.relay, h.name)),
   ];
   return [for (final (host, label) in hosts) PetHostChoice(host, snippet(label, max: 40)!, current: host == current)];
 });

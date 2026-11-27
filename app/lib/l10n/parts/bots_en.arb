@@ -146,7 +146,7 @@
   "botsEventCalledStop": "{name} stopped the work",
   "botsChooseMember": "Choose member",
   "botsMentionMember": "Mention member",
-  "botsRelayUnavailable": "Bots aren’t available over Relay",
+  "botsRelayUnavailable": "Bots aren’t available on this host",
   "botsUseSsh": "Connect to this computer over SSH to use bots",
   "botsTeamLoadFailed": "Couldn’t load the bot team",
   "botsBotCount": "{count, plural, =1{1 bot} other{{count} bots}}",

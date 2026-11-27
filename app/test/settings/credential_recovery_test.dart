@@ -5,7 +5,6 @@ import 'package:dsh_app/forum/forum_auth.dart';
 import 'package:dsh_app/forum/forum_config.dart';
 import 'package:dsh_app/forum/forum_crypto.dart';
 import 'package:dsh_app/l10n/l10n.dart';
-import 'package:dsh_app/remote/relay/dsh_remote_backend.dart';
 import 'package:dsh_app/remote/secret_store.dart';
 import 'package:dsh_app/secrets/secure_storage.dart';
 import 'package:dsh_app/share_hosted/hosted_link.dart';
@@ -30,7 +29,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../account/support.dart' show FakeBrowser;
 import '../engine_settings/support.dart' as engine;
-import '../remote/support/fake_relay.dart';
 import '../shell/golden_harness.dart';
 
 final _zh = lookupL10n(AppLocale.zhCN);
@@ -146,7 +144,6 @@ void main() {
     const PrivacyPage(),
     overrides: [
       ...engine.engineOverrides(DshClient.withCarrier(engine.FakeSettingsHost())),
-      relayBackendProvider.overrideWith((ref) => FakeRelayBackend()),
       operatingSystemProvider.overrideWithValue(os),
     ],
   );
@@ -246,7 +243,6 @@ void main() {
           brightness: Brightness.light,
           overrides: [
             settingsProvider.overrideWith(() => settings),
-            relayBackendProvider.overrideWith((ref) => FakeRelayBackend()),
             operatingSystemProvider.overrideWithValue(os),
           ],
         ),
@@ -334,21 +330,6 @@ void main() {
       expect(find.text(_zh.harmonyCredentialsClearBody), findsNothing);
     });
 
-    for (final code in const ['secrets_unreadable', 'secrets_key_missing', 'secrets_key_unusable']) {
-      test('relay account, $code: says so, and is not retried as a network error', () async {
-        final backend = DshRemoteRelayBackend(secrets: _UnreadableSecrets(code), serverUrl: 'https://relay.example');
-        addTearDown(backend.close);
-        await expectLater(
-          backend.currentUser(),
-          throwsA(
-            isA<HostLinkError>()
-                .having((e) => e.message, 'message', appL10n.harmonyCredentialsUnreadableHint)
-                .having((e) => e.retryable, 'retryable', isFalse),
-          ),
-        );
-      });
-    }
-
     test('forum sign-in: says the keys can\'t be read and where to go', () async {
       final c = ProviderContainer(
         overrides: [
@@ -381,7 +362,6 @@ void main() {
     late _MemoryLinks links;
     late _MemoryKeys keys;
     late MemorySecretStore forum;
-    late List<FakeRelayBackend> relays;
     late int keyPairsMade;
     late ProviderContainer c;
 
@@ -399,7 +379,6 @@ void main() {
       ]);
       keys = _MemoryKeys({'custom': 'old-provider-key'});
       forum = MemorySecretStore({'session:$forumDefaultBaseUrl': '{"key":"old","client":"c"}'});
-      relays = [];
       keyPairsMade = 0;
       FlutterSecureStorage.setMockInitialValues({'deepseek_api_key': 'old-api-key'});
       vault.whenCleared(() {
@@ -418,11 +397,6 @@ void main() {
             keyPairsMade++;
             return generateForumKeyPairSync();
           }),
-          relayBackendProvider.overrideWith((ref) {
-            final relay = FakeRelayBackend(user: relays.isEmpty ? sampleRelayUser : null);
-            relays.add(relay);
-            return relay;
-          }),
         ],
       );
       addTearDown(c.dispose);
@@ -438,17 +412,13 @@ void main() {
       c.listen(settingsProvider, (_, _) {});
       c.listen(hostedLinksProvider, (_, _) {});
       c.listen(forumAuthProvider, (_, _) {});
-      c.listen(relayAccountProvider, (_, _) {});
       await settle();
       expect(c.read(settingsProvider).apiKey, 'old-api-key');
       expect(c.read(settingsProvider).customProviderIds, {'custom'});
       expect(c.read(hostedLinksProvider).links, hasLength(1));
       expect(c.read(forumAuthProvider).signedIn, isTrue);
-      expect(c.read(relayAccountProvider).value?.signedIn, isTrue);
       await c.read(forumAuthProvider.notifier).authorizeUrl();
       expect(keyPairsMade, 1);
-      final relaysBefore = relays.length;
-      c.read(activeHostProvider.notifier).select(const HostRef.relay('r1'));
 
       await c.read(credentialRecoveryProvider).recover();
       await settle();
@@ -459,8 +429,6 @@ void main() {
       expect(c.read(settingsProvider).loaded, isTrue, reason: 'no trip back to the splash');
       expect(c.read(hostedLinksProvider).links, isEmpty);
       expect(c.read(forumAuthProvider).signedIn, isFalse);
-      expect(relays.length, greaterThan(relaysBefore), reason: 'the old account object is gone');
-      expect(c.read(relayAccountProvider).value?.signedIn, isFalse);
       expect(c.read(activeHostProvider), HostRef.local);
 
       // The next save writes what's there now: the old link stays gone, and the

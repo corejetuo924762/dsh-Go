@@ -33,38 +33,9 @@
       }
     }
   },
-  "remoteErrInvalidServer": "服务器地址无效",
-  "remoteErrEmailPassword": "邮箱或密码不对",
-  "remoteErrHostNotInAccount": "账号下找不到这台主机",
-  "remoteHostFallback": "这台主机",
-  "remoteErrHostOffline": "主机现在不在线",
-  "remoteErrHostRemoved": "{name}已不在你的 DSH Remote 账号下",
-  "@remoteErrHostRemoved": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "remoteErrRelaySignInExpired": "DSH Remote 登录已失效",
-  "remoteErrIdentityKeyChanged": "主机身份密钥和上次不一致",
-  "remoteErrIdentityUnconfirmed": "还没有确认主机身份指纹",
-  "remoteErrConnectionReplaced": "远程连接已被替换",
-  "remoteErrHostRejected": "主机拒绝了连接",
-  "remoteErrHostNotOwned": "主机不在你的 DSH Remote 账号下",
-  "remoteErrUpdateNeeded": "版本不匹配，请更新 DSH Go 和主机上的远程插件",
-  "remoteErrVersionIncompatible": "主机上的 DSH 或远程插件需要更新",
-  "remoteErrSignInTimeout": "登录超时",
-  "remoteSignInCancelled": "已取消登录",
-  "remoteErrBrowserSignInUnsupported": "服务器不支持浏览器登录",
-  "remoteErrTooManyRequests": "请求太频繁",
   "remoteErrHostUnreachable": "没能连上远程主机",
   "remoteErrRemoteConnection": "远程连接失败",
-  "remoteOnline": "在线",
-  "remoteOffline": "离线",
   "remoteUnavailable": "暂不可用",
-  "remoteErrHostNotFound": "找不到这台主机",
-  "remoteConnectionStopped": "远程连接已停止",
   "remoteBootstrapReusePort": "复用已在运行的 DSH（端口 {port}）",
   "@remoteBootstrapReusePort": {
     "placeholders": {
@@ -535,25 +506,6 @@
     }
   },
   "remoteHostKeyTrustConnect": "信任并连接",
-  "remoteHostKeyChangedTitle": "身份指纹变了",
-  "remoteRelayKeyChangedBody": "「{name}」的身份密钥和上次不一样。只在确认这台主机重装过远程插件时继续，否则可能有人冒充它。",
-  "@remoteRelayKeyChangedBody": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "remoteRelayKeyFirstBody": "首次连接「{name}」。核对身份指纹，与主机上远程插件显示的一致再继续。",
-  "@remoteRelayKeyFirstBody": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "remoteHostKeyChangeWarning": "之后指纹一旦变化，App 会拒绝连接。",
-  "remoteHostKeyTrustAgain": "重新信任",
   "remoteHostKeyReading": "正在读取主机指纹…",
   "remoteHostSwitcherSemantics": "当前主机：{name}，{status}。切换主机",
   "@remoteHostSwitcherSemantics": {
@@ -568,28 +520,10 @@
   },
   "remoteSwitchHost": "切换主机",
   "remoteThisPhoneDsh": "这台手机上的 DSH",
-  "remoteRemoteLabel": "远程",
-  "remoteRemotePlatform": "远程 · {platform}",
-  "@remoteRemotePlatform": {
-    "placeholders": {
-      "platform": {
-        "type": "String"
-      }
-    }
-  },
-  "remoteRelaySwitchWarning": "DSH Remote 一次只连一台主机，切换会断开上一台",
   "remoteConnectComputer": "连接电脑或服务器",
   "remoteManageHosts": "管理远程主机",
-  "remoteConnectionMethods": "通过 SSH 或 DSH Remote",
-  "remoteRelayLoginRequired": "填写服务器地址、邮箱和密码",
-  "remoteErrSignIn": "没能登录",
-  "remoteSelfHostedServer": "自建服务器",
-  "remoteSelfHostedSignInHelp": "填写服务器地址，可用邮箱密码登录，也可先使用此服务器再选择其他登录方式。",
-  "remoteUseServer": "使用此服务器",
-  "remoteServerAddress": "服务器地址",
-  "remoteEmail": "邮箱",
+  "remoteConnectionMethods": "通过 SSH 或配对电脑",
   "remotePassword": "密码",
-  "remoteRestoreServer": "改回默认服务器 dsh.r2049.cn",
   "remoteConsole": "远程控制台",
   "remoteHostsIntro": "在手机上接着用电脑或服务器上的 DSH",
   "remoteSshHosts": "SSH 主机",
@@ -607,9 +541,7 @@
     }
   },
   "remoteSwitchToPhone": "切回本机",
-  "remoteSignInAgain": "重新登录",
   "remoteHostSettings": "主机设置",
-  "remoteReconnect": "重新连接",
   "remoteReconnectingEllipsis": "重新连接中…",
   "remoteReconnectReason": "重新连接中 · {reason}",
   "@remoteReconnectReason": {
@@ -619,18 +551,6 @@
       }
     }
   },
-  "remoteConnectedEncrypted": "已连接 · 端到端加密",
-  "remoteConnectedVia": "已连接 · {path} · 端到端加密",
-  "@remoteConnectedVia": {
-    "placeholders": {
-      "path": {
-        "type": "String"
-      }
-    }
-  },
-  "remotePathDirect": "直连",
-  "remotePathTurn": "TURN",
-  "remotePathRelay": "Relay 中继",
   "remoteConnectedSsh": "已连接 · SSH {address}",
   "@remoteConnectedSsh": {
     "placeholders": {
@@ -639,38 +559,6 @@
       }
     }
   },
-  "remoteErrRefreshHosts": "没能刷新主机列表",
-  "remoteSwitchWarning": "一次只连一台主机，切换会断开上一台",
-  "remoteHostOfflineHint": "「{name}」现在不在线。在那台电脑上打开 DSH 后再试",
-  "@remoteHostOfflineHint": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "remoteRefreshHosts": "刷新主机列表",
-  "remoteSignOut": "退出",
-  "remoteErrHostsRetry": "没能获取主机列表 · 轻点重试",
-  "remoteNoHosts": "还没有主机",
-  "remoteRelaySetupHelp": "在主机的 DSH 里装好远程插件并登录",
-  "remoteRelaySignOutTitle": "退出 DSH Remote？",
-  "remoteRelaySignOutBody": "这台手机会从账号中移除。主机上的 DSH 和对话不受影响，随时可以重新登录。",
-  "remoteRelaySignInTitle": "登录 DSH Remote",
-  "remoteRelaySignInHelp": "无需配置网络，连接端到端加密",
-  "remoteBrowserSignIn": "在浏览器中登录",
-  "remoteSignInWithProvider": "使用 {provider} 登录",
-  "@remoteSignInWithProvider": {
-    "placeholders": {
-      "provider": {
-        "type": "String"
-      }
-    }
-  },
-  "remoteComingSoon": "即将接入",
-  "remoteSelfHostedEmailSignIn": "自建服务器 · 邮箱登录",
-  "remoteBrowserSignInPending": "在浏览器里完成登录…",
-  "remoteCopySignInLink": "复制登录链接",
   "remoteSshAddressRequired": "填写主机地址（IP 或域名）",
   "remoteSshUsernameRequired": "填写登录用户名",
   "remoteSshPasswordRequired": "填写 SSH 密码，或改用私钥",
@@ -989,34 +877,6 @@
       }
     }
   },
-  "remoteRelayProvider": "服务由 {project} 提供",
-  "@remoteRelayProvider": {
-    "description": "Under the DSH Remote card; project is the upstream GitHub project (liguobao/ds-harness-remote), drawn as a link.",
-    "placeholders": {
-      "project": {
-        "type": "String"
-      }
-    }
-  },
-  "remoteRelayProviderServer": "服务由 {project} 提供 · 当前服务器 {server}",
-  "@remoteRelayProviderServer": {
-    "placeholders": {
-      "project": {
-        "type": "String"
-      },
-      "server": {
-        "type": "String"
-      }
-    }
-  },
-  "remoteQuotedHostName": "「{name}」",
-  "@remoteQuotedHostName": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "remoteErrorDetail": "{message}（{detail}）",
   "@remoteErrorDetail": {
     "placeholders": {
@@ -1028,39 +888,6 @@
       }
     }
   },
-  "remotePathLan": "LAN 局域网",
-  "remotePathP2p": "P2P 点对点",
-  "remoteNetworkDetails": "网络详情",
-  "remoteNetworkAutomatic": "自动依次尝试 LAN → P2P → TURN → Relay，连接全程端到端加密。",
-  "remoteNetworkCurrentPath": "当前路径",
-  "remoteNetworkConnectDuration": "连接耗时",
-  "remoteNetworkRoundTripTime": "往返延迟（RTT）",
-  "remoteNetworkUnmeasured": "未测量",
-  "remoteNetworkUnknownPath": "尚未确认",
-  "remoteNetworkMilliseconds": "{value} 毫秒",
-  "remoteNetworkMeasure": "刷新网络信息 / 测量延迟",
-  "remoteNetworkMeasuring": "正在测量…",
-  "remoteNetworkMeasureFailed": "暂时无法测量，可以稍后重试",
-  "remoteNetworkDisconnected": "连接已断开，重新连接后可测量",
-  "remoteNetworkFallback": "回落原因",
-  "remoteNetworkFallbackUnknown": "直连未能建立，已自动使用可用路径",
-  "remoteNetworkFallbackWebrtcUnavailable": "设备暂不支持 WebRTC，已使用 Relay 中继",
-  "remoteNetworkFallbackDirectFailed": "LAN / P2P 直连未成功，已自动尝试后续路径",
-  "remoteNetworkFallbackDirectTimeout": "LAN / P2P 直连超时，已自动尝试后续路径",
-  "remoteNetworkFallbackDirectRecentlyFailed": "近期直连未成功，本次先使用可用中继",
-  "remoteNetworkFallbackTurnUnavailable": "TURN 服务暂不可用，已使用 Relay 中继",
-  "remoteNetworkFallbackTurnFailed": "TURN 未能连接，已使用 Relay 中继",
-  "remoteNetworkFallbackTurnTimeout": "TURN 连接超时，已使用 Relay 中继",
-  "remoteNetworkFallbackPathUnverified": "尚未确认 WebRTC 路径类型",
-  "@remoteNetworkMilliseconds": {
-    "placeholders": {
-      "value": {
-        "type": "int"
-      }
-    }
-  },
-  "remoteNetworkSnapshotHint": "显示最近一次确认的路径与延迟，刷新可重新检测。",
-  "remoteNetworkObservedAt": "最近观测",
   "remoteHostedLoadFailed": "无法读取已保存的分享链接，请重试。",
   "remoteHostedSaveFailed": "分享链接的更改尚未保存，请重试。",
   "remoteHostedDeleteSaveFailed": "删除未完成，链接仍然有效。请重试。",
@@ -1068,13 +895,6 @@
   "remoteHostedUndoFailed": "无法恢复分享，删除可能已开始。请检查“我的分享链接”。",
   "remoteHostedCreatedUnsaved": "链接已创建，可以复制使用，但尚未保存到本机。请保留链接，并到“我的分享链接”重试保存。",
   "remoteHostedStopFailed": "未能停止分享，链接仍然有效。请重试。",
-  "remoteNetworkLocalIpVersion": "手机 ICE IP 版本",
-  "remoteNetworkRemoteIpVersion": "主机 ICE IP 版本",
-  "remoteNetworkIceProtocol": "ICE 协议",
-  "remoteCompactHistory": "精简历史",
-  "remoteErrHistoryModeChanged": "主机已不支持精简历史，请切换到其他主机后再连回来，或重启 App，重新加载历史",
-  "remoteCompactHistoryHint": "支持的 DSH Remote 主机会精简历史工具详情，实时回复和审批不变。切换主机或重启 App 后生效；旧主机仍传输完整历史。",
-  "searchKwRemoteCompactHistory": "精简 简洁 历史 工具 传输 流量 远程 compact slim lite",
   "pairedErrBanned": "配对尝试次数过多，还需等待 {seconds} 秒",
   "@pairedErrBanned": {
     "placeholders": {

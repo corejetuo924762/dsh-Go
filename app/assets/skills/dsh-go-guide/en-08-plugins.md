@@ -2,7 +2,7 @@
 
 Add abilities to DSH from the plugin market, and turn installed plugins on or off, change their settings or uninstall them. Plugins with a native UI appear above the composer, in the message menu and in panels.
 
-Plugins install on the current host. The top of the page says **Install to: This phone** or the host's name; check it before you go ahead. In Safe mode, over DSH Remote or when not connected, it says why instead.
+Plugins install on the current host. The top of the page says **Install to: This phone** or the host's name; check it before you go ahead. In Safe mode, when the host can't install or when not connected, it says why instead.
 
 ## Plugins page
 
@@ -32,7 +32,7 @@ Web-only plugins are hidden by default; use the button in the market to show the
 - **Uninstall**: in the details, tap **Uninstall** and confirm; you can tap **Undo** on the notice within 4 seconds, and leaving the app uninstalls it at once. The plugin is removed from the host; its data and settings are kept. Sometimes an engine restart is needed to remove it fully.
 - **DSH official** components can be turned on or off but not uninstalled, and the switch applies to every chat on that host.
 
-Over DSH Remote, plugins can only be turned on or off. To install or uninstall, tap **Get install command** or **Get uninstall command** and run it on that computer. Plugins can't be installed or uninstalled in Safe mode.
+When the host can't install from here, plugins can only be turned on or off. To install or uninstall, tap **Get install command** or **Get uninstall command** and run it on that computer. Plugins can't be installed or uninstalled in Safe mode.
 
 ## Edit plugin settings in the app
 
@@ -40,7 +40,7 @@ Enable the plugin, then open **Settings** in its details. When the plugin suppli
 
 Some items can only be edited on the web. Their rows say **Edit this item on the web**; tap one to open the plugin's web settings. Other supported items on the same page remain editable in the app. If the plugin has no usable native settings page, follow its entry to the web interface.
 
-Locked settings, read-only hosts and disconnected hosts can't be edited. If a save fails, check the reason shown on the page and try again. If DSH Web can't be opened over DSH Remote, make the change in DSH Web on that computer.
+Locked settings, read-only hosts and disconnected hosts can't be edited. If a save fails, check the reason shown on the page and try again. If DSH Web can't be opened, make the change in DSH Web on that computer.
 
 ## Native UI
 
@@ -58,7 +58,7 @@ Turn off any of these places in the plugin's details. To turn off the whole plug
 
 The first time a plugin reads your draft, clipboard or a reply, it asks first. It reads only after you tap **Allow**, and only when you tap it. Once allowed, it can't be revoked separately; turn off that place or the plugin instead.
 
-The native UI needs the dsh-go bridge on the host: this phone's engine has it built in, remote hosts usually don't, and it never shows over DSH Remote.
+The native UI needs the dsh-go bridge on the host: this phone's engine has it built in, remote hosts usually don't, and then it doesn't show.
 
 ## DSH Go market
 
@@ -73,4 +73,4 @@ The Official section now includes Images and video, with no npm package name to 
 <!-- nav: commonSettings,mediaSettingsTitle -->
 `Settings › Images and video`
 
-When the plugin is missing, this page also offers installation on the current Host. Configure the provider and key on that page afterwards. Over DSH Remote or in Safe mode, the page explains why direct installation is unavailable.
+When the plugin is missing, this page also offers installation on the current Host. Configure the provider and key on that page afterwards. When the host can't install or in Safe mode, the page explains why direct installation is unavailable.

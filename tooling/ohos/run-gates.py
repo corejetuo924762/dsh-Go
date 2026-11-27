@@ -141,8 +141,7 @@ def verify_flutter_packages(root):
     root = root.resolve()
     config = root / 'app/.dart_tool/package_config.json'
     packages = json.loads(config.read_text())['packages']
-    expected = {'dsh_app': root / 'app', 'dsh_client': root / 'packages/dsh_client',
-                'dsh_remote': root / 'packages/dsh_remote'}
+    expected = {'dsh_app': root / 'app', 'dsh_client': root / 'packages/dsh_client'}
     selected = {}
     for name, wanted in expected.items():
         matches = [entry for entry in packages if entry['name'] == name]

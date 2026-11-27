@@ -25,7 +25,7 @@ enum HostLinkPhase {
   failed,
 }
 
-/// The visible stages of an SSH connect, in order. Relay links use
+/// The visible stages of an SSH connect, in order. A paired link uses
 /// [connect] and [login] only.
 enum HostLinkStep {
   connect,
@@ -77,24 +77,6 @@ class HostLinkError implements Exception {
   String toString() => detail == null ? message : appL10n.remoteErrorDetail(message, detail!);
 }
 
-/// How a DSH Remote tunnel travels: straight to the computer (LAN or P2P),
-/// through a TURN server, or through the Server's relay.
-enum RelayPath {
-  lan,
-  p2p,
-  direct,
-  turn,
-  relay;
-
-  String get label => switch (this) {
-    RelayPath.lan => appL10n.remotePathLan,
-    RelayPath.p2p => appL10n.remotePathP2p,
-    RelayPath.direct => appL10n.remotePathDirect,
-    RelayPath.turn => appL10n.remotePathTurn,
-    RelayPath.relay => appL10n.remotePathRelay,
-  };
-}
-
 enum HostLinkErrorKind {
   unreachable,
   authFailed,
@@ -123,80 +105,11 @@ enum HostLinkDiagnosticCode {
   sshTunnelTimedOut,
   sshTunnelRefused,
   sshTunnelFailed,
-  remoteHostOffline,
-  remoteAccountAuthRequired,
-  remoteDeviceRevoked,
-  remoteTokenExpired,
-  remotePeerIdentityMismatch,
-  remoteHostNotTrusted,
-  remoteConnectionReplaced,
-  remoteConnectionRejected,
-  remoteMembershipRequired,
-  remoteDeviceNotFound,
-  remoteHarnessVersionIncompatible,
-  remoteProtocolMismatch,
-  remoteUnsupportedVersion,
-  remoteCapabilityNotSupported,
-  remoteFrameTooLarge,
-  remoteInvalidMessage,
-  remoteSecureChannelFailed,
-  remoteRpcTimeout,
-  remoteConnectionFailed,
-  remoteRateLimited,
-  remoteHistoryModeChanged,
   pairedUnreachable,
   pairedTicketRejected,
   pairedBanned,
   pairedComputerFailed,
   pairedGatewayRefused,
-}
-
-enum NetworkIpVersion { ipv4, ipv6 }
-
-enum NetworkIceProtocol { udp, tcp }
-
-/// Measured facts for one encrypted Remote connection. Missing values are unknown.
-class RemoteNetworkStatus {
-  const RemoteNetworkStatus({
-    this.path,
-    this.connectDuration,
-    this.roundTripTime,
-    this.fallbackReason,
-    this.observedAt,
-    this.localIpVersion,
-    this.remoteIpVersion,
-    this.iceProtocol,
-  });
-  final RelayPath? path;
-  final Duration? connectDuration;
-  final Duration? roundTripTime;
-  final NetworkIpVersion? localIpVersion;
-  final NetworkIpVersion? remoteIpVersion;
-  final NetworkIceProtocol? iceProtocol;
-
-  /// A fixed code, never an arbitrary transport exception or candidate address.
-  final String? fallbackReason;
-  final DateTime? observedAt;
-
-  String? get safeFallbackReason => fallbackReason == null
-      ? null
-      : const {
-          'webrtcUnavailable',
-          'directFailed',
-          'directTimeout',
-          'directRecentlyFailed',
-          'turnUnavailable',
-          'turnFailed',
-          'turnTimeout',
-          'pathUnverified',
-        }.contains(fallbackReason)
-      ? fallbackReason
-      : 'unknown';
-}
-
-/// Optional support; SSH links and older backends need no synthetic measurements.
-abstract interface class NetworkInspectableHostLink {
-  Future<RemoteNetworkStatus?> inspectNetwork();
 }
 
 class HostLinkStatus {
@@ -208,8 +121,6 @@ class HostLinkStatus {
     this.attempt = 0,
     this.nextRetryAt,
     this.detail,
-    this.path,
-    this.network,
   });
 
   static const idle = HostLinkStatus(HostLinkPhase.idle);
@@ -231,22 +142,6 @@ class HostLinkStatus {
 
   /// Optional one-line progress note ("复用已在运行的 DSH" …).
   final String? detail;
-
-  /// DSH Remote, connected: how the tunnel travels.
-  final RelayPath? path;
-  final RemoteNetworkStatus? network;
-
-  HostLinkStatus withNetwork(RemoteNetworkStatus value) => HostLinkStatus(
-    phase,
-    step: step,
-    completed: completed,
-    error: error,
-    attempt: attempt,
-    nextRetryAt: nextRetryAt,
-    detail: detail,
-    path: value.path,
-    network: value,
-  );
 
   bool get isConnected => phase == HostLinkPhase.connected;
   bool get isBusy => phase == HostLinkPhase.connecting || phase == HostLinkPhase.reconnecting;
@@ -276,7 +171,7 @@ class HostLinkStatus {
   String toString() => 'HostLinkStatus($phase, step: $step, attempt: $attempt, error: $error)';
 }
 
-/// A connection to one non-local DSH host, SSH or relay.
+/// A connection to one non-local DSH host: an SSH host or a paired computer.
 ///
 /// [open] resolves with the first ready [DshClient]; later the link keeps
 /// itself alive (keepalive, network changes, backoff) and publishes a fresh

@@ -5,7 +5,7 @@
 Check the host status at the bottom of the chat list.
 
 - **This phone**: open the engine page and check its status and **Logs**. Not installed, stopped and failed to start are different cases; follow the page. When a start fails, the failure card links to the logs and a diagnostics bundle.
-- **Remote host**: the remote hosts page offers a fix for the cause, such as **Reconnect**, **Sign in again** or **Trust again**.
+- **Remote host**: the remote hosts page offers a fix for the cause, such as **Retry** or **Trust and connect**.
 - If no model is set up, **Choose model** offers to enter an API key or add a provider.
 
 Reset and uninstall both delete data on this phone; you rarely need them to fix a problem.

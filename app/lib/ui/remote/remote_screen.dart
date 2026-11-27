@@ -1,21 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/l10n.dart';
-import '../../remote/relay/relay_backend.dart';
 import '../../runtime/local_footprint.dart';
 import '../../runtime/runtime_state.dart';
-import '../../state/account_api.dart' show AccountProfile;
 import '../../state/app_info.dart';
 import '../../state/connection_state.dart';
 import '../../state/hosts_state.dart';
 import '../../remote/paired/paired_host_store.dart';
 import '../../state/paired_hosts_state.dart';
-import '../account/account_widgets.dart' show AccountAvatar;
-import '../common/app_dialog.dart';
 import '../common/ask_ai.dart';
 import '../common/overview_card.dart';
 import '../common/status_chip.dart';
@@ -27,24 +22,17 @@ import '../web/web_view_page.dart';
 import 'host_key_dialog.dart';
 import 'host_status.dart';
 import 'link_progress.dart';
-import 'network_details_sheet.dart';
 import 'pairing/paired_host_actions.dart';
 import 'pairing/paired_pairing_page.dart';
-import 'pairing_page.dart';
-import 'relay_credit.dart';
-import 'relay_login_sheet.dart';
 import 'ssh_host_form.dart';
-import 'session_backup_page.dart';
 
-/// 远程主机 (a list page): the computers and servers this phone can drive.
+/// 远程主机 (a list page): the computers this phone can drive.
 ///
-/// From the top: the DSH Remote account (李国宝's ds-harness-remote,
-/// end-to-end encrypted relay, no network setup) — who is signed in, or the
-/// way to sign in; the host in use; the account's hosts; SSH hosts
-/// (self-contained: dsh-app starts `dsh web` over SSH and tunnels to it);
-/// then the connection settings and the rest. Picking a host makes it the
-/// active one; the chat and the session list follow. A host's DSH Web opens
-/// from 网页版, as on every host (dsh_web_launcher.dart).
+/// From the top: the host in use; SSH hosts (self-contained: dsh-app starts
+/// `dsh web` over SSH and tunnels to it); the computers paired from their
+/// access links; then the connection settings and the rest. Picking a host
+/// makes it the active one; the chat and the session list follow. A host's DSH
+/// Web opens from 网页版, as on every host (dsh_web_launcher.dart).
 class RemoteScreen extends ConsumerStatefulWidget {
   const RemoteScreen({super.key});
 
@@ -53,17 +41,6 @@ class RemoteScreen extends ConsumerStatefulWidget {
 }
 
 class _RemoteScreenState extends ConsumerState<RemoteScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // The account's hosts as they are now: who came online since the list
-    // was read (it is read once at start). Signed out: nothing to do. After
-    // the first frame: providers can't change while the tree builds.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) unawaited(ref.read(relayAccountProvider.notifier).refresh());
-    });
-  }
-
   void _openConsole() {
     final l10n = context.l10n;
     Navigator.of(context).push(
@@ -99,31 +76,6 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
     if (ok && navigator.mounted) navigator.maybePop();
   }
 
-  /// An offline host may have come online since the list was read: look
-  /// again, then connect, or say it is still offline — or that the look
-  /// failed (the list then still holds the old entry).
-  Future<void> _useOffline(RelayHost host) async {
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    await ref.read(relayAccountProvider.notifier).refresh();
-    if (!mounted) return;
-    final account = ref.read(relayAccountProvider).value;
-    // Signed out meanwhile, or the host left the account: the page shows it.
-    final now = account?.hostById(host.id);
-    if (account == null || !account.signedIn || now == null) return;
-    if (!account.hostsFailed && now.online) {
-      await _use(HostRef.relay(now.id, name: now.name));
-      return;
-    }
-    final l10n = context.l10n;
-    messenger
-      ?..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(account.hostsFailed ? l10n.remoteErrRefreshHosts : l10n.remoteHostOfflineHint(host.name)),
-        ),
-      );
-  }
-
   /// A host added while this phone has nothing to run on (no runtime, first
   /// run) is the one to use: take it at once instead of a second tap.
   Future<void> _addSsh() async {
@@ -140,26 +92,13 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
     final ssh = ref.watch(hostsProvider.select((s) => s.ssh));
     final paired = ref.watch(pairedHostsProvider).records;
     final active = ref.watch(activeHostProvider);
-    final (signedIn, refreshing) = ref.watch(
-      relayAccountProvider.select((a) => (a.value?.signedIn ?? false, a.value?.refreshing ?? false)),
-    );
     void push(Widget page) => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
     return AppPage.list(
       title: l10n.commonRemoteHost,
       subtitle: Text(l10n.remoteHostsIntro),
-      actions: [
-        if (signedIn)
-          GlassIconButton(
-            icon: AppIcons.refresh,
-            tooltip: l10n.remoteRefreshHosts,
-            onPressed: refreshing ? null : () => unawaited(ref.read(relayAccountProvider.notifier).refresh()),
-          ),
-        const AskAiButton(AskAiTopic.remote),
-      ],
+      actions: [const AskAiButton(AskAiTopic.remote)],
       children: [
-        const _AccountCard(),
         _ActiveCard(active: active),
-        if (signedIn) _RelayHostsSection(onUse: (h) => unawaited(_use(h)), onOffline: _useOffline),
         SettingsSection(
           title: l10n.remoteSshHosts,
           footer: Text(l10n.remoteSshRequirements),
@@ -181,7 +120,7 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
           ],
         ),
         // Paired computers stand next to SSH hosts: a phone reaches either the
-        // same way, and neither needs the DSH Remote account.
+        // same way, and neither needs an account.
         SettingsSection(
           title: l10n.remotePairedComputers,
           footer: Text(l10n.remotePairedComputersHint),
@@ -206,7 +145,7 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
           title: l10n.remoteConnectionSettings,
           children: [
             // Only meaningful once there is a host to come back to.
-            if (ssh.isNotEmpty || signedIn)
+            if (ssh.isNotEmpty || paired.isNotEmpty)
               SettingsSwitchTile(
                 key: const ValueKey('remote-auto-connect'),
                 spot: Spots.remoteAutoConnect,
@@ -214,25 +153,11 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
                 value: ref.watch(remoteAutoConnectProvider),
                 onChanged: (value) => unawaited(ref.read(remoteAutoConnectProvider.notifier).set(value)),
               ),
-            // Always here: settings search lands on it, signed in or not.
-            SettingsSwitchTile(
-              key: const ValueKey('remote-compact-history'),
-              spot: Spots.remoteCompactHistory,
-              subtitle: l10n.remoteCompactHistoryHint,
-              value: ref.watch(remoteCompactHistoryProvider),
-              onChanged: (value) => unawaited(ref.read(remoteCompactHistoryProvider.notifier).set(value)),
-            ),
           ],
         ),
         SettingsSection(
           title: l10n.commonMore,
           children: [
-            SettingsTile(
-              icon: AppIcons.save,
-              tinted: false,
-              spot: Spots.remoteSessionBackup,
-              onTap: () => push(const SessionBackupPage()),
-            ),
             SettingsTile(
               icon: AppIcons.webConsole,
               tinted: false,
@@ -244,80 +169,6 @@ class _RemoteScreenState extends ConsumerState<RemoteScreen> {
         ),
       ],
     );
-  }
-}
-
-/// The DSH Remote account, first on the page and on its own: who is signed
-/// in (and the way out), or the sign-in card.
-class _AccountCard extends ConsumerWidget {
-  const _AccountCard();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final async = ref.watch(relayAccountProvider);
-    final account = async.value ?? const RelayAccountState();
-    final user = account.user;
-    if (user == null) {
-      // Known before the stored sign-in has been read.
-      final available = ref.watch(relayBackendProvider).available;
-      final server = account.server;
-      return SettingsSection(
-        title: 'DSH Remote',
-        // The credit's link takes taps in the margin below it, so it carries it.
-        margin: available ? RelayCredit.sectionMargin : kSettingsGroupMargin,
-        footer: available
-            ? RelayCredit(server: server.isEmpty || server == 'dsh.r2049.cn' ? null : server)
-            : Text(l10n.remoteUnavailable),
-        children: [_LoginCard(account: account, available: available, loading: async.isLoading && !async.hasValue)],
-      );
-    }
-    return OverviewCard(
-      key: const ValueKey('remote-account'),
-      leading: AccountAvatar(
-        profile: AccountProfile(id: user.id, name: user.displayName),
-        size: OverviewCard.avatarSize,
-      ),
-      title: Text(user.displayName),
-      subtitle: Text(
-        [
-          'DSH Remote',
-          if (user.provider case final p?) _providerName(p),
-          // A self-hosted server is worth naming; the official one goes without.
-          if (account.server.isNotEmpty && account.server != 'dsh.r2049.cn') account.server,
-        ].join(' · '),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: _EdgeTextButton(
-        label: l10n.remoteSignOut,
-        onPressed: () => _confirmLogout(context, ref.read(relayAccountProvider.notifier)),
-      ),
-    );
-  }
-
-  static String _providerName(String p) => switch (p) {
-    'github' => 'GitHub',
-    'zhihu' => appL10n.brandZhihu,
-    'google' => 'Google',
-    'password' => appL10n.remoteEmail,
-    _ => p,
-  };
-
-  Future<void> _confirmLogout(BuildContext context, RelayAccountController notifier) async {
-    final l10n = context.l10n;
-    final ok = await showAppDialog<bool>(
-      context: context,
-      builder: (dialog) => AlertDialog(
-        title: Text(l10n.remoteRelaySignOutTitle),
-        content: Text(l10n.remoteRelaySignOutBody),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialog, false), child: Text(l10n.commonCancel)),
-          FilledButton(onPressed: () => Navigator.pop(dialog, true), child: Text(l10n.remoteSignOut)),
-        ],
-      ),
-    );
-    if (ok == true) await notifier.logout();
   }
 }
 
@@ -337,13 +188,8 @@ class _ActiveCard extends ConsumerWidget {
     final name = ref.watch(hostNameProvider(active)) ?? l10n.commonRemoteHost;
     final ssh = active.kind == HostKind.ssh ? ref.watch(hostsProvider).sshById(active.id) : null;
     final error = status.error;
-    // Errors a retry can't fix go to the host's settings (SSH) or the trust
-    // check (relay) instead.
-    final needsLogin = active.kind == HostKind.relay && error?.kind == HostLinkErrorKind.notLoggedIn;
+    // Errors a retry can't fix go to the host's settings (SSH).
     final needsSettings = ssh != null && error != null && !error.retryable;
-    final needsTrust =
-        active.kind == HostKind.relay &&
-        (error?.kind == HostLinkErrorKind.hostKeyMismatch || error?.kind == HostLinkErrorKind.hostKeyUnverified);
     void reconnect() => ref.read(remoteConnectionProvider(active).notifier).retry();
     final failed = status.phase == HostLinkPhase.failed && error != null;
     // No runtime on this phone: 本机 is nowhere to go back to.
@@ -351,23 +197,14 @@ class _ActiveCard extends ConsumerWidget {
     return OverviewCard(
       leading: OverviewGlyph(hostKindIcon(active.kind), tint: hostKindTint(active.kind)),
       title: Text(l10n.remoteActiveHost(name)),
-      subtitle: InkWell(
-        onTap: active.kind == HostKind.relay && status.isConnected
-            ? () => showRemoteNetworkDetails(context, active)
-            : null,
-        child: Row(
-          children: [
-            AnimatedStatusDot(tone: view.tone, size: 7),
-            const SizedBox(width: 6),
-            Flexible(
-              child: Text(_statusLine(status, view, ssh?.address), maxLines: 1, overflow: TextOverflow.ellipsis),
-            ),
-            if (active.kind == HostKind.relay && status.isConnected) ...[
-              const SizedBox(width: 6),
-              Tooltip(message: l10n.remoteNetworkDetails, child: const Icon(AppIcons.info, size: 16)),
-            ],
-          ],
-        ),
+      subtitle: Row(
+        children: [
+          AnimatedStatusDot(tone: view.tone, size: 7),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(_statusLine(status, view, ssh?.address), maxLines: 1, overflow: TextOverflow.ellipsis),
+          ),
+        ],
       ),
       trailing: canGoLocal
           ? _EdgeTextButton(
@@ -380,45 +217,14 @@ class _ActiveCard extends ConsumerWidget {
               padding: const EdgeInsets.only(left: OverviewCard.inset, right: OverviewCard.inset - 12),
               child: LinkErrorBox(
                 error: error,
-                action: needsLogin
-                    ? (
-                        l10n.remoteSignInAgain,
-                        () async {
-                          if (ref.read(relayAccountProvider).value?.user?.provider == 'password') {
-                            final backend = ref.read(relayBackendProvider);
-                            final signedIn = await showSelfHostedLogin(
-                              context,
-                              initialServer: ref.read(relayServerProvider) ?? defaultRelayServer,
-                            );
-                            if (signedIn == true &&
-                                context.mounted &&
-                                ref.read(activeHostProvider) == active &&
-                                identical(backend, ref.read(relayBackendProvider))) {
-                              reconnect();
-                            }
-                            return;
-                          }
-                          await ref.read(relayAccountProvider.notifier).login();
-                          if (context.mounted && (ref.read(relayAccountProvider).value?.signedIn ?? false)) reconnect();
-                        },
-                      )
-                    : needsSettings
+                action: needsSettings
                     ? (
                         l10n.remoteHostSettings,
                         () =>
                             Navigator.of(context)
                                 .push(MaterialPageRoute<void>(builder: (_) => SshHostFormPage(existing: ssh))),
                       )
-                    : needsTrust
-                    ? (
-                        l10n.remoteHostKeyTrustAgain,
-                        () async {
-                          if (await activateHost(context, ref, active)) {
-                            reconnect();
-                          }
-                        },
-                      )
-                    : (active.kind == HostKind.relay ? l10n.remoteReconnect : l10n.commonRetry, reconnect),
+                    : (l10n.commonRetry, reconnect),
               ),
             )
           : null,
@@ -432,8 +238,7 @@ class _ActiveCard extends ConsumerWidget {
     }
     if (status.phase == HostLinkPhase.connected) {
       if (address != null) return appL10n.remoteConnectedSsh(address);
-      final path = status.network?.path ?? status.path;
-      return path == null ? appL10n.remoteConnectedEncrypted : appL10n.remoteConnectedVia(path.label);
+      return appL10n.remoteConnected;
     }
     return view.label;
   }
@@ -542,64 +347,6 @@ class _SshRow extends ConsumerWidget {
   }
 }
 
-// ── DSH Remote hosts ─────────────────────────────────────────────────────────
-
-/// The signed-in account's hosts (the account itself is [_AccountCard]).
-class _RelayHostsSection extends ConsumerWidget {
-  const _RelayHostsSection({required this.onUse, required this.onOffline});
-
-  final ValueChanged<HostRef> onUse;
-  final ValueChanged<RelayHost> onOffline;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final account = ref.watch(relayAccountProvider).value ?? const RelayAccountState();
-    final active = ref.watch(activeHostProvider);
-    final notifier = ref.read(relayAccountProvider.notifier);
-    return SettingsSection(
-      title: 'DSH Remote',
-      footer: account.hostsFailed && account.hosts.isNotEmpty
-          ? Text(l10n.remoteErrRefreshHosts, style: TextStyle(color: DshColors.of(context).danger))
-          : account.hosts.length > 1
-          ? Text(l10n.remoteSwitchWarning)
-          : null,
-      children: [
-        if (account.hosts.isEmpty && account.hostsFailed)
-          SettingsTile(
-            icon: AppIcons.refresh,
-            tinted: false,
-            title: l10n.remoteErrHostsRetry,
-            onTap: () => unawaited(notifier.refresh()),
-          )
-        else if (account.hosts.isEmpty)
-          SettingsTile(
-            icon: AppIcons.computer,
-            tinted: false,
-            title: l10n.remoteNoHosts,
-            subtitle: l10n.remoteRelaySetupHelp,
-          )
-        else
-          for (final h in account.hosts)
-            _RelayRow(
-              host: h,
-              active: active == HostRef.relay(h.id),
-              onTap: h.online || active == HostRef.relay(h.id)
-                  ? () => onUse(HostRef.relay(h.id, name: h.name))
-                  : () => onOffline(h),
-            ),
-        if (ref.watch(relayPairingSupportProvider).value ?? false)
-          SettingsTile(
-            icon: AppIcons.qrCode,
-            tinted: false,
-            title: l10n.remotePairAddComputer,
-            onTap: () => Navigator.of(context).push(RemotePairingPage.route()),
-          ),
-      ],
-    );
-  }
-}
-
 /// A paired computer: the name the person gave it and the address its link
 /// named. No fingerprint, and no confirmation on the first connect — pairing
 /// already said which computer this is.
@@ -640,217 +387,6 @@ class _PairedRow extends ConsumerWidget {
                   Text(view.label),
                 ],
               ),
-        trailing: active ? Icon(AppIcons.selected, size: 20, color: scheme.primary) : const SizedBox(width: 20),
-        chevron: false,
-      ),
-    );
-  }
-}
-
-/// GitHub first (the usual way in), then the Server's own order.
-List<RelayAuthProvider> _orderedProviders(List<RelayAuthProvider> providers) => [
-  for (final p in providers)
-    if (p.id == 'github') p,
-  for (final p in providers)
-    if (p.id != 'github') p,
-];
-
-class _LoginCard extends ConsumerWidget {
-  const _LoginCard({required this.account, required this.available, required this.loading});
-
-  final RelayAccountState account;
-  final bool available;
-  final bool loading;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = DshColors.of(context);
-    final notifier = ref.read(relayAccountProvider.notifier);
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(SettingsMetrics.inset, 12, SettingsMetrics.inset, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              const SettingsIcon(AppIcons.lock, tint: 1),
-              const SizedBox(width: SettingsMetrics.iconGap),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.remoteRelaySignInTitle, style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 1),
-                    Text(
-                      l10n.remoteRelaySignInHelp,
-                      style: theme.textTheme.bodySmall?.copyWith(color: colors.textTertiary),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          if (!account.loggingIn && available && (ref.watch(relayPairingSupportProvider).value ?? false)) ...[
-            FilledButton.tonalIcon(
-              onPressed: () => Navigator.of(context).push(RemotePairingPage.route()),
-              icon: const Icon(AppIcons.qrCode, size: 18),
-              label: Text(l10n.remotePairEntry),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 6, 4, 12),
-              child: Text(
-                l10n.remotePairEntryHint,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(color: colors.textTertiary),
-              ),
-            ),
-          ],
-          if (account.loggingIn)
-            _Waiting(url: account.loginUrl, onCancel: notifier.cancelLogin)
-          else if (account.providers.isEmpty)
-            // No provider list (a Server too old to list them, or unreachable):
-            // one generic browser sign-in.
-            FilledButton.icon(
-              onPressed: available && !loading ? () => unawaited(notifier.login()) : null,
-              icon: const Icon(AppIcons.openExternal, size: 18),
-              label: Text(available ? l10n.remoteBrowserSignIn : l10n.remoteComingSoon),
-            )
-          else
-            ..._signInButtons(context, account, notifier, enabled: available && !loading),
-          if (account.error case final e?) ...[
-            const SizedBox(height: 10),
-            Text(e, style: theme.textTheme.bodySmall?.copyWith(color: colors.danger)),
-          ],
-          if (available)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Center(
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: colors.textTertiary,
-                    minimumSize: const Size(0, 36),
-                    textStyle: theme.textTheme.labelMedium,
-                  ),
-                  onPressed: account.loggingIn ? null : () => showSelfHostedLogin(context),
-                  child: Text(l10n.remoteSelfHostedEmailSignIn),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-/// One button per sign-in provider: the first (GitHub, see
-/// [_orderedProviders]) is the page's filled action, the rest stay tonal.
-List<Widget> _signInButtons(
-  BuildContext context,
-  RelayAccountState account,
-  RelayAccountController notifier, {
-  required bool enabled,
-}) {
-  final l10n = context.l10n;
-  final providers = _orderedProviders(account.providers);
-  VoidCallback? tap(RelayAuthProvider provider) =>
-      enabled ? () => unawaited(notifier.login(providerId: provider.id)) : null;
-  const icon = Icon(AppIcons.openExternal, size: 18);
-  return [
-    for (final (i, provider) in providers.indexed) ...[
-      if (i > 0) const SizedBox(height: 8),
-      if (i == 0)
-        FilledButton.icon(
-          onPressed: tap(provider),
-          icon: icon,
-          label: Text(l10n.remoteSignInWithProvider(provider.displayName)),
-        )
-      else
-        FilledButton.tonalIcon(
-          onPressed: tap(provider),
-          icon: icon,
-          label: Text(l10n.remoteSignInWithProvider(provider.displayName)),
-        ),
-    ],
-  ];
-}
-
-class _Waiting extends StatelessWidget {
-  const _Waiting({required this.url, required this.onCancel});
-
-  final Uri? url;
-  final VoidCallback onCancel;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final colors = DshColors.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2.2)),
-            const SizedBox(width: 12),
-            Expanded(child: Text(l10n.remoteBrowserSignInPending, style: theme.textTheme.bodyMedium)),
-            TextButton(onPressed: onCancel, child: Text(l10n.commonCancel)),
-          ],
-        ),
-        if (url case final u?)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              style: TextButton.styleFrom(foregroundColor: colors.textTertiary, padding: EdgeInsets.zero),
-              onPressed: () => Clipboard.setData(ClipboardData(text: u.toString())),
-              icon: const Icon(AppIcons.copy, size: 15),
-              label: Text(l10n.remoteCopySignInLink),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-class _RelayRow extends ConsumerWidget {
-  const _RelayRow({required this.host, required this.active, required this.onTap});
-
-  final RelayHost host;
-  final bool active;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final scheme = Theme.of(context).colorScheme;
-    final hostRef = HostRef.relay(host.id, name: host.name);
-    final status = active ? ref.watch(hostLinkStatusProvider(hostRef)).value : null;
-    final view = status == null ? HostStatusView.ofRelayHost(host) : HostStatusView.ofLink(status);
-    return Semantics(
-      key: ValueKey('remote-row-${host.id}'),
-      selected: active,
-      inMutuallyExclusiveGroup: true,
-      child: SettingsTile(
-        icon: hostKindIcon(HostKind.relay),
-        tinted: false,
-        title: host.name,
-        subtitle: host.subtitle,
-        onTap: onTap,
-        value: KeyedSubtree(
-          key: ValueKey('remote-status-${host.id}'),
-          child: status?.isConnected == true
-              ? Tooltip(
-                  message: context.l10n.remoteNetworkDetails,
-                  child: TextButton.icon(
-                    key: ValueKey('remote-network-${host.id}'),
-                    onPressed: () => showRemoteNetworkDetails(context, hostRef),
-                    icon: const Icon(AppIcons.info, size: 16),
-                    label: Text((status!.network?.path ?? status.path)?.label ?? context.l10n.remoteNetworkDetails),
-                  ),
-                )
-              : _HostState(view),
-        ),
         trailing: active ? Icon(AppIcons.selected, size: 20, color: scheme.primary) : const SizedBox(width: 20),
         chevron: false,
       ),

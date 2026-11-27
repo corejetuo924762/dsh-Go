@@ -26,7 +26,7 @@ import '../diagnostics/support/zip_reader.dart';
 const _session = 'SYNTHETIC_SESSION_PRIVATE';
 const _text = 'SYNTHETIC_PROMPT_PRIVATE';
 const _ssh = HostRef.ssh('SYNTHETIC_HOST_SSH_PRIVATE');
-const _relay = HostRef.relay('SYNTHETIC_HOST_RELAY_PRIVATE', name: 'SYNTHETIC_RELAY_NAME_PRIVATE');
+const _relay = HostRef.paired('SYNTHETIC_HOST_RELAY_PRIVATE', name: 'SYNTHETIC_RELAY_NAME_PRIVATE');
 const _writerHeld = DshRemoteException(
   'session/writer-held',
   'SYNTHETIC_MESSAGE_PRIVATE token=SYNTHETIC_TOKEN_PRIVATE',

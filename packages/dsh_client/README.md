@@ -19,7 +19,7 @@ Pure-Dart client for the DeepSeek Harness `dsh web` API. It is verified against 
 // Local engine (unchanged):
 final local = await DshClient.connect(launchUrl: 'dsh web: http://127.0.0.1:3080/?token=…');
 
-// Any other carrier, e.g. the encrypted remote tunnel from package:dsh_remote:
+// Any other carrier, e.g. an SSH tunnel or a paired computer:
 final client = await DshClient.connectCarrier(myCarrier);   // or DshClient.withCarrier(myCarrier)
 ```
 

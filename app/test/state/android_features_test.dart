@@ -1,15 +1,11 @@
 // A build on an OS without Android's own concepts (HarmonyOS): none of them
 // show anywhere, in the hub, 全部功能, search, links, the pages that mention
-// them or first run; the relay goes straight to its server. And on Android,
-// every one is still there.
+// them or first run. And on Android, every one is still there.
 
 import 'package:dsh_app/links/page_links.dart';
 import 'package:dsh_app/l10n/l10n.dart';
 import 'package:dsh_app/pets/pet_prefs.dart';
 import 'package:dsh_app/pets/pet_signals.dart';
-import 'package:dsh_app/remote/relay/dsh_remote_backend.dart';
-import 'package:dsh_app/remote/relay/webrtc_peer.dart';
-import 'package:dsh_app/remote/secret_store.dart';
 import 'package:dsh_app/runtime/runtime_bridge.dart';
 import 'package:dsh_app/runtime/runtime_state.dart';
 import 'package:dsh_app/state/android_features.dart';
@@ -718,40 +714,9 @@ void main() {
     });
   });
 
-  group('relay', () {
-    DshRemoteRelayBackend backend({required bool webRtc}) {
-      final container = ProviderContainer(
-        overrides: [
-          secretStoreProvider.overrideWithValue(MemorySecretStore()),
-          webRtcAvailableProvider.overrideWithValue(webRtc),
-        ],
-      );
-      addTearDown(container.dispose);
-      return container.read(relayBackendProvider) as DshRemoteRelayBackend;
-    }
-
-    test('on Android: direct first', () {
-      final relay = backend(webRtc: true);
-      expect(relay.peerConnector, flutterPeerConnector);
-      expect(relay.account.peerConnector, flutterPeerConnector);
-    });
-
-    test('on HarmonyOS: straight to the relay', () {
-      final relay = backend(webRtc: false);
-      expect(relay.peerConnector, isNull);
-      expect(relay.account.peerConnector, isNull);
-    });
-  });
-
   test("Android's own system features stay off HarmonyOS and iOS", () {
     expect(androidSystemFeaturesOn('android'), isTrue);
     expect(androidSystemFeaturesOn('ohos'), isFalse);
     expect(androidSystemFeaturesOn('ios'), isFalse);
-  });
-
-  test('turning those off on iOS leaves its WebRTC path alone', () {
-    expect(webRtcOn('android'), isTrue);
-    expect(webRtcOn('ios'), isTrue);
-    expect(webRtcOn('ohos'), isFalse);
   });
 }

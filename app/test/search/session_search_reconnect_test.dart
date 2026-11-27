@@ -5,7 +5,9 @@ import 'package:dsh_app/runtime/runtime_bridge.dart';
 import 'package:dsh_app/runtime/runtime_state.dart';
 import 'package:dsh_app/share_code/guest_fs.dart';
 import 'package:dsh_app/state/connection_state.dart';
+import 'package:dsh_app/remote/paired/paired_host_store.dart';
 import 'package:dsh_app/state/hosts_state.dart';
+import 'package:dsh_app/state/paired_hosts_state.dart';
 import 'package:dsh_app/state/session_search.dart';
 import 'package:dsh_app/state/settings_state.dart';
 import 'package:dsh_client/dsh_client.dart';
@@ -70,11 +72,23 @@ class _Client extends DshClient {
   }
 }
 
-const _remoteHost = HostRef.relay('metadata-fixture');
+const _remoteHost = HostRef.paired('metadata-fixture');
 
 class _RemoteHost extends ActiveHostController {
   @override
   HostRef build() => _remoteHost;
+}
+
+/// The paired record [_remoteHost] names: without it the host reads as
+/// unknown and `activeConnectionProvider` answers null instead of the link.
+class _Paired extends PairedHostsController {
+  @override
+  PairedHostsState build() => PairedHostsState(
+    records: [
+      PairedHostRecord(id: _remoteHost.id, entry: DshPairingEntry.lan(Uri.parse('http://127.0.0.1:3080'))),
+    ],
+    loaded: true,
+  );
 }
 
 class _Link extends HostLink {
@@ -254,6 +268,7 @@ void main() {
     final link = _Link(client);
     overrides(String name) => [
       activeHostProvider.overrideWith(_RemoteHost.new),
+      pairedHostsProvider.overrideWith(_Paired.new),
       hostLinkProvider(_remoteHost).overrideWithValue(link),
       hostNameProvider(_remoteHost).overrideWithValue(name),
     ];
@@ -285,6 +300,7 @@ void main() {
     final link = _Link(client, openGate: opening);
     overrides(String name) => [
       activeHostProvider.overrideWith(_RemoteHost.new),
+      pairedHostsProvider.overrideWith(_Paired.new),
       hostLinkProvider(_remoteHost).overrideWithValue(link),
       hostNameProvider(_remoteHost).overrideWithValue(name),
     ];
@@ -320,6 +336,7 @@ void main() {
       HostLink selectedLink = withPrevious ? initialLink : retryLink;
       final overrides = [
         activeHostProvider.overrideWith(_RemoteHost.new),
+      pairedHostsProvider.overrideWith(_Paired.new),
         hostNameProvider(_remoteHost).overrideWithValue('retry fixture'),
         hostLinkProvider(_remoteHost).overrideWith((ref) {
           final link = selectedLink;

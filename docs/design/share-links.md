@@ -56,7 +56,7 @@ App（分享面板「链接」）
 - 算法：AES-256-GCM，IV 12 字节随机，无 AAD，tag 16 字节。
 - 存储格式：`"DSG1"` ‖ IV ‖ 密文（含 tag）。
 - 密钥：32 字节随机，base64url 无填充（43 字符），只出现在 `#k=` 里。每条链接一把新密钥。
-- App 实现：`package:cryptography` 的纯 Dart 实现（`DartAesGcm`，和 `packages/dsh_remote` 一样），测试和后台 isolate 里行为一致；4 MB 文件加密约 0.25 秒（桌面 JIT），256 KB 以上放到后台 isolate。
+- App 实现：`package:cryptography` 的纯 Dart 实现（`DartAesGcm`），测试和后台 isolate 里行为一致；4 MB 文件加密约 0.25 秒（桌面 JIT），256 KB 以上放到后台 isolate。
 - 互通：`app/test/share_hosted/fixtures/webcrypto_vectors.json` 是 node WebCrypto 生成的向量，Dart 逐字节一致；反方向由测试调用 node（WebCrypto + `site/share/viewer.js`）解开 App 加密的结果。
 - 解包上限 64 MB（防 gzip 炸弹）。
 

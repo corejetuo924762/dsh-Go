@@ -393,7 +393,7 @@
   },
   "botsChooseMember": "选择成员",
   "botsMentionMember": "提到成员",
-  "botsRelayUnavailable": "经中转连接时用不了 Bot",
+  "botsRelayUnavailable": "这台主机用不了 Bot",
   "botsUseSsh": "用 SSH 连接这台电脑即可使用",
   "botsTeamLoadFailed": "没能读取 Bot 团队",
   "botsBotCount": "{count} 个 Bot",

@@ -13,8 +13,8 @@
 /// frames for one link and report when that link is gone.
 ///
 /// [DshHttpCarrier] is the default (`POST /api/<endpoint>` +
-/// `/api/remote.mux` over a [DshConnection]); `package:dsh_remote` adds an
-/// end-to-end encrypted tunnel carrier.
+/// `/api/remote.mux` over a [DshConnection]); the app adds carriers of its
+/// own for SSH tunnels and paired computers.
 library;
 
 import 'dart:async';

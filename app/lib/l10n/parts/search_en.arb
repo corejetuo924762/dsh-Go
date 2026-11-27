@@ -33,7 +33,7 @@
   "searchKwPlugins": "extensions,market,install,marketplace",
   "searchKwAllFeatures": "features,catalog,everything",
   "searchKwAccount": "account,balance,top up,sign in,sign out,api key,usage,DeepSeek",
-  "searchKwRemote": "remote,ssh,computer,server,DSH Remote,connect",
+  "searchKwRemote": "remote,ssh,computer,server,connect",
   "searchKwPermission": "permissions,approval,don't ask,read only,full access,auto-run commands",
   "searchKwAgentPresets": "presets,mode,agent mode",
   "searchKwUiMode": "native,web,web mode,interface",

@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:dsh_app/remote/relay/relay_backend.dart';
 import 'package:dsh_app/state/connection_state.dart';
 import 'package:dsh_app/state/draft_store.dart';
 import 'package:dsh_app/state/hosts_state.dart';
+import 'package:dsh_app/state/paired_hosts_state.dart';
 import 'package:dsh_app/state/sessions_state.dart';
 import 'package:dsh_app/state/voice_settings.dart';
 import 'package:dsh_app/state/voice_state.dart';
@@ -19,15 +19,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../plugins/support/fake_plugin_host.dart' show FakeMuxLink;
-import '../remote/support/fake_relay.dart';
+import '../remote/support/fake_host_link.dart';
 import 'support/composer_fakes.dart';
 import 'support/harness.dart';
 
-const _host = HostRef.relay('mac');
-
 class _SelectedHost extends ActiveHostController {
+  _SelectedHost(this.initial);
+
+  final HostRef initial;
+
   @override
-  HostRef build() => _host;
+  HostRef build() => initial;
 }
 
 class _Wire extends FakeRpcCarrier {
@@ -41,17 +43,11 @@ class _Wire extends FakeRpcCarrier {
   Future<void> close() async => closed = true;
 }
 
-class _Relay extends FakeRelayBackend {
-  _Relay() : super(user: sampleRelayUser);
-  late RelayStateCallback stateChanged;
+class _Link extends FakeHostLink {
   final wires = <DshClient, _Wire>{};
 
   @override
-  Future<DshClient> connectHost(RelayHost host, {RelayStateCallback? onState}) async {
-    stateChanged = onState!;
-    onState(RelayConnectionState.connecting, null);
-    onState(RelayConnectionState.handshaking, null);
-    connected.add(host.id);
+  Future<DshClient> connect() async {
     final wire = _Wire();
     final client = DshClient.withCarrier(wire);
     wires[client] = wire;
@@ -71,12 +67,14 @@ class _Bridge extends FakeVoiceBridge {
 }
 
 class _Scene {
-  _Scene(this.backend, this.link, this.bridge, this.container, this.published);
-  final _Relay backend;
-  final RelayHostLink link;
+  _Scene(this.link, this.bridge, this.container, this.published, this.host);
+  final _Link link;
   final _Bridge bridge;
   final ProviderContainer container;
   final List<DshClient> published;
+
+  /// The paired computer under test.
+  final HostRef host;
 
   DshClient get client => container.read(activeConnectionProvider).requireValue!.client;
   Composer composer(WidgetTester tester) => tester.widget<Composer>(find.byType(Composer));
@@ -90,8 +88,9 @@ class _Scene {
     SharedPreferences.setMockInitialValues({VoiceSettingsController.preferenceKey: mode.name});
     usePhoneView(tester);
     mockClipboard(tester);
-    final backend = _Relay();
-    final link = RelayHostLink(backend: backend, hostId: _host.id, resolveHost: () async => sampleRelayHosts.first);
+    final paired = FakePairedHosts();
+    final host = paired.host;
+    final link = _Link();
     final bridge = _Bridge();
     final published = <DshClient>[];
     final subscription = link.clients.listen(published.add);
@@ -108,7 +107,8 @@ class _Scene {
         overrides: [
           for (final override in harness.overrides)
             if (override.origin != activeConnectionProvider) override,
-          activeHostProvider.overrideWith(_SelectedHost.new),
+          activeHostProvider.overrideWith(() => _SelectedHost(host)),
+          pairedHostsProvider.overrideWith(() => paired),
           hostLinkProvider.overrideWith((ref, host) => link),
           hostNameProvider.overrideWith((ref, host) => 'Workstation'),
           voiceBridgeProvider.overrideWithValue(bridge),
@@ -116,9 +116,9 @@ class _Scene {
       ),
     );
     final container = ProviderScope.containerOf(tester.element(find.byType(ChatScreen)));
-    await container.read(remoteConnectionProvider(_host).future);
+    await container.read(remoteConnectionProvider(host).future);
     await pumpFrames(tester);
-    final scene = _Scene(backend, link, bridge, container, published);
+    final scene = _Scene(link, bridge, container, published, host);
     await scene.voice(tester).refresh();
     return scene;
   }
@@ -131,19 +131,18 @@ class _Scene {
   }
 
   Future<void> reconnect(WidgetTester tester) async {
-    final before = client;
+    final before = link.currentClient!;
     final screen = tester.state(find.byType(ChatScreen));
     final controller = voice(tester);
-    backend.stateChanged(RelayConnectionState.failed, const HostLinkError(HostLinkErrorKind.other, 'closed'));
-    container.read(remoteConnectionProvider(_host).notifier).retry();
-    final replacement = await container.read(remoteConnectionProvider(_host).future);
-    await tester.pump();
-    await tester.pump();
+    link.drop();
+    container.read(remoteConnectionProvider(host).notifier).retry();
+    final replacement = await container.read(remoteConnectionProvider(host).future);
+    await pumpFrames(tester);
     expect(replacement!.client, isNot(same(before)));
     expect(client, same(replacement.client));
     expect(published, contains(same(replacement.client)));
-    expect(backend.wires[before]!.closed, isTrue);
-    expect(container.read(activeHostProvider), _host);
+    expect(link.wires[before]!.closed, isTrue);
+    expect(container.read(activeHostProvider), host);
     expect(container.read(currentSessionProvider), 'first-chat');
     expect(tester.state(find.byType(ChatScreen)), same(screen));
     expect(voice(tester), same(controller));
@@ -174,7 +173,7 @@ void main() {
       expect(scene.container.read(draftStoreProvider).drafts['first-chat']?.text, 'completed words');
       expect(scene.bridge.calls.where((call) => call == 'recognizer'), hasLength(1));
       expect(
-        scene.backend.wires.values.expand((wire) => wire.calls).where((call) => call.$1.startsWith('speech/')),
+        scene.link.wires.values.expand((wire) => wire.calls).where((call) => call.$1.startsWith('speech/')),
         isEmpty,
       );
       expect(tester.takeException(), isNull);
@@ -271,7 +270,7 @@ void main() {
     expect(scene.voice(tester).phase, VoicePhase.idle);
     expect(scene.bridge.calls, contains('cancel'));
     expect(
-      scene.backend.wires.values.expand((wire) => wire.calls).where((call) => call.$1 == 'speech/transcribe'),
+      scene.link.wires.values.expand((wire) => wire.calls).where((call) => call.$1 == 'speech/transcribe'),
       isEmpty,
     );
     expect(scene.composer(tester).controller.text, isEmpty);
@@ -287,7 +286,7 @@ void main() {
     expect(scene.voice(tester).phase, VoicePhase.idle);
     expect(scene.bridge.calls.where((call) => call.startsWith('recorder:')), isEmpty);
     expect(
-      scene.backend.wires.values.expand((wire) => wire.calls).where((call) => call.$1.startsWith('speech/')),
+      scene.link.wires.values.expand((wire) => wire.calls).where((call) => call.$1.startsWith('speech/')),
       isEmpty,
     );
     expect(scene.composer(tester).controller.text, isEmpty);

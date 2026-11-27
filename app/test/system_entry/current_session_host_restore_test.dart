@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _remote = HostRef.relay('mac', name: 'Mac');
+const _remote = HostRef.paired('mac', name: 'Mac');
 
 Future<SharedPreferences> _seed({HostRef host = HostRef.local, bool autoConnect = true, String? legacyId}) async {
   SharedPreferences.setMockInitialValues({
@@ -178,7 +178,7 @@ void main() {
     await _settle(current);
     current.read(activeHostProvider.notifier).select(_remote);
     current.read(currentSessionProvider.notifier).select('remote-session');
-    const renamed = HostRef.relay('mac', name: 'Renamed Mac');
+    const renamed = HostRef.paired('mac', name: 'Renamed Mac');
     current.read(activeHostProvider.notifier).select(renamed);
     await _settle(current);
 

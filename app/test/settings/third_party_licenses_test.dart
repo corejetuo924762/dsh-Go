@@ -17,7 +17,6 @@ const _expected = <String, String>{
   'DeepSeek Harness': 'Copyright (c) 2026 DeepSeek',
   'Phase': 'Copyright (c) 2026 CikeSeven',
   'DS Bot': 'Copyright 2026 Fei2411 and the DS Bot contributors',
-  'ds-harness-remote': 'Copyright (c) 2026 DSH Remote contributors',
   'DSHA': 'Copyright (c) 2026 qiannianhuanxiang',
   'Libraries.dev': 'Copyright (c) 2026 Jakub Antalik',
   'Paper Shaders': 'Copyright (c) Paper Design, Inc.',
@@ -32,9 +31,6 @@ const _expected = <String, String>{
   'ONNX Runtime': 'Copyright (c) Microsoft Corporation',
   'Silero VAD': 'Copyright (c) 2020-present Silero Team',
   'smart-turn': 'Copyright (c) 2024–2025, Daily',
-  'flutter_webrtc': 'Copyright (c) 2015 Howard Yang',
-  'WebRTC': 'Copyright (c) 2011, The WebRTC project authors',
-  'AudioSwitch': 'Copyright 2020 Twilio, inc.',
   'Phosphor Icons': 'Copyright (c) 2023 Phosphor Icons',
   'Material Icons': 'Google',
   'discourse-emojis': 'Joffrey Jaffeux',
@@ -80,9 +76,6 @@ void main() {
       'Silero VAD',
       'smart-turn',
       'tawcroot (tawc)',
-      'flutter_webrtc',
-      'AudioSwitch',
-      'WebRTC',
       'Streaming Zipformer zh-en (sherpa-onnx)',
     ];
 
@@ -123,19 +116,6 @@ void main() {
     });
   });
 
-  test('WebRTC entry exposes the complete upstream asset without truncation', () {
-    final file = File('assets/licenses/webrtc-150.7871.04.md');
-    final bundle = file.readAsStringSync();
-    expect(
-      sha256.convert(file.readAsBytesSync()).toString(),
-      'd1f9382c6878ac024155fd6d44a5977329108bb8b0a01cea40e4a2f1d7de252e',
-    );
-    expect(textOf('WebRTC'), endsWith(bundle));
-    expect(RegExp(r'^# ', multiLine: true).allMatches(bundle).length, 30);
-    expect(bundle, contains('# boringssl'));
-    expect(bundle, contains('# zlib'));
-  });
-
   test('ML Kit carries its SDK terms rather than sample-code Apache terms', () {
     final notice = textOf('Google ML Kit Text Recognition (Chinese)');
     expect(notice, contains('https://developers.google.com/ml-kit/terms'));
@@ -170,7 +150,6 @@ void main() {
     for (final package in [
       'PiPilot',
       'DeepSeek Harness',
-      'ds-harness-remote',
       'DSHA',
       'Shizuku-API',
       'Phosphor Icons',
@@ -184,8 +163,6 @@ void main() {
       'libadb-android',
       'Conscrypt',
       'AndroidX WebKit',
-      'flutter_webrtc',
-      'AudioSwitch',
       'Material Icons',
     ]) {
       expect(textOf(package), contains(_apache), reason: package);
@@ -196,8 +173,6 @@ void main() {
       allOf(contains("with the author's permission"), contains('Copyright (c) 2026 CikeSeven'), contains(_mit)),
     );
     expect(textOf('Bouncy Castle'), contains(_mit));
-    expect(textOf('flutter_webrtc'), contains(_mit));
-    expect(textOf('WebRTC'), allOf(contains('Neither the name of Google'), contains('Additional IP Rights Grant')));
     expect(textOf('XZ for Java'), contains('Permission to use, copy, modify, and/or distribute'));
     expect(textOf('JetBrains Mono'), contains('SIL OPEN FONT LICENSE Version 1.1'));
     expect(textOf('Unicode Character Database (15.0.0)'), File('tool/unicode-15.0-LICENSE.txt').readAsStringSync());

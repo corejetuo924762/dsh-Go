@@ -310,9 +310,9 @@ void main() {
       expect(container.read(currentSessionProvider), 's1');
     });
 
-    for (final kind in [HostKind.ssh, HostKind.relay]) {
+    for (final kind in [HostKind.ssh, HostKind.paired]) {
       test('$kind current-chat requests become system reminders on background', () async {
-        final host = kind == HostKind.ssh ? _ssh : const HostRef.relay('lab');
+        final host = kind == HostKind.ssh ? _ssh : const HostRef.paired('lab');
         make(
           active: fakeHostConnection(local: false, kind: kind, hostId: 'lab'),
         );

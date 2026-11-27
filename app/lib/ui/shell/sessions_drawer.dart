@@ -39,7 +39,6 @@ import '../onboarding/local_install.dart';
 import '../modes/mode_switch.dart';
 import '../remote/host_status.dart';
 import '../remote/host_switcher.dart' show showHostSheet;
-import '../remote/network_details_sheet.dart' show showRemoteNetworkDetails;
 import '../safe_mode/engine_failure_card.dart';
 import '../safe_mode/safe_mode_banner.dart';
 import '../share/share_entry.dart';
@@ -1000,7 +999,7 @@ class IdentityBar extends ConsumerWidget {
     final colors = DshColors.of(context);
     final host = ref.watch(activeHostProvider);
     final name = ref.watch(hostNameProvider(host)) ?? (host.isLocal ? l10n.commonThisPhone : l10n.commonRemoteHost);
-    final view = watchHostStatus(ref, host, showRelayPath: true);
+    final view = watchHostStatus(ref, host);
     final statusLabel = view.label;
     final tint = hostKindTint(host.kind);
     return Padding(
@@ -1016,21 +1015,37 @@ class IdentityBar extends ConsumerWidget {
               key: const ValueKey('identity-host-controls'),
               children: [
                 const SizedBox(width: 6),
-                IconButton(
-                  key: const ValueKey('identity-host-details'),
-                  tooltip: host.isLocal ? l10n.phoneEngineTitle : l10n.remoteNetworkDetails,
-                  onPressed: host.isLocal ? onLocalDetails : () => showRemoteNetworkDetails(context, host),
-                  padding: const EdgeInsets.all(4),
-                  constraints: const BoxConstraints.tightFor(width: keySize, height: keySize),
-                  style: IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                  icon: DecoratedBox(
-                    decoration: ShapeDecoration(color: colors.identity[tint], shape: const CircleBorder()),
+                // 本机 opens engine details; a remote host has its own page for that.
+                if (host.isLocal)
+                  IconButton(
+                    key: const ValueKey('identity-host-details'),
+                    tooltip: l10n.phoneEngineTitle,
+                    onPressed: onLocalDetails,
+                    padding: const EdgeInsets.all(4),
+                    constraints: const BoxConstraints.tightFor(width: keySize, height: keySize),
+                    style: IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                    icon: DecoratedBox(
+                      decoration: ShapeDecoration(color: colors.identity[tint], shape: const CircleBorder()),
+                      child: SizedBox.square(
+                        dimension: 36,
+                        child: Icon(hostKindIcon(host.kind), size: 19, color: colors.onIdentity[tint]),
+                      ),
+                    ),
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.all(4),
                     child: SizedBox.square(
-                      dimension: 36,
-                      child: Icon(hostKindIcon(host.kind), size: 19, color: colors.onIdentity[tint]),
+                      dimension: keySize - 8,
+                      child: DecoratedBox(
+                        decoration: ShapeDecoration(color: colors.identity[tint], shape: const CircleBorder()),
+                        child: SizedBox.square(
+                          dimension: 36,
+                          child: Icon(hostKindIcon(host.kind), size: 19, color: colors.onIdentity[tint]),
+                        ),
+                      ),
                     ),
                   ),
-                ),
                 Expanded(
                   child: Semantics(
                     button: true,

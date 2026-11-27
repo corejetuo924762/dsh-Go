@@ -61,7 +61,6 @@ PR 上的 Flutter 测试按目录打包运行（`app/tool/bundle_tests.py`）：
 
 ```bash
 (cd packages/dsh_client && dart pub get && dart analyze && dart test)
-(cd packages/dsh_remote && dart pub get && dart analyze && dart test)
 ```
 
 **插件 SDK：**

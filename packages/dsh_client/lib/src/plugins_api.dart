@@ -625,8 +625,8 @@ final class PluginManagerOtherEvent extends PluginManagerEvent {
 
 /// `pluginManager/*` on [DshClient].
 ///
-/// Over the ds-harness-remote relay only the list and enable endpoints are
-/// allowed; check [canInstallPlugins] before offering installs.
+/// A carrier may allow only the list and enable endpoints (a paired
+/// computer's host does); check [canInstallPlugins] before offering installs.
 extension PluginsApi on DshClient {
   /// Whether this carrier lets install/remove calls through.
   bool get canInstallPlugins =>

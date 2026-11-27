@@ -61,7 +61,6 @@ On a PR the Flutter tests run as bundles, one per directory (`app/tool/bundle_te
 
 ```bash
 (cd packages/dsh_client && dart pub get && dart analyze && dart test)
-(cd packages/dsh_remote && dart pub get && dart analyze && dart test)
 ```
 
 **Plugin SDK:**

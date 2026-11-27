@@ -240,7 +240,7 @@ void main() {
     });
   }
 
-  voiceTest('relay states the real unavailable reason and performs no REST request', (tester) async {
+  voiceTest('a paired computer states the real unavailable reason and performs no REST request', (tester) async {
     late VoiceServer server;
     late DshClient client;
     await tester.runAsync(() async {
@@ -251,7 +251,7 @@ void main() {
       await client.close();
       await server.close();
     });
-    final source = HostConnection(client: client, isLocal: false, kind: HostKind.relay, hostId: 'relay');
+    final source = HostConnection(client: client, isLocal: false, kind: HostKind.paired, hostId: 'paired-1');
     await tester.pumpWidget(
       goldenApp(
         brightness: Brightness.light,
@@ -263,7 +263,7 @@ void main() {
       ),
     );
     await network(tester);
-    expect(find.text(appL10n.webRelayUnavailable), findsOneWidget);
+    expect(find.text(appL10n.voiceScribeUnsupported), findsOneWidget);
     expect(find.text('识别语言'), findsNothing);
     expect(find.byTooltip('刷新'), findsNothing);
     expect(server.requests, isEmpty);

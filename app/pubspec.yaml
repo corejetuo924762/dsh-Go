@@ -58,8 +58,6 @@ dependencies:
   url_launcher: ^6.3.3
   dsh_client:
     path: ../packages/dsh_client
-  dsh_remote:
-    path: ../packages/dsh_remote
   dsh_tavern:
     path: ../packages/dsh_tavern
   scrollable_positioned_list: ^0.3.8
@@ -79,8 +77,8 @@ dependencies:
   sherpa_onnx_android_armeabi: 1.13.4
   sherpa_onnx_android_x86: 1.13.4
   sherpa_onnx_android_x86_64: 1.13.4
-  # AES-256-GCM for hosted conversation links (lib/share_hosted), the pure-Dart
-  # implementation packages/dsh_remote already uses. Apache-2.0.
+  # AES-256-GCM for hosted conversation links (lib/share_hosted), a pure-Dart
+  # implementation. Apache-2.0.
   cryptography: ^2.9.0
   # IANA rules for automation run-time previews (next runs in any time zone).
   timezone: ^0.11.2
@@ -95,9 +93,6 @@ dependencies:
   http: ^1.6.0
   html: ^0.15.6
   pointycastle: ^4.0.0
-  # WebRTC DataChannel for DSH Remote's direct (P2P / TURN) path; the transport
-  # logic lives in packages/dsh_remote. MIT, bundles libwebrtc (BSD-3).
-  flutter_webrtc: ^1.6.3
   archive: ^4.6.0
   # Full image decoding in the pet importer's background isolate. MIT.
   image: 4.12.0
@@ -158,8 +153,6 @@ flutter:
 
   assets:
     - assets/licenses/streaming-asr-model-APACHE-2.0.txt
-    # Full upstream WebRTC Android release notices, shown by LicenseRegistry.
-    - assets/licenses/webrtc-150.7871.04.md
     # Unicode 15.0 tables used by pet archive filename normalization.
     - assets/licenses/unicode-15.0.txt
     - assets/licenses/jquery-3.7.1-LICENSE.txt

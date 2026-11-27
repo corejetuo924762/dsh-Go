@@ -230,7 +230,7 @@ void main() {
     });
 
     testWidgets('a remote host\'s tasks run regardless', (tester) async {
-      await schedules(tester, os: 'ohos', host: const HostRef.relay('r1'));
+      await schedules(tester, os: 'ohos', host: const HostRef.paired('r1'));
       expect(find.text(note), findsNothing);
     });
 

@@ -6,7 +6,7 @@
 
 - [对话](zh/01-chat.md)：新对话、模型、图片与语音、插话与排队、提问与授权、消息菜单、对话列表、外接键盘
 - [模型与渠道](zh/02-models.md)：切换模型、思考深度、自定义渠道、模型设置、DeepSeek 账号与 API Key
-- [本机引擎与远程主机](zh/03-engine-hosts.md)：本机或远程、启动与自动启动、Linux 环境、重置、卸载、切换主机、SSH、DSH Remote
+- [本机引擎与远程主机](zh/03-engine-hosts.md)：本机或远程、启动与自动启动、Linux 环境、重置、卸载、切换主机、SSH、配对电脑
 - [系统操作](zh/04-phone-control.md)：鸿蒙版用它代替手机操控，开启、能做什么、做不到什么、确认方式、交还给你、记录
 - [网页模式](zh/05-web.md)：切换界面、网页里的 App 功能、网页版手机布局
 - [宠物](zh/06-pets.md)：选择宠物、气泡、伙伴小屋、创意工坊
@@ -27,7 +27,7 @@
 
 - [Chat](en/01-chat.md): new chats, models, images and voice, steering and queueing, questions and approvals, message menu, chat list, hardware keyboard
 - [Models and providers](en/02-models.md): switching models, thinking effort, custom providers, model settings, DeepSeek account and API key
-- [Engine and remote hosts](en/03-engine-hosts.md): this phone or remote, starting and auto-start, Linux environment, reset, uninstall, switching hosts, SSH, DSH Remote
+- [Engine and remote hosts](en/03-engine-hosts.md): this phone or remote, starting and auto-start, Linux environment, reset, uninstall, switching hosts, SSH, paired computers
 - [System actions](en/04-phone-control.md): what HarmonyOS has instead of phone control; turning it on, what it can and can't do, confirmation, handing back, the log
 - [Web mode](en/05-web.md): switching interfaces, app features in Web, Web phone layout
 - [Pets](en/06-pets.md): choosing a pet, bubbles, companion room, Workshop

@@ -88,7 +88,7 @@ IPC 等错误误认成密钥丢失。所有错误原样穿过 Dart；读取或�
 | --- | --- |
 | 设置 › 隐私与分享 | “清除已保存的密钥”一行，只在一次探测读取报这三类错误时出现 |
 | API key 页、清除 API key、SSH 主机表单 | 直接弹确认框，不再说“再试一次”；表单内容保留 |
-| DSH Remote 登录、论坛登录 | 错误文案说明无法读取并指向隐私页；DSH Remote 不再当网络错误重连 |
+| 论坛登录、分享托管链接 | 错误文案说明无法读取并指向隐私页；不把它当网络错误重连 |
 
 确认框按钮是“取消”与“清除密钥”，危险色。用户确认后才调用
 `CredentialRecovery.recover`（`app/lib/state/credential_recovery.dart`），它调用一次
@@ -97,7 +97,7 @@ Android 和显式注入存储不提供这个 OH 恢复入口，不调用原插�
 调用协议，不代替 UI 真实的用户确认。
 
 恢复前后都让内存持有者放手，防止旧值写回：`hostedLinksProvider`（任何改动都重写整个
-列表）、`relayBackendProvider`（token 轮换写回）、`forumAuthProvider`（会话和密钥对）。
+列表）、`forumAuthProvider`（会话和密钥对）。
 `settingsProvider` 只重读 API key 和 provider id，因为失效它会让整个应用回到启动页。
 五个 store 本身没有缓存。不自动重试旧的编辑提交，也不把内存里的凭据再保存回来。
 
@@ -137,8 +137,7 @@ alias；密文已清但 HUKS 删除失败则返回 `secrets_recovery_failed`，�
 | `settingsProvider` / `SettingsController`（`state/settings_state.dart`） | `state.apiKey`、`customProviderIds`；新生命周期通过 `_load()` 从空库读回。既有 `_load` 私有，没有公开的恢复重载方法；不能把旧 state 再调用 `setApiKey` 保存。 |
 | `hostedLinksProvider` / `HostedLinksController`（`share_hosted/hosted_links_state.dart`） | `links` 含分享解密 key 和删除 token；取消原实例 timers，并收束已有 `_load`、`_save`、`_commit`，新实例从空库加载。只改 loaded 标志或重建 store 不够；旧删除回调不能再把旧列表保存回来。 |
 | `forumAuthProvider` / `ForumAuthController`（`forum/forum_auth.dart`） | `state.credentials` 以及私有 `_keys` RSA 对；当前 `build()` 未清 `_keys`，不能假定一次 invalidate 就清空。需要明确清字段或保证新控制器实例，同时使旧 `_restore`/授权回调失效。不要用会远端revoke的 `signOut` 冒充纯本地清理。 |
-| `relayBackendProvider` / `relayAccountProvider`（`state/hosts_state.dart`、`packages/dsh_remote/.../remote_account.dart`） | 后端有 `_identity`、`_credentials`、`_pins` 与 `_credentialWrites`；关闭连接并重新创建实例，收束旧异步凭据写入。现有 `close()` 仅关闭连接/API，不证明上述写队列已停止或所有缓存已擦除。 |
-| `hostLinkProvider(host)`、`remoteConnectionProvider(host)`（`state/connection_state.dart`） | 已建SSH/relay连接及正在认证的连接持有旧凭据；须关闭/失效，再从SecureSecretStore读取。SSH配置仍由 `HostsController` 的SharedPreferences加载，不能删除主机地址、用户名与配置。 |
+| `hostLinkProvider(host)`、`remoteConnectionProvider(host)`（`state/connection_state.dart`） | 已建 SSH / 配对电脑连接及正在认证的连接持有旧凭据；须关闭/失效，再从SecureSecretStore读取。SSH配置仍由 `HostsController` 的SharedPreferences加载，不能删除主机地址、用户名与配置。 |
 | `readListCredentialEpochProvider.notifier.advance()`（`state/read_list_epoch.dart`） | 现有凭据变化失效入口；恢复完成需推进此代际以失效相关读取身份，但这一步不会清空上面那些独立缓存。 |
 
 特别注意 `LocalConnectionController` 对 `settingsProvider.apiKey` 的监听：从非空变空
@@ -153,7 +152,7 @@ alias；密文已清但 HUKS 删除失败则返回 `secrets_recovery_failed`，�
 若主线选择重新启动应用或替换整个ProviderContainer，同样要先收束旧实例的异步写入。
 这些是恢复流程的验收条件，Dart 没有全局缓存清理 API。
 
-表后现状：`CredentialRecovery` 在恢复前后都推进代际并失效 hosted links、relay 和论坛，
+表后现状：`CredentialRecovery` 在恢复前后都推进代际并失效 hosted links 和论坛，
 `ForumAuthController.build()` 已清 `_keys`，`settingsProvider` 用公开的
 `reloadCredentials` 重读；SSH 和本地连接没有在恢复时关闭。`apiKey` 变空会清引擎那份，
 这是上一节写明的现行选择，对话框也说了会清哪些内容。

@@ -382,7 +382,7 @@
   "pluginsMarketTitle": "插件市场",
   "pluginsConnectToManage": "连上引擎后管理插件",
   "pluginsSafeModeOperationsBlocked": "安全模式下不能安装或卸载插件",
-  "pluginsRelayToggleOnly": "{host} · 经中转只能开关，安装请在那台电脑上进行",
+  "pluginsRelayToggleOnly": "{host} · 这台主机只能开关，安装请在那台电脑上进行",
   "@pluginsRelayToggleOnly": {
     "placeholders": {
       "host": {
@@ -756,7 +756,7 @@
       }
     }
   },
-  "pluginsRelayCommandInstruction": "经 DSH Remote 中转时只能开关插件。在{host}的终端里运行：",
+  "pluginsRelayCommandInstruction": "这台主机只能开关插件。在{host}的终端里运行：",
   "@pluginsRelayCommandInstruction": {
     "placeholders": {
       "host": {

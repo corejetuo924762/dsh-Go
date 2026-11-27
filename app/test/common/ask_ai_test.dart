@@ -171,7 +171,7 @@ void main() {
     });
 
     testWidgets('on DSH Remote, which takes no files: the question and the note', (tester) async {
-      await pumpPage(tester, host: const HostRef.relay('r'));
+      await pumpPage(tester, host: const HostRef.paired('r'));
       await tester.tap(find.byTooltip('问 AI'));
       await tester.pumpAndSettle();
       final request = _container(tester).read(composeInboxProvider).single;

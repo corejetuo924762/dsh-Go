@@ -138,13 +138,13 @@
 
 | 方案 | 依赖 | 工作量 | 适合 |
 |---|---|---|---|
-| A. 原生接入 ds-harness-remote（Dart 版 Relay → P2P） | 上游 ds-harness-remote 的许可与协议配合（许可和自写 Noise 见 THIRD_PARTY_NOTICES.md） | 1.5–2 人周（Relay MVP）+ 1–1.5 人周（WebRTC） | 所有用户，扫码即用 |
+| ~~A. 原生接入 ds-harness-remote（Dart 版 Relay → P2P）~~（已拆除，#15） | 上游 ds-harness-remote 的许可与协议配合 | — | 已由「扫码配对电脑」取代 |
 | B. SSH 远程（自带，dartssh2 端口转发 + 现有客户端） | 无 | ~1 人周 | 开发者，自己有服务器 |
-| 现状：Remote Web WebView | dsh.r2049.cn | 已有 | 过渡 |
+| 现状：配对电脑（访问入口配对码 + HTTP 直连） | 无 | 已有 | 同网段或有内网穿透的电脑 |
 
 状态（10-23）：A、B 均已完成。A：`packages/dsh_remote`（Noise IK 过官方向量；对自建的上游服务端 + Host 插件做了中转端到端测试），App 内账号登录、主机列表、指纹确认；未验证线上 dsh.r2049.cn 真实账号登录与 WebRTC 直连（未实现）。B：SSH 远程（主机指纹 TOFU、自动启动远端 dsh web、隧道、断线重连；私钥可粘贴或从文件导入），对本机临时 sshd 和开发机真实 sshd（DSH 0.2.0-rc.2）做了端到端测试。抽屉内可切换 本机 / SSH / 远程 主机。
 
-状态（10-31）：A 的直连已实现并接线。`packages/dsh_remote/lib/src/transport/webrtc_transport.dart` 的 `WebRtcTransport` 走 LAN / P2P / TURN（经 `peerConnector` 选择性启用，`null` 时与原来一样全程 Relay），App 侧 `app/lib/state/hosts_state.dart` 传 `peerConnector: flutterPeerConnector`、`app/lib/remote/relay/dsh_remote_backend.dart` 提供 `direct(bool)` 开关；范围与验证见 `packages/dsh_remote/README.md` 状态表与 `VERIFICATION.md`（Android 35 x86_64 上真实 P2P 与关闭直连的 Relay 探针均通过）。仍未验证：真机、跨公网 NAT、真实 TURN。上面 10-23 那条里的「未实现」是当时的记录，保留不动。
+状态（11-27，#15）：A 已按维护者裁定整体拆除——`packages/dsh_remote`、Relay/WebRTC 传输、账号登录、精简历史与对话备份全部删除，主机只剩 本机 / SSH / 配对 三种。替代路径是配对电脑：电脑的访问入口显示配对码，手机扫码或粘贴链接后直接 HTTP/WebSocket 连上它，不走账号也不走中继。上面两段历史记录保留不动。
 
 建议先 B 后 A：B 不依赖外部、能马上让"远程连 dsh-TUI / 电脑 DSH"可用；A 依赖上游的中转服务，放在后面做。两者都接到同一个 `HostConnection`，抽屉里加"主机切换"（本机 / 电脑 / 服务器）。
 
@@ -179,7 +179,7 @@ Agents-Anywhere 的网络与协议对我们没用（全经它自己的服务器�
 | 7 | 进度卡：todo / plan / goal，排队消息可编辑 | 官方投影 | ☑️ 会话详情 › 进度；排队消息可改插话 / 撤回 |
 | 8 | 手机文件双向打通：`/root/手机存储` 软链、挂载失败跳过、反方向导出到"下载" | DSHA | P0 #1 补完 |
 
-许可：DSHA、Whaleness、mobile-gateway、201222-L 为 MIT，saya-ch 为 Apache-2.0，可按许可证复用；dsh-pocket 为 GPL-2.0，只参考；Agents-Anywhere、yukiykchen 缺许可文件，需作者授权；ds-harness-remote 的许可见 THIRD_PARTY_NOTICES.md。
+许可：DSHA、Whaleness、mobile-gateway、201222-L 为 MIT，saya-ch 为 Apache-2.0，可按许可证复用；dsh-pocket 为 GPL-2.0，只参考；Agents-Anywhere、yukiykchen 缺许可文件，需作者授权。
 
 ## std 联动
 

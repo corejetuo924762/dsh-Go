@@ -9,7 +9,6 @@ import '../remote/link_status.dart';
 import '../remote/network_watch.dart';
 import '../remote/paired/paired_host_store.dart';
 import '../remote/paired/paired_link.dart';
-import '../remote/relay/relay_backend.dart';
 import '../remote/ssh/ssh_link.dart';
 import '../remote/ssh/ssh_transport.dart';
 import '../runtime/runtime_bridge.dart';
@@ -24,7 +23,7 @@ import 'provider_backend.dart';
 import 'provider_keys.dart';
 import 'settings_state.dart';
 
-/// A connected DSH host: the on-device engine, an SSH host or a relay device.
+/// A connected DSH host: the on-device engine, an SSH host or a paired computer.
 class HostConnection {
   const HostConnection({
     required this.client,
@@ -41,7 +40,7 @@ class HostConnection {
   /// A fixed label (tests); null builds it from [kind] and [name].
   final String? _label;
 
-  /// The host's own name (SSH / relay); null for 本机 or when not known.
+  /// The host's own name (SSH / paired); null for 本机 or when not known.
   final String? name;
 
   /// Shown in the chat header: "本机", "电脑 · SSH", "家里的 Mac · 远程".
@@ -254,33 +253,6 @@ final hostLinkProvider = Provider.autoDispose.family<HostLink?, HostRef>((ref, h
       _observeRemoteLink(ref, link, host.kind);
       ref.onDispose(() => unawaited(link.close()));
       return link;
-    case HostKind.relay:
-      final backend = ref.watch(relayBackendProvider);
-      final link = RelayHostLink(
-        backend: backend,
-        hostId: host.id,
-        // Fresh presence straight from the server (the account list on the
-        // remote page refreshes on its own).
-        resolveHost: () async {
-          final hosts = await backend.listHosts(refresh: true);
-          for (final h in hosts) {
-            if (h.id == host.id) return h;
-          }
-          return null;
-        },
-        kicks: ref.read(networkKicksProvider),
-      );
-      _observeRemoteLink(ref, link, host.kind);
-      final statuses = link.statuses.listen((status) {
-        if (status.phase == HostLinkPhase.failed && status.error?.kind == HostLinkErrorKind.notLoggedIn) {
-          unawaited(ref.read(relayAccountProvider.notifier).recheck());
-        }
-      });
-      ref.onDispose(() {
-        unawaited(statuses.cancel());
-        unawaited(link.close());
-      });
-      return link;
   }
 });
 
@@ -293,13 +265,10 @@ void _observeRemoteLink(Ref ref, HostLink link, HostKind kind) {
     switch (status.phase) {
       case HostLinkPhase.connecting:
       case HostLinkPhase.reconnecting:
-        settle ??= ref.read(usageStatsProvider.notifier).beginOperation(switch ((kind, reachedReady)) {
-          (HostKind.ssh, false) => UsageOperation.sshInitial,
-          (HostKind.ssh, true) => UsageOperation.sshReconnect,
-          (HostKind.paired, false) => UsageOperation.pairedInitial,
-          (HostKind.paired, true) => UsageOperation.pairedReconnect,
-          (_, false) => UsageOperation.relayInitial,
-          (_, true) => UsageOperation.relayReconnect,
+        settle ??= ref.read(usageStatsProvider.notifier).beginOperation(switch (kind) {
+          HostKind.ssh => reachedReady ? UsageOperation.sshReconnect : UsageOperation.sshInitial,
+          HostKind.paired => reachedReady ? UsageOperation.pairedReconnect : UsageOperation.pairedInitial,
+          HostKind.local => UsageOperation.runtimeOther,
         });
       case HostLinkPhase.connected:
         reachedReady = true;
@@ -339,7 +308,6 @@ final hostNameProvider = Provider.autoDispose.family<String?, HostRef>((ref, hos
   return switch (host.kind) {
     HostKind.local => appL10n.commonThisPhone,
     HostKind.ssh => ref.watch(hostsProvider.select((s) => s.sshById(host.id)?.name)),
-    HostKind.relay => ref.watch(relayAccountProvider.select((a) => a.value?.hostById(host.id)?.name)) ?? host.name,
     // The name the person gave the paired computer, following a rename.
     HostKind.paired =>
       ref.watch(pairedHostsProvider.select((s) => s.byId(host.id)?.name)) ?? host.name,
@@ -554,15 +522,6 @@ class ConnectionDiagnostics {
       'phase': status.phase.name,
       if (status.step != null) 'step': status.step!.name,
       'attempt': status.attempt,
-      if (status.path case final path?) 'transport': path.name,
-      if (status.network case final network?) ...{
-        if (network.connectDuration case final duration?) 'connectDurationMs': duration.inMilliseconds,
-        if (network.roundTripTime case final duration?) 'roundTripTimeMs': duration.inMilliseconds,
-        'fallbackReason': ?network.safeFallbackReason,
-        if (network.localIpVersion case final version?) 'localIpVersion': version.name,
-        if (network.remoteIpVersion case final version?) 'remoteIpVersion': version.name,
-        if (network.iceProtocol case final protocol?) 'iceProtocol': protocol.name,
-      },
       if (status.error case final error?) ...{
         'errorKind': error.kind.name,
         'retryable': error.retryable,
@@ -575,8 +534,6 @@ class ConnectionDiagnostics {
       status.phase,
       status.step,
       status.attempt,
-      status.path,
-      status.network?.safeFallbackReason,
       status.error?.kind,
       status.error?.retryable,
       status.error?.diagnosticCode,
@@ -595,8 +552,6 @@ class ConnectionDiagnostics {
           'phase': status.phase.name,
           if (status.step case final step?) 'step': step.name,
           'attempt': status.attempt,
-          if (status.path case final path?) 'transport': path.name,
-          'fallbackReason': ?status.network?.safeFallbackReason,
           if (status.error case final error?) ...{
             'errorKind': error.kind.name,
             'retryable': error.retryable,
@@ -647,8 +602,6 @@ AsyncValue<HostConnection?> _connectionForHost(Ref ref, HostRef host) {
       final paired = ref.watch(pairedHostsProvider);
       if (!paired.loaded) return const AsyncLoading();
       if (paired.byId(host.id) == null) return const AsyncData(null);
-      return ref.watch(remoteConnectionProvider(host));
-    case HostKind.relay:
       return ref.watch(remoteConnectionProvider(host));
   }
 }

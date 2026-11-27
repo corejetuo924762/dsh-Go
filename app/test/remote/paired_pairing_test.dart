@@ -19,7 +19,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../shell/golden_harness.dart';
-import 'support/fake_relay.dart';
 
 /// A camera the system refuses.
 class _DeniedCamera extends MobileScannerPlatform {
@@ -61,8 +60,6 @@ void main() {
   List<Override> overrides() => [
     secretStoreProvider.overrideWithValue(secrets),
     networkKicksProvider.overrideWithValue(const Stream.empty()),
-    relayBackendProvider.overrideWithValue(FakeRelayBackend()),
-    urlOpenerProvider.overrideWithValue((_) async => true),
     localRuntimeProvider.overrideWith(() => FakeRuntime(const LocalRuntimeState(loaded: true, status: runningStatus))),
     // This suite is about the page, not about dialing a gateway: the link's
     // own states are fed in by hand.

@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../packages/dsh_client/test/support/fake_dsh.dart';
 import 'support/session_sync_host.dart';
 
-const _remote = HostRef.relay('controlled-B');
+const _remote = HostRef.paired('controlled-B');
 final _peers = Provider<Map<HostRef, _Peer?>>((ref) => const {});
 final _routing = activeConnectionProvider.overrideWith((ref) {
   final host = ref.watch(activeHostProvider);
@@ -289,7 +289,7 @@ void main() {
     await waitSync(() => h.state.openApproval?.eventId == 'ask-B-initial', 'initial B request');
     await h.chat.allowAll(h.state.openApproval!);
     await waitSync(() => h.b.answers.length == 1, 'initial B approval');
-    h.container.read(activeHostProvider.notifier).select(const HostRef.relay('controlled-B', name: 'Renamed'));
+    h.container.read(activeHostProvider.notifier).select(const HostRef.paired('controlled-B', name: 'Renamed'));
     await h.container.pump();
     await h.ready(h.b);
     expect(h.container.read(currentSessionProvider), 'S');

@@ -176,7 +176,7 @@ void main() {
         Scaffold(
           body: BundleSheet(name: 'some-plugin', initial: removable()),
         ),
-        PluginHost(client: relay, label: '电脑', kind: HostKind.relay),
+        PluginHost(client: relay, label: '电脑', kind: HostKind.paired),
       );
       expect(find.text(_zh.hubPluginRemoveCommand), findsOneWidget);
     });

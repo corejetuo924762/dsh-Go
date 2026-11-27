@@ -377,7 +377,7 @@ void main() {
       await pumpScreen(
         tester,
         tab: PluginsTab.market,
-        host: fakeHost(relayClient, kind: HostKind.relay, label: '家里的 Mac · 远程'),
+        host: fakeHost(relayClient, kind: HostKind.paired, label: '家里的 Mac · 远程'),
       );
       expect(find.text('家里的 Mac · 远程 · 经中转只能开关，安装请在那台电脑上进行'), findsOneWidget);
       await openSheet(tester, 'novel-writer');

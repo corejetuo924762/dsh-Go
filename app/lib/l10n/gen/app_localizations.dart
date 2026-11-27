@@ -4541,7 +4541,7 @@ abstract class L10n {
   /// No description provided for @botsRelayUnavailable.
   ///
   /// In zh, this message translates to:
-  /// **'经中转连接时用不了 Bot'**
+  /// **'这台主机用不了 Bot'**
   String get botsRelayUnavailable;
 
   /// No description provided for @botsUseSsh.
@@ -10067,7 +10067,7 @@ abstract class L10n {
   /// No description provided for @companionMemoryUnsupportedHint.
   ///
   /// In zh, this message translates to:
-  /// **'经 DSH Remote 中继连接时用不了，或者这台主机的 dsh-go 桥接比较旧。'**
+  /// **'这台主机的 dsh-go 桥接比较旧，还读不了她的记忆。'**
   String get companionMemoryUnsupportedHint;
 
   /// No description provided for @companionMemoryLoadFailed.
@@ -16395,7 +16395,7 @@ abstract class L10n {
   /// No description provided for @featuresCordisRemoteUnavailable.
   ///
   /// In zh, this message translates to:
-  /// **'经 DSH Remote 中转时不可用'**
+  /// **'这台主机不提供 Cordis 面板'**
   String get featuresCordisRemoteUnavailable;
 
   /// No description provided for @featuresCordisReadFailed.
@@ -18381,7 +18381,7 @@ abstract class L10n {
   /// No description provided for @featuresExportRemoteHint.
   ///
   /// In zh, this message translates to:
-  /// **'经 DSH Remote 中转时拿不到日志，可以在电脑上的网页版导出'**
+  /// **'这台主机拿不到日志，可以在电脑上的网页版导出'**
   String get featuresExportRemoteHint;
 
   /// No description provided for @featuresExportShareHint.
@@ -18879,7 +18879,7 @@ abstract class L10n {
   /// No description provided for @harmonyCredentialsClearBody.
   ///
   /// In zh, this message translates to:
-  /// **'重试没有用。清除后，App 保存的 API key、DSH Remote 登录、SSH 密码和私钥、论坛登录都会被删除，需要重新填写或登录。已发布的分享链接还在，但这台手机上删不掉了。对话和主机列表会保留。此操作无法撤销。'**
+  /// **'重试没有用。清除后，App 保存的 API key、SSH 密码和私钥、论坛登录都会被删除，需要重新填写或登录。已发布的分享链接还在，但这台手机上删不掉了。对话和主机列表会保留。此操作无法撤销。'**
   String get harmonyCredentialsClearBody;
 
   /// No description provided for @harmonyCredentialsClearAction.
@@ -19206,18 +19206,6 @@ abstract class L10n {
   /// **'系统语音识别不可用'**
   String get harmonyVoiceSystemUnavailable;
 
-  /// No description provided for @harmonyNetworkRelayOnly.
-  ///
-  /// In zh, this message translates to:
-  /// **'当前版本走 Relay 中继，全程端到端加密。'**
-  String get harmonyNetworkRelayOnly;
-
-  /// No description provided for @harmonyNetworkFallbackRelayOnly.
-  ///
-  /// In zh, this message translates to:
-  /// **'当前版本只走 Relay 中继'**
-  String get harmonyNetworkFallbackRelayOnly;
-
   /// No description provided for @harmonySetupStay.
   ///
   /// In zh, this message translates to:
@@ -19379,18 +19367,6 @@ abstract class L10n {
   /// In zh, this message translates to:
   /// **'这台设备不能听你开口'**
   String get harmonyPluginVoiceUnavailable;
-
-  /// No description provided for @hostDetailsConnectionType.
-  ///
-  /// In zh, this message translates to:
-  /// **'连接方式'**
-  String get hostDetailsConnectionType;
-
-  /// No description provided for @hostDetailsSshNetworkHint.
-  ///
-  /// In zh, this message translates to:
-  /// **'通过 SSH 隧道连接。此连接不提供 LAN / P2P 路径检测或延迟测量。'**
-  String get hostDetailsSshNetworkHint;
 
   /// No description provided for @hubSessionDetails.
   ///
@@ -20937,7 +20913,7 @@ abstract class L10n {
   /// No description provided for @iosSpeechCallEndNoRecognizerSignedIn.
   ///
   /// In zh, this message translates to:
-  /// **'当前连接不能用已登录账号识别通话录音（例如经 DSH Remote 中继）；请填写 DeepSeek API Key 或配置其他可用的云端识别。iOS 暂不提供本地语音模型下载。'**
+  /// **'当前连接不能用已登录账号识别通话录音；请填写 DeepSeek API Key 或配置其他可用的云端识别。iOS 暂不提供本地语音模型下载。'**
   String get iosSpeechCallEndNoRecognizerSignedIn;
 
   /// No description provided for @iosPhoneLinkErrorPairingRejected.
@@ -29487,7 +29463,7 @@ abstract class L10n {
   /// No description provided for @pluginsRelayToggleOnly.
   ///
   /// In zh, this message translates to:
-  /// **'{host} · 经中转只能开关，安装请在那台电脑上进行'**
+  /// **'{host} · 这台主机只能开关，安装请在那台电脑上进行'**
   String pluginsRelayToggleOnly(String host);
 
   /// No description provided for @pluginsInstallThisPhone.
@@ -30519,7 +30495,7 @@ abstract class L10n {
   /// No description provided for @pluginsRelayCommandInstruction.
   ///
   /// In zh, this message translates to:
-  /// **'经 DSH Remote 中转时只能开关插件。在{host}的终端里运行：'**
+  /// **'这台主机只能开关插件。在{host}的终端里运行：'**
   String pluginsRelayCommandInstruction(String host);
 
   /// No description provided for @pluginsPermissionLocalThirdParty.
@@ -31578,114 +31554,6 @@ abstract class L10n {
   /// **'重新连接中 · 第 {count} 次'**
   String remoteReconnectAttempt(int count);
 
-  /// No description provided for @remoteErrInvalidServer.
-  ///
-  /// In zh, this message translates to:
-  /// **'服务器地址无效'**
-  String get remoteErrInvalidServer;
-
-  /// No description provided for @remoteErrEmailPassword.
-  ///
-  /// In zh, this message translates to:
-  /// **'邮箱或密码不对'**
-  String get remoteErrEmailPassword;
-
-  /// No description provided for @remoteErrHostNotInAccount.
-  ///
-  /// In zh, this message translates to:
-  /// **'账号下找不到这台主机'**
-  String get remoteErrHostNotInAccount;
-
-  /// No description provided for @remoteHostFallback.
-  ///
-  /// In zh, this message translates to:
-  /// **'这台主机'**
-  String get remoteHostFallback;
-
-  /// No description provided for @remoteErrHostOffline.
-  ///
-  /// In zh, this message translates to:
-  /// **'主机现在不在线'**
-  String get remoteErrHostOffline;
-
-  /// No description provided for @remoteErrHostRemoved.
-  ///
-  /// In zh, this message translates to:
-  /// **'{name}已不在你的 DSH Remote 账号下'**
-  String remoteErrHostRemoved(String name);
-
-  /// No description provided for @remoteErrRelaySignInExpired.
-  ///
-  /// In zh, this message translates to:
-  /// **'DSH Remote 登录已失效'**
-  String get remoteErrRelaySignInExpired;
-
-  /// No description provided for @remoteErrIdentityKeyChanged.
-  ///
-  /// In zh, this message translates to:
-  /// **'主机身份密钥和上次不一致'**
-  String get remoteErrIdentityKeyChanged;
-
-  /// No description provided for @remoteErrIdentityUnconfirmed.
-  ///
-  /// In zh, this message translates to:
-  /// **'还没有确认主机身份指纹'**
-  String get remoteErrIdentityUnconfirmed;
-
-  /// No description provided for @remoteErrConnectionReplaced.
-  ///
-  /// In zh, this message translates to:
-  /// **'远程连接已被替换'**
-  String get remoteErrConnectionReplaced;
-
-  /// No description provided for @remoteErrHostRejected.
-  ///
-  /// In zh, this message translates to:
-  /// **'主机拒绝了连接'**
-  String get remoteErrHostRejected;
-
-  /// No description provided for @remoteErrHostNotOwned.
-  ///
-  /// In zh, this message translates to:
-  /// **'主机不在你的 DSH Remote 账号下'**
-  String get remoteErrHostNotOwned;
-
-  /// No description provided for @remoteErrUpdateNeeded.
-  ///
-  /// In zh, this message translates to:
-  /// **'版本不匹配，请更新 DSH Go 和主机上的远程插件'**
-  String get remoteErrUpdateNeeded;
-
-  /// No description provided for @remoteErrVersionIncompatible.
-  ///
-  /// In zh, this message translates to:
-  /// **'主机上的 DSH 或远程插件需要更新'**
-  String get remoteErrVersionIncompatible;
-
-  /// No description provided for @remoteErrSignInTimeout.
-  ///
-  /// In zh, this message translates to:
-  /// **'登录超时'**
-  String get remoteErrSignInTimeout;
-
-  /// No description provided for @remoteSignInCancelled.
-  ///
-  /// In zh, this message translates to:
-  /// **'已取消登录'**
-  String get remoteSignInCancelled;
-
-  /// No description provided for @remoteErrBrowserSignInUnsupported.
-  ///
-  /// In zh, this message translates to:
-  /// **'服务器不支持浏览器登录'**
-  String get remoteErrBrowserSignInUnsupported;
-
-  /// No description provided for @remoteErrTooManyRequests.
-  ///
-  /// In zh, this message translates to:
-  /// **'请求太频繁'**
-  String get remoteErrTooManyRequests;
-
   /// No description provided for @remoteErrHostUnreachable.
   ///
   /// In zh, this message translates to:
@@ -31698,35 +31566,11 @@ abstract class L10n {
   /// **'远程连接失败'**
   String get remoteErrRemoteConnection;
 
-  /// No description provided for @remoteOnline.
-  ///
-  /// In zh, this message translates to:
-  /// **'在线'**
-  String get remoteOnline;
-
-  /// No description provided for @remoteOffline.
-  ///
-  /// In zh, this message translates to:
-  /// **'离线'**
-  String get remoteOffline;
-
   /// No description provided for @remoteUnavailable.
   ///
   /// In zh, this message translates to:
   /// **'暂不可用'**
   String get remoteUnavailable;
-
-  /// No description provided for @remoteErrHostNotFound.
-  ///
-  /// In zh, this message translates to:
-  /// **'找不到这台主机'**
-  String get remoteErrHostNotFound;
-
-  /// No description provided for @remoteConnectionStopped.
-  ///
-  /// In zh, this message translates to:
-  /// **'远程连接已停止'**
-  String get remoteConnectionStopped;
 
   /// No description provided for @remoteBootstrapReusePort.
   ///
@@ -32760,36 +32604,6 @@ abstract class L10n {
   /// **'信任并连接'**
   String get remoteHostKeyTrustConnect;
 
-  /// No description provided for @remoteHostKeyChangedTitle.
-  ///
-  /// In zh, this message translates to:
-  /// **'身份指纹变了'**
-  String get remoteHostKeyChangedTitle;
-
-  /// No description provided for @remoteRelayKeyChangedBody.
-  ///
-  /// In zh, this message translates to:
-  /// **'「{name}」的身份密钥和上次不一样。只在确认这台主机重装过远程插件时继续，否则可能有人冒充它。'**
-  String remoteRelayKeyChangedBody(String name);
-
-  /// No description provided for @remoteRelayKeyFirstBody.
-  ///
-  /// In zh, this message translates to:
-  /// **'首次连接「{name}」。核对身份指纹，与主机上远程插件显示的一致再继续。'**
-  String remoteRelayKeyFirstBody(String name);
-
-  /// No description provided for @remoteHostKeyChangeWarning.
-  ///
-  /// In zh, this message translates to:
-  /// **'之后指纹一旦变化，App 会拒绝连接。'**
-  String get remoteHostKeyChangeWarning;
-
-  /// No description provided for @remoteHostKeyTrustAgain.
-  ///
-  /// In zh, this message translates to:
-  /// **'重新信任'**
-  String get remoteHostKeyTrustAgain;
-
   /// No description provided for @remoteHostKeyReading.
   ///
   /// In zh, this message translates to:
@@ -32814,24 +32628,6 @@ abstract class L10n {
   /// **'这台手机上的 DSH'**
   String get remoteThisPhoneDsh;
 
-  /// No description provided for @remoteRemoteLabel.
-  ///
-  /// In zh, this message translates to:
-  /// **'远程'**
-  String get remoteRemoteLabel;
-
-  /// No description provided for @remoteRemotePlatform.
-  ///
-  /// In zh, this message translates to:
-  /// **'远程 · {platform}'**
-  String remoteRemotePlatform(String platform);
-
-  /// No description provided for @remoteRelaySwitchWarning.
-  ///
-  /// In zh, this message translates to:
-  /// **'DSH Remote 一次只连一台主机，切换会断开上一台'**
-  String get remoteRelaySwitchWarning;
-
   /// No description provided for @remoteConnectComputer.
   ///
   /// In zh, this message translates to:
@@ -32847,62 +32643,14 @@ abstract class L10n {
   /// No description provided for @remoteConnectionMethods.
   ///
   /// In zh, this message translates to:
-  /// **'通过 SSH 或 DSH Remote'**
+  /// **'通过 SSH 或配对电脑'**
   String get remoteConnectionMethods;
-
-  /// No description provided for @remoteRelayLoginRequired.
-  ///
-  /// In zh, this message translates to:
-  /// **'填写服务器地址、邮箱和密码'**
-  String get remoteRelayLoginRequired;
-
-  /// No description provided for @remoteErrSignIn.
-  ///
-  /// In zh, this message translates to:
-  /// **'没能登录'**
-  String get remoteErrSignIn;
-
-  /// No description provided for @remoteSelfHostedServer.
-  ///
-  /// In zh, this message translates to:
-  /// **'自建服务器'**
-  String get remoteSelfHostedServer;
-
-  /// No description provided for @remoteSelfHostedSignInHelp.
-  ///
-  /// In zh, this message translates to:
-  /// **'填写服务器地址，可用邮箱密码登录，也可先使用此服务器再选择其他登录方式。'**
-  String get remoteSelfHostedSignInHelp;
-
-  /// No description provided for @remoteUseServer.
-  ///
-  /// In zh, this message translates to:
-  /// **'使用此服务器'**
-  String get remoteUseServer;
-
-  /// No description provided for @remoteServerAddress.
-  ///
-  /// In zh, this message translates to:
-  /// **'服务器地址'**
-  String get remoteServerAddress;
-
-  /// No description provided for @remoteEmail.
-  ///
-  /// In zh, this message translates to:
-  /// **'邮箱'**
-  String get remoteEmail;
 
   /// No description provided for @remotePassword.
   ///
   /// In zh, this message translates to:
   /// **'密码'**
   String get remotePassword;
-
-  /// No description provided for @remoteRestoreServer.
-  ///
-  /// In zh, this message translates to:
-  /// **'改回默认服务器 dsh.r2049.cn'**
-  String get remoteRestoreServer;
 
   /// No description provided for @remoteConsole.
   ///
@@ -32964,23 +32712,11 @@ abstract class L10n {
   /// **'切回本机'**
   String get remoteSwitchToPhone;
 
-  /// No description provided for @remoteSignInAgain.
-  ///
-  /// In zh, this message translates to:
-  /// **'重新登录'**
-  String get remoteSignInAgain;
-
   /// No description provided for @remoteHostSettings.
   ///
   /// In zh, this message translates to:
   /// **'主机设置'**
   String get remoteHostSettings;
-
-  /// No description provided for @remoteReconnect.
-  ///
-  /// In zh, this message translates to:
-  /// **'重新连接'**
-  String get remoteReconnect;
 
   /// No description provided for @remoteReconnectingEllipsis.
   ///
@@ -32994,149 +32730,11 @@ abstract class L10n {
   /// **'重新连接中 · {reason}'**
   String remoteReconnectReason(String reason);
 
-  /// No description provided for @remoteConnectedEncrypted.
-  ///
-  /// In zh, this message translates to:
-  /// **'已连接 · 端到端加密'**
-  String get remoteConnectedEncrypted;
-
-  /// No description provided for @remoteConnectedVia.
-  ///
-  /// In zh, this message translates to:
-  /// **'已连接 · {path} · 端到端加密'**
-  String remoteConnectedVia(String path);
-
-  /// No description provided for @remotePathDirect.
-  ///
-  /// In zh, this message translates to:
-  /// **'直连'**
-  String get remotePathDirect;
-
-  /// No description provided for @remotePathTurn.
-  ///
-  /// In zh, this message translates to:
-  /// **'TURN'**
-  String get remotePathTurn;
-
-  /// No description provided for @remotePathRelay.
-  ///
-  /// In zh, this message translates to:
-  /// **'Relay 中继'**
-  String get remotePathRelay;
-
   /// No description provided for @remoteConnectedSsh.
   ///
   /// In zh, this message translates to:
   /// **'已连接 · SSH {address}'**
   String remoteConnectedSsh(String address);
-
-  /// No description provided for @remoteErrRefreshHosts.
-  ///
-  /// In zh, this message translates to:
-  /// **'没能刷新主机列表'**
-  String get remoteErrRefreshHosts;
-
-  /// No description provided for @remoteSwitchWarning.
-  ///
-  /// In zh, this message translates to:
-  /// **'一次只连一台主机，切换会断开上一台'**
-  String get remoteSwitchWarning;
-
-  /// No description provided for @remoteHostOfflineHint.
-  ///
-  /// In zh, this message translates to:
-  /// **'「{name}」现在不在线。在那台电脑上打开 DSH 后再试'**
-  String remoteHostOfflineHint(String name);
-
-  /// No description provided for @remoteRefreshHosts.
-  ///
-  /// In zh, this message translates to:
-  /// **'刷新主机列表'**
-  String get remoteRefreshHosts;
-
-  /// No description provided for @remoteSignOut.
-  ///
-  /// In zh, this message translates to:
-  /// **'退出'**
-  String get remoteSignOut;
-
-  /// No description provided for @remoteErrHostsRetry.
-  ///
-  /// In zh, this message translates to:
-  /// **'没能获取主机列表 · 轻点重试'**
-  String get remoteErrHostsRetry;
-
-  /// No description provided for @remoteNoHosts.
-  ///
-  /// In zh, this message translates to:
-  /// **'还没有主机'**
-  String get remoteNoHosts;
-
-  /// No description provided for @remoteRelaySetupHelp.
-  ///
-  /// In zh, this message translates to:
-  /// **'在主机的 DSH 里装好远程插件并登录'**
-  String get remoteRelaySetupHelp;
-
-  /// No description provided for @remoteRelaySignOutTitle.
-  ///
-  /// In zh, this message translates to:
-  /// **'退出 DSH Remote？'**
-  String get remoteRelaySignOutTitle;
-
-  /// No description provided for @remoteRelaySignOutBody.
-  ///
-  /// In zh, this message translates to:
-  /// **'这台手机会从账号中移除。主机上的 DSH 和对话不受影响，随时可以重新登录。'**
-  String get remoteRelaySignOutBody;
-
-  /// No description provided for @remoteRelaySignInTitle.
-  ///
-  /// In zh, this message translates to:
-  /// **'登录 DSH Remote'**
-  String get remoteRelaySignInTitle;
-
-  /// No description provided for @remoteRelaySignInHelp.
-  ///
-  /// In zh, this message translates to:
-  /// **'无需配置网络，连接端到端加密'**
-  String get remoteRelaySignInHelp;
-
-  /// No description provided for @remoteBrowserSignIn.
-  ///
-  /// In zh, this message translates to:
-  /// **'在浏览器中登录'**
-  String get remoteBrowserSignIn;
-
-  /// No description provided for @remoteSignInWithProvider.
-  ///
-  /// In zh, this message translates to:
-  /// **'使用 {provider} 登录'**
-  String remoteSignInWithProvider(String provider);
-
-  /// No description provided for @remoteComingSoon.
-  ///
-  /// In zh, this message translates to:
-  /// **'即将接入'**
-  String get remoteComingSoon;
-
-  /// No description provided for @remoteSelfHostedEmailSignIn.
-  ///
-  /// In zh, this message translates to:
-  /// **'自建服务器 · 邮箱登录'**
-  String get remoteSelfHostedEmailSignIn;
-
-  /// No description provided for @remoteBrowserSignInPending.
-  ///
-  /// In zh, this message translates to:
-  /// **'在浏览器里完成登录…'**
-  String get remoteBrowserSignInPending;
-
-  /// No description provided for @remoteCopySignInLink.
-  ///
-  /// In zh, this message translates to:
-  /// **'复制登录链接'**
-  String get remoteCopySignInLink;
 
   /// No description provided for @remoteSshAddressRequired.
   ///
@@ -33900,185 +33498,11 @@ abstract class L10n {
   /// **'还没装 DSH？在主机上运行 {command}'**
   String remoteSshInstallCommand(String command);
 
-  /// Under the DSH Remote card; project is the upstream GitHub project (liguobao/ds-harness-remote), drawn as a link.
-  ///
-  /// In zh, this message translates to:
-  /// **'服务由 {project} 提供'**
-  String remoteRelayProvider(String project);
-
-  /// No description provided for @remoteRelayProviderServer.
-  ///
-  /// In zh, this message translates to:
-  /// **'服务由 {project} 提供 · 当前服务器 {server}'**
-  String remoteRelayProviderServer(String project, String server);
-
-  /// No description provided for @remoteQuotedHostName.
-  ///
-  /// In zh, this message translates to:
-  /// **'「{name}」'**
-  String remoteQuotedHostName(String name);
-
   /// No description provided for @remoteErrorDetail.
   ///
   /// In zh, this message translates to:
   /// **'{message}（{detail}）'**
   String remoteErrorDetail(String message, String detail);
-
-  /// No description provided for @remotePathLan.
-  ///
-  /// In zh, this message translates to:
-  /// **'LAN 局域网'**
-  String get remotePathLan;
-
-  /// No description provided for @remotePathP2p.
-  ///
-  /// In zh, this message translates to:
-  /// **'P2P 点对点'**
-  String get remotePathP2p;
-
-  /// No description provided for @remoteNetworkDetails.
-  ///
-  /// In zh, this message translates to:
-  /// **'网络详情'**
-  String get remoteNetworkDetails;
-
-  /// No description provided for @remoteNetworkAutomatic.
-  ///
-  /// In zh, this message translates to:
-  /// **'自动依次尝试 LAN → P2P → TURN → Relay，连接全程端到端加密。'**
-  String get remoteNetworkAutomatic;
-
-  /// No description provided for @remoteNetworkCurrentPath.
-  ///
-  /// In zh, this message translates to:
-  /// **'当前路径'**
-  String get remoteNetworkCurrentPath;
-
-  /// No description provided for @remoteNetworkConnectDuration.
-  ///
-  /// In zh, this message translates to:
-  /// **'连接耗时'**
-  String get remoteNetworkConnectDuration;
-
-  /// No description provided for @remoteNetworkRoundTripTime.
-  ///
-  /// In zh, this message translates to:
-  /// **'往返延迟（RTT）'**
-  String get remoteNetworkRoundTripTime;
-
-  /// No description provided for @remoteNetworkUnmeasured.
-  ///
-  /// In zh, this message translates to:
-  /// **'未测量'**
-  String get remoteNetworkUnmeasured;
-
-  /// No description provided for @remoteNetworkUnknownPath.
-  ///
-  /// In zh, this message translates to:
-  /// **'尚未确认'**
-  String get remoteNetworkUnknownPath;
-
-  /// No description provided for @remoteNetworkMilliseconds.
-  ///
-  /// In zh, this message translates to:
-  /// **'{value} 毫秒'**
-  String remoteNetworkMilliseconds(int value);
-
-  /// No description provided for @remoteNetworkMeasure.
-  ///
-  /// In zh, this message translates to:
-  /// **'刷新网络信息 / 测量延迟'**
-  String get remoteNetworkMeasure;
-
-  /// No description provided for @remoteNetworkMeasuring.
-  ///
-  /// In zh, this message translates to:
-  /// **'正在测量…'**
-  String get remoteNetworkMeasuring;
-
-  /// No description provided for @remoteNetworkMeasureFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'暂时无法测量，可以稍后重试'**
-  String get remoteNetworkMeasureFailed;
-
-  /// No description provided for @remoteNetworkDisconnected.
-  ///
-  /// In zh, this message translates to:
-  /// **'连接已断开，重新连接后可测量'**
-  String get remoteNetworkDisconnected;
-
-  /// No description provided for @remoteNetworkFallback.
-  ///
-  /// In zh, this message translates to:
-  /// **'回落原因'**
-  String get remoteNetworkFallback;
-
-  /// No description provided for @remoteNetworkFallbackUnknown.
-  ///
-  /// In zh, this message translates to:
-  /// **'直连未能建立，已自动使用可用路径'**
-  String get remoteNetworkFallbackUnknown;
-
-  /// No description provided for @remoteNetworkFallbackWebrtcUnavailable.
-  ///
-  /// In zh, this message translates to:
-  /// **'设备暂不支持 WebRTC，已使用 Relay 中继'**
-  String get remoteNetworkFallbackWebrtcUnavailable;
-
-  /// No description provided for @remoteNetworkFallbackDirectFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'LAN / P2P 直连未成功，已自动尝试后续路径'**
-  String get remoteNetworkFallbackDirectFailed;
-
-  /// No description provided for @remoteNetworkFallbackDirectTimeout.
-  ///
-  /// In zh, this message translates to:
-  /// **'LAN / P2P 直连超时，已自动尝试后续路径'**
-  String get remoteNetworkFallbackDirectTimeout;
-
-  /// No description provided for @remoteNetworkFallbackDirectRecentlyFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'近期直连未成功，本次先使用可用中继'**
-  String get remoteNetworkFallbackDirectRecentlyFailed;
-
-  /// No description provided for @remoteNetworkFallbackTurnUnavailable.
-  ///
-  /// In zh, this message translates to:
-  /// **'TURN 服务暂不可用，已使用 Relay 中继'**
-  String get remoteNetworkFallbackTurnUnavailable;
-
-  /// No description provided for @remoteNetworkFallbackTurnFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'TURN 未能连接，已使用 Relay 中继'**
-  String get remoteNetworkFallbackTurnFailed;
-
-  /// No description provided for @remoteNetworkFallbackTurnTimeout.
-  ///
-  /// In zh, this message translates to:
-  /// **'TURN 连接超时，已使用 Relay 中继'**
-  String get remoteNetworkFallbackTurnTimeout;
-
-  /// No description provided for @remoteNetworkFallbackPathUnverified.
-  ///
-  /// In zh, this message translates to:
-  /// **'尚未确认 WebRTC 路径类型'**
-  String get remoteNetworkFallbackPathUnverified;
-
-  /// No description provided for @remoteNetworkSnapshotHint.
-  ///
-  /// In zh, this message translates to:
-  /// **'显示最近一次确认的路径与延迟，刷新可重新检测。'**
-  String get remoteNetworkSnapshotHint;
-
-  /// No description provided for @remoteNetworkObservedAt.
-  ///
-  /// In zh, this message translates to:
-  /// **'最近观测'**
-  String get remoteNetworkObservedAt;
 
   /// No description provided for @remoteHostedLoadFailed.
   ///
@@ -34121,48 +33545,6 @@ abstract class L10n {
   /// In zh, this message translates to:
   /// **'未能停止分享，链接仍然有效。请重试。'**
   String get remoteHostedStopFailed;
-
-  /// No description provided for @remoteNetworkLocalIpVersion.
-  ///
-  /// In zh, this message translates to:
-  /// **'手机 ICE IP 版本'**
-  String get remoteNetworkLocalIpVersion;
-
-  /// No description provided for @remoteNetworkRemoteIpVersion.
-  ///
-  /// In zh, this message translates to:
-  /// **'主机 ICE IP 版本'**
-  String get remoteNetworkRemoteIpVersion;
-
-  /// No description provided for @remoteNetworkIceProtocol.
-  ///
-  /// In zh, this message translates to:
-  /// **'ICE 协议'**
-  String get remoteNetworkIceProtocol;
-
-  /// No description provided for @remoteCompactHistory.
-  ///
-  /// In zh, this message translates to:
-  /// **'精简历史'**
-  String get remoteCompactHistory;
-
-  /// No description provided for @remoteErrHistoryModeChanged.
-  ///
-  /// In zh, this message translates to:
-  /// **'主机已不支持精简历史，请切换到其他主机后再连回来，或重启 App，重新加载历史'**
-  String get remoteErrHistoryModeChanged;
-
-  /// No description provided for @remoteCompactHistoryHint.
-  ///
-  /// In zh, this message translates to:
-  /// **'支持的 DSH Remote 主机会精简历史工具详情，实时回复和审批不变。切换主机或重启 App 后生效；旧主机仍传输完整历史。'**
-  String get remoteCompactHistoryHint;
-
-  /// No description provided for @searchKwRemoteCompactHistory.
-  ///
-  /// In zh, this message translates to:
-  /// **'精简 简洁 历史 工具 传输 流量 远程 compact slim lite'**
-  String get searchKwRemoteCompactHistory;
 
   /// No description provided for @pairedErrBanned.
   ///
@@ -34719,7 +34101,7 @@ abstract class L10n {
   /// No description provided for @remotePairedComputersHint.
   ///
   /// In zh, this message translates to:
-  /// **'不用 DSH Remote 账号，直接用电脑上的配对码连上'**
+  /// **'不用账号，直接用电脑上访问入口显示的配对码连上'**
   String get remotePairedComputersHint;
 
   /// No description provided for @pairedHostRenamed.
@@ -34769,90 +34151,6 @@ abstract class L10n {
   /// In zh, this message translates to:
   /// **'文件超过远程上传协议的大小上限'**
   String get stateRemoteUploadTooLarge;
-
-  /// No description provided for @remoteWebTitle.
-  ///
-  /// In zh, this message translates to:
-  /// **'DSH Web'**
-  String get remoteWebTitle;
-
-  /// No description provided for @remoteWebOpening.
-  ///
-  /// In zh, this message translates to:
-  /// **'正在打开 DSH Web…'**
-  String get remoteWebOpening;
-
-  /// No description provided for @remoteWebFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'没能打开 DSH Web'**
-  String get remoteWebFailed;
-
-  /// No description provided for @remoteWebRefresh.
-  ///
-  /// In zh, this message translates to:
-  /// **'刷新首页'**
-  String get remoteWebRefresh;
-
-  /// No description provided for @remoteWebBusy.
-  ///
-  /// In zh, this message translates to:
-  /// **'人太多了，请稍后重试'**
-  String get remoteWebBusy;
-
-  /// No description provided for @remoteWebPairingRequired.
-  ///
-  /// In zh, this message translates to:
-  /// **'连接授权失效，请重新连接或配对主机。'**
-  String get remoteWebPairingRequired;
-
-  /// No description provided for @remoteWebHostNotReady.
-  ///
-  /// In zh, this message translates to:
-  /// **'主机网页版尚未就绪。请启动 DSH Web，并将 Remote 插件更新到 0.6.6 或更新版本。'**
-  String get remoteWebHostNotReady;
-
-  /// No description provided for @remoteWebReconnect.
-  ///
-  /// In zh, this message translates to:
-  /// **'连接已断开，请重新连接主机后再打开。'**
-  String get remoteWebReconnect;
-
-  /// No description provided for @remoteWebUnsafeUrl.
-  ///
-  /// In zh, this message translates to:
-  /// **'网页地址无法验证，已停止打开。请检查主机配置。'**
-  String get remoteWebUnsafeUrl;
-
-  /// No description provided for @remoteWebExchangeRejected.
-  ///
-  /// In zh, this message translates to:
-  /// **'访问验证没有通过，请重试。'**
-  String get remoteWebExchangeRejected;
-
-  /// No description provided for @remoteWebSessionExpired.
-  ///
-  /// In zh, this message translates to:
-  /// **'网页连接已过期，请重试。'**
-  String get remoteWebSessionExpired;
-
-  /// No description provided for @remoteWebPlatformUnavailable.
-  ///
-  /// In zh, this message translates to:
-  /// **'当前平台暂不支持此网页入口。请使用原生远程界面。'**
-  String get remoteWebPlatformUnavailable;
-
-  /// No description provided for @remoteWebTryAgain.
-  ///
-  /// In zh, this message translates to:
-  /// **'暂时无法打开网页，请检查主机连接后重试。'**
-  String get remoteWebTryAgain;
-
-  /// No description provided for @remoteWebUnavailable.
-  ///
-  /// In zh, this message translates to:
-  /// **'暂时无法打开，请稍后重试'**
-  String get remoteWebUnavailable;
 
   /// No description provided for @riskDontShowAgain.
   ///
@@ -35277,7 +34575,7 @@ abstract class L10n {
   /// No description provided for @searchKwRemote.
   ///
   /// In zh, this message translates to:
-  /// **'远程,SSH,电脑,服务器,DSH Remote,连接电脑'**
+  /// **'远程,SSH,电脑,服务器,连接电脑'**
   String get searchKwRemote;
 
   /// No description provided for @searchKwPermission.
@@ -35951,174 +35249,6 @@ abstract class L10n {
   /// In zh, this message translates to:
   /// **'只有确认系统已不在安装时才结束等待。清除本次记录不等于取消系统安装；不会自动重试或切换路线，仍需再次原生确认。'**
   String get selfUpdateEndWaitingNote;
-
-  /// No description provided for @backupRecordFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'手机未能保存恢复记录。请记下上面的对话 ID 并检查目标主机，不要重复导入。'**
-  String get backupRecordFailed;
-
-  /// No description provided for @backupSearchKeywords.
-  ///
-  /// In zh, this message translates to:
-  /// **'备份,恢复,迁移,复制对话,同步,backup,restore'**
-  String get backupSearchKeywords;
-
-  /// No description provided for @backupTitle.
-  ///
-  /// In zh, this message translates to:
-  /// **'对话备份'**
-  String get backupTitle;
-
-  /// No description provided for @backupHint.
-  ///
-  /// In zh, this message translates to:
-  /// **'备份到手机后，可切换主机恢复到已有工作区。每次恢复会新建对话；不含附件、源码和跨对话关系。'**
-  String get backupHint;
-
-  /// No description provided for @backupCancelled.
-  ///
-  /// In zh, this message translates to:
-  /// **'已取消，已校验保存的备份仍可恢复。'**
-  String get backupCancelled;
-
-  /// No description provided for @backupUnknown.
-  ///
-  /// In zh, this message translates to:
-  /// **'结果待核对：请连接原目标主机查询，或先在目标端检查。不会自动重新导入。'**
-  String get backupUnknown;
-
-  /// No description provided for @backupFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'操作失败（{code}）。请检查连接或存储后重试。'**
-  String backupFailed(String code);
-
-  /// No description provided for @backupSaved.
-  ///
-  /// In zh, this message translates to:
-  /// **'已保存 {count} 条备份。'**
-  String backupSaved(int count);
-
-  /// No description provided for @backupSavedCloseFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'已保存 {count} 条备份，源主机导出句柄未能关闭；断线或闲置后会自动释放。'**
-  String backupSavedCloseFailed(int count);
-
-  /// No description provided for @backupRestoreConfirm.
-  ///
-  /// In zh, this message translates to:
-  /// **'将“{title}”恢复到“{workspace}”？会创建一条新对话，不合并或覆盖已有历史。'**
-  String backupRestoreConfirm(String title, String workspace);
-
-  /// No description provided for @backupRestored.
-  ///
-  /// In zh, this message translates to:
-  /// **'已恢复，新对话：{id}'**
-  String backupRestored(String id);
-
-  /// No description provided for @backupRestoredDetached.
-  ///
-  /// In zh, this message translates to:
-  /// **'历史已恢复，未加入工作区。对话 ID：{id}。请在目标端查找，不要重复导入。'**
-  String backupRestoredDetached(String id);
-
-  /// No description provided for @backupOriginalDevice.
-  ///
-  /// In zh, this message translates to:
-  /// **'请使用原 Remote 设备身份连接原目标主机，再查询提交结果。'**
-  String get backupOriginalDevice;
-
-  /// No description provided for @backupStorageFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'无法读取备份。请检查应用存储和系统密钥；不会重置或覆盖已有备份。'**
-  String get backupStorageFailed;
-
-  /// No description provided for @backupConnectHost.
-  ///
-  /// In zh, this message translates to:
-  /// **'连接一台已配对的 Remote 主机，即可备份或恢复。'**
-  String get backupConnectHost;
-
-  /// No description provided for @backupNoWorkspace.
-  ///
-  /// In zh, this message translates to:
-  /// **'等待主机工作区列表；没有工作区时请先在主机上创建。'**
-  String get backupNoWorkspace;
-
-  /// No description provided for @backupWorkspace.
-  ///
-  /// In zh, this message translates to:
-  /// **'整个工作区'**
-  String get backupWorkspace;
-
-  /// No description provided for @backupToPhone.
-  ///
-  /// In zh, this message translates to:
-  /// **'备份到手机'**
-  String get backupToPhone;
-
-  /// No description provided for @backupExportUnsupported.
-  ///
-  /// In zh, this message translates to:
-  /// **'此主机未提供对话导出能力，请更新主机 Remote 插件。'**
-  String get backupExportUnsupported;
-
-  /// No description provided for @backupImportUnsupported.
-  ///
-  /// In zh, this message translates to:
-  /// **'此主机未提供对话恢复能力，请更新主机 Remote 插件。'**
-  String get backupImportUnsupported;
-
-  /// No description provided for @backupPending.
-  ///
-  /// In zh, this message translates to:
-  /// **'待核对的恢复'**
-  String get backupPending;
-
-  /// No description provided for @backupCheck.
-  ///
-  /// In zh, this message translates to:
-  /// **'查询'**
-  String get backupCheck;
-
-  /// No description provided for @backupAcknowledge.
-  ///
-  /// In zh, this message translates to:
-  /// **'已在目标端核对'**
-  String get backupAcknowledge;
-
-  /// No description provided for @backupAcknowledgeConfirm.
-  ///
-  /// In zh, this message translates to:
-  /// **'确认已在目标端核对？清除此待确认记录后，可手动再导入，但可能创建重复对话。'**
-  String get backupAcknowledgeConfirm;
-
-  /// No description provided for @backupOnPhone.
-  ///
-  /// In zh, this message translates to:
-  /// **'手机上的备份'**
-  String get backupOnPhone;
-
-  /// No description provided for @backupEmpty.
-  ///
-  /// In zh, this message translates to:
-  /// **'还没有备份。备份仅保存在本机，卸载 App 会丢失。'**
-  String get backupEmpty;
-
-  /// No description provided for @backupRestore.
-  ///
-  /// In zh, this message translates to:
-  /// **'恢复到当前工作区'**
-  String get backupRestore;
-
-  /// No description provided for @backupDeleteConfirm.
-  ///
-  /// In zh, this message translates to:
-  /// **'删除手机上的这条备份及其恢复记录？不会删除主机上的对话。'**
-  String get backupDeleteConfirm;
 
   /// No description provided for @shellDeletePermanently.
   ///
@@ -38085,7 +37215,7 @@ abstract class L10n {
   /// No description provided for @speechAccountUnusable.
   ///
   /// In zh, this message translates to:
-  /// **'已登录的账号在这里付不了 DeepSeek 语音：当前连接的 DSH 版本较旧（更新后就行），或正经 DSH Remote 中继连接。在设置里填 DeepSeek API Key 就能用'**
+  /// **'已登录的账号在这里付不了 DeepSeek 语音：当前连接的 DSH 版本较旧，更新后就行。在设置里填 DeepSeek API Key 就能用'**
   String get speechAccountUnusable;
 
   /// No description provided for @speechSignIn.
@@ -38397,7 +37527,7 @@ abstract class L10n {
   /// No description provided for @speechCallEndNoRecognizerSignedIn.
   ///
   /// In zh, this message translates to:
-  /// **'通话要能识别录音。已登录的账号在这里付不了 DeepSeek 语音（当前连接的 DSH 版本较旧，或经 DSH Remote 中继）：在设置里填 DeepSeek API Key，或在设置 › 语音里下载语音模型'**
+  /// **'通话要能识别录音。已登录的账号在这里付不了 DeepSeek 语音（当前连接的 DSH 版本较旧）：在设置里填 DeepSeek API Key，或在设置 › 语音里下载语音模型'**
   String get speechCallEndNoRecognizerSignedIn;
 
   /// No description provided for @speechCallEndNoRecognizer.
@@ -39984,18 +39114,6 @@ abstract class L10n {
   /// **'SSH 主机'**
   String get stateSshHost;
 
-  /// No description provided for @stateHostBrowserFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'没能打开浏览器，可以复制登录链接到浏览器里完成。'**
-  String get stateHostBrowserFailed;
-
-  /// No description provided for @stateSignInFailed.
-  ///
-  /// In zh, this message translates to:
-  /// **'没能登录'**
-  String get stateSignInFailed;
-
   /// No description provided for @stateMarketTooLarge.
   ///
   /// In zh, this message translates to:
@@ -40275,7 +39393,7 @@ abstract class L10n {
   /// No description provided for @statePluginRelayToggleOnly.
   ///
   /// In zh, this message translates to:
-  /// **'经中转连接只能开关插件'**
+  /// **'这台主机只能开关插件'**
   String get statePluginRelayToggleOnly;
 
   /// No description provided for @statePluginManagementUnsupported.
@@ -40557,7 +39675,7 @@ abstract class L10n {
   /// No description provided for @stateExportRelayUnsupported.
   ///
   /// In zh, this message translates to:
-  /// **'经中转连接暂不支持导出'**
+  /// **'这台主机暂不支持导出'**
   String get stateExportRelayUnsupported;
 
   /// No description provided for @stateExportChatMissing.
@@ -40877,12 +39995,6 @@ abstract class L10n {
   /// In zh, this message translates to:
   /// **'{name} · 配对'**
   String stateHostPairedLabel(String name);
-
-  /// No description provided for @stateHostRemoteLabel.
-  ///
-  /// In zh, this message translates to:
-  /// **'{name} · 远程'**
-  String stateHostRemoteLabel(String name);
 
   /// No description provided for @stateMarketHttpError.
   ///
@@ -52043,12 +51155,6 @@ abstract class L10n {
   /// In zh, this message translates to:
   /// **'经 SSH 隧道的地址只能在 App 内打开'**
   String get webSshAppOnly;
-
-  /// No description provided for @webRelayUnavailable.
-  ///
-  /// In zh, this message translates to:
-  /// **'经 DSH Remote 中转时打不开网页版，请在那台电脑上打开'**
-  String get webRelayUnavailable;
 
   /// No description provided for @webSshHost.
   ///

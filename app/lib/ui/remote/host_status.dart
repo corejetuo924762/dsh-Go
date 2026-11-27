@@ -26,31 +26,22 @@ class HostStatusView {
     HostLinkPhase.reconnecting => HostStatusView(StatusTone.warn, appL10n.remoteReconnecting),
     HostLinkPhase.failed => HostStatusView(StatusTone.error, appL10n.commonConnectionFailed),
   };
-
-  static HostStatusView ofRelayHost(RelayHost host) => host.online
-      ? HostStatusView(StatusTone.ok, appL10n.remoteOnline)
-      : HostStatusView(StatusTone.idle, appL10n.remoteOffline);
 }
 
 /// Live status of [host]: the engine for 本机, the link for remote hosts.
-HostStatusView watchHostStatus(WidgetRef ref, HostRef host, {bool showRelayPath = false}) {
+HostStatusView watchHostStatus(WidgetRef ref, HostRef host) {
   if (host.isLocal) {
     final view = EngineStatusView.of(ref.watch(localRuntimeProvider));
     return HostStatusView(view.tone, view.label);
   }
   final snapshot = ref.watch(hostLinkStatusProvider(host));
   final status = (snapshot.isLoading || snapshot.hasError ? null : snapshot.value) ?? HostLinkStatus.idle;
-  if (showRelayPath && host.kind == HostKind.relay && status.isConnected) {
-    final path = status.network?.path ?? status.path;
-    if (path != null) return HostStatusView(StatusTone.ok, path.label);
-  }
   return HostStatusView.ofLink(status);
 }
 
 IconData hostKindIcon(HostKind kind) => switch (kind) {
   HostKind.local => AppIcons.thisPhone,
   HostKind.ssh => AppIcons.sshHost,
-  HostKind.relay => AppIcons.computer,
   HostKind.paired => AppIcons.computer,
 };
 
@@ -58,6 +49,5 @@ IconData hostKindIcon(HostKind kind) => switch (kind) {
 int hostKindTint(HostKind kind) => switch (kind) {
   HostKind.local => 0,
   HostKind.ssh => 6,
-  HostKind.relay => 1,
   HostKind.paired => 1,
 };

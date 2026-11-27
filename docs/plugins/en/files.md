@@ -4,7 +4,7 @@ The NA v1.3 `files` capability opens a system chooser after a tap. Selected cont
 
 ## Declaration and fallback
 
-Declare `"capabilities": ["files"]`. Add `"requires": ["files"]` to manifest buttons. Inside a panel, show selection buttons only when `caps.features?.includes('files')`; otherwise show ordinary explanatory text. Older apps and bridges, platforms without a native adapter, and DSH Remote relay connections do not negotiate this capability. Ordinary panels remain available.
+Declare `"capabilities": ["files"]`. Add `"requires": ["files"]` to manifest buttons. Inside a panel, show selection buttons only when `caps.features?.includes('files')`; otherwise show ordinary explanatory text. Older apps and bridges, platforms without a native adapter, and hosts without the dsh-go bridge do not negotiate this capability. Ordinary panels remain available.
 
 File selection does not require view v2. The manifest's `dshGo.v`, HTTP path and WebSocket `v` remain `1`, never `1.3`.
 
@@ -104,7 +104,7 @@ These are resource policies, not measured performance claims. Known lengths and 
 - Images use `MediaStore.ACTION_PICK_IMAGES` from Android 33. Multiple selection uses the lesser of the requested count and `getPickImagesMaxLimit()`. Older systems or a missing Photo Picker Activity fall back to `ACTION_OPEN_DOCUMENT` with `image/*`.
 - Only temporary read access is requested: no directory, write or additional storage permission, and no `takePersistableUriPermission`. Reads use `ContentResolver.openAssetFileDescriptor(uri, "r", ...)` with `CancellationSignal`, bypassing the dependency path that first copies the entire file to cache.
 - Local and direct SSH hosts reuse existing host authentication, HTTP carriers and SSH tunnels. Uploads use our own `/dsh-go/v1/files/` bridge route without changing the DSH engine protocol. Existing `fileUploads/upload` returns conversation attachment receipts, not a plugin-readable path.
-- DSH Remote relay does not currently forward `/dsh-go/*`; `files` stays unavailable. It cannot open a chooser and falsely report delivery. Authenticated bridge-route forwarding is an upstream prerequisite.
+- A host without the dsh-go bridge (a paired computer that doesn't have it, say) serves no `/dsh-go/*`, so `files` stays unavailable. It cannot open a chooser and falsely report delivery. Authenticated bridge-route forwarding is an upstream prerequisite.
 
 Android references: [Storage Access Framework](https://developer.android.com/training/data-storage/shared/documents-files), [MediaStore Photo Picker](https://developer.android.com/reference/android/provider/MediaStore#ACTION_PICK_IMAGES), and [ContentResolver](https://developer.android.com/reference/android/content/ContentResolver#openAssetFileDescriptor(android.net.Uri,java.lang.String,android.os.CancellationSignal)). This change has API-jar compilation and cross-layer automated tests; system UI, vendor providers, process recreation and a real SSH device path still require device verification.
 

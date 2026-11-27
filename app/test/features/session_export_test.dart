@@ -78,7 +78,7 @@ class _RealHttp extends HttpOverrides {}
 
 Future<T> _withRealHttp<T>(Future<T> Function() body) => HttpOverrides.runWithHttpOverrides(body, _RealHttp());
 
-final _relay = fakeHost(DshClient.withCarrier(_NoHttp()), kind: HostKind.relay, label: '家里的 Mac · 远程');
+final _relay = fakeHost(DshClient.withCarrier(_NoHttp()), kind: HostKind.paired, label: '家里的 Mac · 远程');
 
 Future<void> _pump(
   WidgetTester tester, {

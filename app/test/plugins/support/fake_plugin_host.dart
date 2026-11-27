@@ -125,7 +125,7 @@ class _SelectedHost extends ActiveHostController {
   @override
   HostRef build() => switch (host?.kind) {
     HostKind.ssh => HostRef.ssh(host!.hostId!),
-    HostKind.relay => HostRef.relay(host!.hostId!),
+    HostKind.paired => HostRef.paired(host!.hostId!),
     _ => HostRef.local,
   };
 }

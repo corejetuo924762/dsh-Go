@@ -142,7 +142,7 @@
   "pairedHostManage": "管理这台电脑",
   "remotePairedComputers": "配对电脑",
   "remotePairedPageTitle": "配对电脑",
-  "remotePairedComputersHint": "不用 DSH Remote 账号，直接用电脑上的配对码连上",
+  "remotePairedComputersHint": "不用账号，直接用电脑上访问入口显示的配对码连上",
   "pairedHostRenamed": "已改名为「{name}」",
   "@pairedHostRenamed": {
     "placeholders": {

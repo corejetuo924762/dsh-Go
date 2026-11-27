@@ -9,7 +9,7 @@ Use the full DSH Web interface inside the app, and switch back to the native int
 
 Under **Home**, choose **Native** or **Web** to switch right away. You can also tap the button next to New chat at the top of the chat list to go straight to Web.
 
-Going to Web brings the current chat along, or starts a new one in Web if none is open. Coming back brings the chat you were viewing in Web. DSH Web on a DSH Remote host is the exception: it opens on its home page without the chat, and switching back doesn't bring back the chat you viewed there.
+Going to Web brings the current chat along, or starts a new one in Web if none is open. Coming back brings the chat you were viewing in Web. A paired computer has no in-app DSH Web, so Web mode doesn't carry the chat there.
 
 ## App features in Web mode
 
@@ -41,4 +41,4 @@ Further down **Interface** are DSH Web's own options, kept in the current host's
 
 - **This phone**: if the engine isn't running, tap **Start engine**; if DSH isn't installed on this phone, tap **Install runtime**.
 - **SSH hosts**: DSH Web appears once the host is connected.
-- DSH Remote hosts: the host needs DS Harness Remote plugin 0.6.6 or later with DSH Web running; see [Open DSH Web on a Remote host](03-engine-hosts.md#open-dsh-web-on-a-remote-host).
+- Paired computers: no in-app DSH Web entry yet; open DSH Web on that computer. See [Open DSH Web on a remote host](03-engine-hosts.md#open-dsh-web-on-a-remote-host).

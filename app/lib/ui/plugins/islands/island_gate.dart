@@ -29,7 +29,7 @@ const islandsWithoutGuard = bool.fromEnvironment('DSH_GO_LOCAL_ISLANDS');
 
 /// Whether a host may have islands at all (§9). Pure:
 ///
-/// - relay: never (no DSH Web over the relay);
+/// - a paired computer: never (its page is not ours to inject into);
 /// - SSH: yes, the same exposure as the 网页版 entry that's already there;
 /// - on-device: only once the route guard ships with the runtime — the
 ///   bridge says so ([reported], `routeGuard` in `/dsh-go/v1/inventory`)
@@ -42,7 +42,6 @@ bool islandHostAllowed(
   RouteGuard probed = RouteGuard.unknown,
   bool override = false,
 }) => switch (kind) {
-  HostKind.relay => false,
   HostKind.ssh => true,
   HostKind.paired => false,
   HostKind.local => override || (reported == true && probed == RouteGuard.present),
@@ -129,7 +128,7 @@ final islandHostGateProvider = Provider.family<bool, HostRef>((ref, host) {
 
 /// The DSH Web launch URL for [host]'s islands (same as the 网页版's,
 /// `localWebUri`): the on-device engine while it runs, an SSH host through
-/// the app's forward while connected, nothing over the relay.
+/// the app's forward while connected, nothing on a paired computer.
 final islandHostUrlProvider = Provider.autoDispose.family<Uri?, HostRef>((ref, host) {
   switch (host.kind) {
     case HostKind.local:
@@ -144,7 +143,6 @@ final islandHostUrlProvider = Provider.autoDispose.family<Uri?, HostRef>((ref, h
       if (port == null || token == null) return null;
       return islandLaunchUri('http://127.0.0.1:$port', token);
     case HostKind.paired:
-    case HostKind.relay:
       return null;
   }
 });
