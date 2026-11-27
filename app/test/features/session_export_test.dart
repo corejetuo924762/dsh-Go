@@ -148,7 +148,7 @@ void main() {
     );
 
     test('errors read as sentences', () {
-      expect(sessionExportErrorText(const DshRemoteException('session-export/unsupported', 'x')), contains('中转'));
+      expect(sessionExportErrorText(const DshRemoteException('session-export/unsupported', 'x')), contains('暂不支持导出'));
       expect(sessionExportErrorText(const DshRemoteException('session-export/http-500', 'x')), '没能导出');
       expect(sessionExportErrorText(const DshTransportException('down')), '没能连上引擎');
     });

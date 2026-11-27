@@ -5,10 +5,12 @@ import 'package:dsh_app/diagnostics/diagnostics_bundle.dart';
 import 'package:dsh_app/diagnostics/app_error_log.dart';
 import 'package:dsh_app/diagnostics/diagnostics_channel.dart';
 import 'package:dsh_app/remote/link_status.dart';
+import 'package:dsh_app/remote/paired/paired_host_store.dart';
 import 'package:dsh_app/runtime/runtime_bridge.dart';
 import 'package:dsh_app/runtime/runtime_state.dart';
 import 'package:dsh_app/state/connection_state.dart';
 import 'package:dsh_app/state/hosts_state.dart';
+import 'package:dsh_app/state/paired_hosts_state.dart';
 import 'package:dsh_app/state/settings_state.dart';
 import 'package:dsh_client/dsh_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +23,19 @@ const _privateError = HostLinkError(
   'secret-host.example',
   detail: 'token=private-token SHA256:private-fingerprint',
 );
+
+class _Paired extends PairedHostsController {
+  @override
+  PairedHostsState build() => PairedHostsState(
+    records: [
+      PairedHostRecord(
+        id: 'private-host-id',
+        entry: DshPairingEntry.lan(Uri.parse('http://127.0.0.1:3080')),
+      ),
+    ],
+    loaded: true,
+  );
+}
 
 class _Runtime extends LocalRuntimeController {
   @override
@@ -128,6 +143,9 @@ ProviderContainer _observed(HostRef host, _Link link) {
       hostsProvider.overrideWith(_Hosts.new),
       hostNameProvider.overrideWith((ref, host) => 'private-host-name'),
       hostLinkProvider.overrideWith((ref, host) => link),
+      // A paired computer only has a link once the encrypted store knows it;
+      // without this the provider answers "no such host" and never fails.
+      pairedHostsProvider.overrideWith(_Paired.new),
       localConnectionProvider.overrideWith(_Local.new),
       localRuntimeProvider.overrideWith(_Runtime.new),
       settingsProvider.overrideWith(_Settings.new),
