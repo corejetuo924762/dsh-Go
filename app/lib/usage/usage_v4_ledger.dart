@@ -15,6 +15,8 @@ enum UsageOperation {
   runtimeOther('runtime_other'),
   sshInitial('ssh_initial'),
   sshReconnect('ssh_reconnect'),
+  pairedInitial('paired_initial'),
+  pairedReconnect('paired_reconnect'),
   relayInitial('relay_initial'),
   relayReconnect('relay_reconnect'),
   chatTurnLocal('chat_turn_local'),

@@ -22059,6 +22059,11 @@ class L10nZh extends L10n {
   }
 
   @override
+  String stateHostPairedLabel(String name) {
+    return '$name · 配对';
+  }
+
+  @override
   String stateHostRemoteLabel(String name) {
     return '$name · 远程';
   }

@@ -21,7 +21,8 @@ VALUES = ("tokens_in", "tokens_out", "paired_in", "paired_out", "uncached_in",
 OPERATIONS = ("runtime_direct", "runtime_proot", "runtime_other",
               "ssh_initial", "ssh_reconnect", "relay_initial", "relay_reconnect",
               "chat_turn_local", "chat_turn_remote", "chat_first_text_local", "chat_first_text_remote", "phone_task", "update_download", "update_install", "call_connect", "call_session", "plugin_install",
-              "plugin_execute", "onboarding_local", "onboarding_remote", "onboarding_tavern", "crash", "anr")
+              "plugin_execute", "onboarding_local", "onboarding_remote", "onboarding_tavern", "crash", "anr",
+              "paired_initial", "paired_reconnect")
 OP_COLS = ("episodes", "ready", "failed", "cancelled", "unknown",
            "le250ms", "le500ms", "le1s", "le2s", "le5s", "le10s", "le30s",
            "le60s", "le180s", "gt180s", "clipped")

@@ -25,6 +25,18 @@ class _NoLocal extends LocalConnectionController {
   Future<HostConnection?> build() async => null;
 }
 
+/// Counts builds of the on-device engine connection: a paired host must not
+/// open it (it would look like the paired computer while writing locally).
+class _CountingLocal extends LocalConnectionController {
+  static int builds = 0;
+
+  @override
+  Future<HostConnection?> build() async {
+    builds++;
+    return null;
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -66,11 +78,17 @@ void main() {
     secrets = MemorySecretStore();
     server = FakeSshServer();
     connector = FakeConnector();
+    _CountingLocal.builds = 0;
   });
 
   group('HostRef', () {
     test('round-trips and compares by kind + id', () {
-      for (final ref in [HostRef.local, const HostRef.ssh('ssh-1'), const HostRef.relay('mac', name: '家里的 Mac')]) {
+      for (final ref in [
+        HostRef.local,
+        const HostRef.ssh('ssh-1'),
+        const HostRef.relay('mac', name: '家里的 Mac'),
+        HostRef.paired(pairedHostId('192.168.1.5:3080'), name: '书房'),
+      ]) {
         expect(HostRef.decode(ref.encode()), ref);
       }
       expect(HostRef.decode(const HostRef.relay('mac', name: 'A').encode()).name, 'A');
@@ -80,10 +98,38 @@ void main() {
       expect(HostRef.decode('{"kind":"ssh"}'), HostRef.local);
     });
 
+    test('a paired host keeps its kind through the stored record', () {
+      final ref = HostRef.paired(pairedHostId('192.168.1.5:3080'), name: '书房');
+      final encoded = jsonDecode(ref.encode()) as Map;
+      expect(encoded['kind'], 'paired');
+      expect(encoded['id'], pairedHostId('192.168.1.5:3080'));
+
+      final restored = HostRef.decode(ref.encode());
+      expect(restored.kind, HostKind.paired);
+      expect(restored.id, ref.id);
+      expect(restored.name, '书房');
+    });
+
+    test('paired host identity comes from the entry address, never the name', () {
+      final id = pairedHostId('192.168.1.5:3080');
+      expect(id, matches(RegExp(r'^paired-[0-9a-f]{12}$')));
+      // Same address, same host — however often it is derived.
+      expect(pairedHostId('192.168.1.5:3080'), id);
+      // Another address in the same home is another host.
+      expect(pairedHostId('192.168.1.5:3081'), isNot(id));
+      expect(pairedHostId('nas.example.com'), isNot(id));
+
+      final named = HostRef.paired(id, name: '书房');
+      expect(HostRef.paired(id, name: '客厅'), named, reason: '改名不换身份');
+      expect(HostRef.paired(id, name: '客厅').name, '客厅');
+    });
+
     test('labels read well in the chat header', () {
       expect(hostLabel(HostKind.local, null), '本机');
       expect(hostLabel(HostKind.ssh, '电脑'), '电脑 · SSH');
       expect(hostLabel(HostKind.relay, '家里的 Mac'), '家里的 Mac · 远程');
+      expect(hostLabel(HostKind.paired, '书房'), '书房 · 配对');
+      expect(hostLabel(HostKind.paired, null), '远程主机 · 配对');
       expect(hostLabel(HostKind.ssh, '一个名字特别特别特别特别长的服务器'), endsWith('… · SSH'));
     });
   });
@@ -241,6 +287,32 @@ void main() {
       addTearDown(sub.close);
       await until(c, activeConnectionProvider, (s) => !s.isLoading, what: '本机连接状态');
       expect(c.read(activeConnectionProvider).value, isNull);
+    });
+
+    test('paired host stays a client: no link yet, and never the on-device engine', () async {
+      final c = ProviderContainer(
+        overrides: [
+          secretStoreProvider.overrideWithValue(secrets),
+          localConnectionProvider.overrideWith(_CountingLocal.new),
+          networkKicksProvider.overrideWithValue(const Stream.empty()),
+          relayBackendProvider.overrideWithValue(FakeRelayBackend()),
+        ],
+      );
+      addTearDown(c.dispose);
+      final host = HostRef.paired(pairedHostId('192.168.1.5:3080'), name: '书房');
+      c.read(activeHostProvider.notifier).select(host);
+      final sub = c.listen(activeConnectionProvider, (_, _) {});
+      addTearDown(sub.close);
+      final statuses = c.listen(hostLinkStatusProvider(host), (_, _) {});
+      addTearDown(statuses.close);
+
+      await until(c, activeConnectionProvider, (s) => !s.isLoading, what: '配对主机连接状态');
+      expect(c.read(activeConnectionProvider).value, isNull);
+      expect(c.read(activeConnectionProvider).hasError, isFalse);
+      expect(_CountingLocal.builds, 0, reason: '配对主机不拉起本机引擎');
+      expect(c.read(hostLinkProvider(host)), isNull, reason: '配对链路随接通票落地');
+      await until(c, hostLinkStatusProvider(host), (s) => s.value?.phase == HostLinkPhase.idle, what: '配对主机未连接');
+      expect(secrets.values, isEmpty, reason: '这一步不写任何凭据');
     });
 
     test('SSH host → a remote HostConnection with a meaningful label and cwd', () async {

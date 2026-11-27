@@ -6752,6 +6752,7 @@
   "stateSettingsMaxLength": "{count, plural, =1{At most 1 character} other{At most {count} characters}}",
   "stateEngineHttpRejected": "The engine rejected the request ({status})",
   "stateGoalActionOffline": "{action}: Can’t reach the engine",
+  "stateHostPairedLabel": "{name} · Paired",
   "stateHostRemoteLabel": "{name} · Remote",
   "stateMarketHttpError": "Can’t open the plugin catalog (HTTP {status})",
   "statePluginRuntimeIncompatible": "This plugin doesn’t support the current DSH version ({version}).",

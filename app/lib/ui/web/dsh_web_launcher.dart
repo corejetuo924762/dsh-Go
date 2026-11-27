@@ -60,6 +60,12 @@ final dshWebAccessProvider = Provider.autoDispose<DshWebAccess>((ref) {
   switch (host.kind) {
     case HostKind.local:
       return const LocalDshWeb();
+    case HostKind.paired:
+      // DSH Web over the paired link arrives with that link; nothing to
+      // open until it connects.
+      return NoDshWeb(
+        appL10n.webConnectHostFirst(ref.watch(hostNameProvider(host)) ?? appL10n.commonRemoteHost),
+      );
     case HostKind.relay:
       final os = ref.watch(operatingSystemProvider);
       if (os != 'android' && os != 'ios') return NoDshWeb(appL10n.webRelayUnavailable);

@@ -13032,6 +13032,14 @@
       }
     }
   },
+  "stateHostPairedLabel": "{name} · 配对",
+  "@stateHostPairedLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "stateHostRemoteLabel": "{name} · 远程",
   "@stateHostRemoteLabel": {
     "placeholders": {
