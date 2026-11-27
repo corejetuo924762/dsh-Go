@@ -68,6 +68,15 @@ class ReportTest(unittest.TestCase):
         self.assertEqual(sampled["d7_visible_returns"], 1)
         self.assertIsNone(sampled["d7_rate"])
 
+    def test_operation_slots_match_the_worker(self):
+        # The Worker gives each operation its mask bit by list position and the
+        # report reads those bits back through OPERATIONS: drift relabels data.
+        source = (Path(__file__).resolve().parents[1] / "src" / "usage-v4.ts").read_text(encoding="utf-8")
+        block = re.search(r"const operations = \[(.*?)\] as const;", source, re.S)
+        self.assertIsNotNone(block)
+        worker = re.findall(r"'([a-z0-9_]+)'", block.group(1))
+        self.assertEqual(tuple(worker), report.OPERATIONS)
+
 
 if __name__ == "__main__":
     unittest.main()
