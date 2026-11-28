@@ -17,7 +17,7 @@ Commands, skills, Config schemas and `dsh-ui` cards already show natively. See [
 
 ## 2. Tool cards
 
-Your tool returns a view and the app draws it as a card. It takes about 5 minutes and travels with the transcript, so relay hosts show it too. See the [quickstart](quickstart.md).
+Your tool returns a view and the app draws it as a card. It takes about 5 minutes and travels with the transcript, so paired computers show it too. See the [quickstart](quickstart.md).
 
 Tool cards are read-only for now: buttons in them don't act.
 
@@ -75,6 +75,6 @@ Move only the pieces you care about; the rest stays on the web.
 |---|---|---|---|
 | The phone's own engine | ✅ | ✅ | ✅ |
 | SSH host | ✅ | ❌ the bridge can't be installed there yet | ✅ |
-| Relay host | ✅ | ❌ | ❌ |
+| Paired computer | ✅ | ❌ | ❌ |
 
 See [Hosts, installing and fallbacks](hosts.md).

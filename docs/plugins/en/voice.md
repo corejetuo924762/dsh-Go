@@ -122,4 +122,4 @@ The test host calls your callbacks directly; leases, authentication and the 10 H
 
 ## Where it works
 
-On the local engine. SSH hosts once the bridge can be installed there (see [hosts](hosts.md)); relay hosts have none of this, and buttons with `requires` don't show.
+On the local engine. SSH hosts once the bridge can be installed there (see [hosts](hosts.md)); paired computers have none of this, and buttons with `requires` don't show.

@@ -6,7 +6,7 @@ Six things in a DSH plugin already show natively in the dsh-go app, with no dsh-
 |---|---|---|---|
 | Slash commands (`ctx.commands`) | The composer's `/` menu; results in the chat | Fully | All |
 | Skills (`SKILL.md`) | The `/` menu's skill group, the Skills page | Fully | All |
-| Plugin settings (an exported `Config`, live-editable fields) | Plugin details and the plugin group in Settings: a native form | Fully | On-device, SSH; relay depends on the host |
+| Plugin settings (an exported `Config`, live-editable fields) | Plugin details and the plugin group in Settings: a native form | Fully | On-device, SSH; a paired computer depends on the host |
 | Tools (`defineTool`) | The tool row: icon + name + one-line summary; expands to arguments and result | Generic | All |
 | Teaching the model to write ` ```dsh-ui ` blocks (in a skill or system prompt) | Charts, metrics, comparisons and options in replies | Fully | All |
 | `"dsh-go/view"` in a tool's `presentationMeta` | A native card in the tool row | Fully | All |

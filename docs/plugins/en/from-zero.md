@@ -278,7 +278,7 @@ dsh --profile web --dump-config
 |---|---|
 | On-device engine | Use the app's local terminal and keep the directory inside that environment |
 | SSH host | Use the remote terminal; a development-computer path is not automatically copied there |
-| Relay host | Install on the machine running DSH; tool cards travel with existing tool records and this example needs no additional REST tunnel |
+| Paired computer | Install on the machine running DSH; tool cards travel with existing tool records and this example needs no additional REST tunnel |
 
 This release links a local directory, so removing it breaks the entry point. After editing `lib/`, follow [local reloading](local-development.md). Restarting the on-device engine interrupts current work. Uninstalling and reinstalling is not a guarantee that an already loaded module is invalidated. Existing conversation records do not recompute presentation metadata; make a new tool call.
 

@@ -133,7 +133,7 @@
 
 控件只按无障碍名称匹配（中英两套文案），不依赖哈希类名；脚本只做点击和写官方自己的存储，不改样式，也不增删官方节点。没落地时，脚本通过 `DshAppOpen` JS channel 回报失败的步骤，App 弹一句中文提示，页面停在首页。
 
-远程主机：SSH 主机通过 App 的本地转发 `http://127.0.0.1:<转发端口>/?token=…` 打开远端的网页版。DSH 的浏览器防护接受任何 loopback Host，这一点已读源码 `dsh-client-connection` 的 `isTrustedApiRequest` 核实，但没有在真实 SSH 主机上跑过。经 DSH Remote 中转的主机没有 HTTP 通道，网页版入口会提示去那台电脑上打开。
+远程主机：SSH 主机通过 App 的本地转发 `http://127.0.0.1:<转发端口>/?token=…` 打开远端的网页版。DSH 的浏览器防护接受任何 loopback Host，这一点已读源码 `dsh-client-connection` 的 `isTrustedApiRequest` 核实，但没有在真实 SSH 主机上跑过。配对电脑的网页版没有 App 内入口，在那台电脑上直接开 DSH Web；导出走同一条 HTTP 链路，可用。
 
 实测：在电脑上用 runtime 里的 DSH 0.2.1-rc.2 起 `dsh web`，HOME 指向临时目录，在浏览器里注入同一个脚本。下面这些目标都落对了：插件、自动化任务、设置 › 模型 / Agent 预设 / 内置插件 / 通用设置、插件卡片（子智能体、Agent 循环、终端、智能体团队、语音输入、思考过程机器翻译）、换会话后打开终端 / 文件、侧栏。手机宽度（375px）加上注入的手机布局后，又测了一遍设置、面板、插件卡片、侧栏和终端。「账号与余额」只在登录官方账号后出现；没登录时脚本会回报失败，所以汇总页的账号入口用原生页面。
 
@@ -144,7 +144,7 @@
 
 ## 缺口与后续
 
-- **下载会话日志（`/export`）**：☑️ 已原生实现（`lib/ui/features/session_export_page.dart`）。和官方一样 GET `api/session.export?sessionId=…&includeDescendants=true` 拿 ZIP（`dsh-session-<id>.zip`），然后走系统分享或存到「下载/DSH」。入口：输入框 `/export`、全部功能 › 导出对话日志。经 DSH Remote 中转的主机没有 HTTP 通道，导不了，页面会说明。
+- **下载会话日志（`/export`）**：☑️ 已原生实现（`lib/ui/features/session_export_page.dart`）。和官方一样 GET `api/session.export?sessionId=…&includeDescendants=true` 拿 ZIP（`dsh-session-<id>.zip`），然后走系统分享或存到「下载/DSH」。入口：输入框 `/export`、全部功能 › 导出对话日志。配对电脑走同一条 HTTP 链路（`DshHttpCarrier`），会话日志导出可用。
 - **凭据遮挡**：☑️ 已原生实现（`lib/ui/chat/secret_mask.dart`），匹配规则与官方 `lib/client.js` 一致。
 - **原生化候选**：Cordis 的批准运行和插件界面（目前在网页版）。
 - **待真机验证**：深链在手机 WebView 里是否都落对；SSH 主机的网页版；原生终端的软键盘与快捷键行；语音输入（系统识别与引擎插件两条路）；订阅登录失效后「重新登录」的整条路径；DS Bot 通知点开的跳转。

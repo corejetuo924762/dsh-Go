@@ -58,7 +58,7 @@ Sound, speech detection, the small caption channel and the floating caption ([So
 | Case | Result |
 |---|---|
 | The plugin declares no `capabilities` | Exactly v1.1 |
-| The app lacks a capability (an older app, a relay host, no microphone) | Buttons with `requires` don't show; such effects are dropped (one issue, not a violation) |
+| The app lacks a capability (an older app, a paired computer, no microphone) | Buttons with `requires` don't show; such effects are dropped (one issue, not a violation) |
 | The bridge is older than the app | No `features` in `welcome`: the app turns none of this on |
 
 A view function's `caps.features` lists what the app asked for in this request, if you want to add a caption only when it can be shown.

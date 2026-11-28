@@ -79,7 +79,7 @@ This attribute opts out of the touch-size rule only; safe areas, drawers and oth
 
 - Islands still require a host with web pages, the existing route gate and available resource budget.
 - If an island cannot open, the existing DSH Web entry opens the sidebar so the person can choose the panel. The web opening bridge has no third-party panel deep-link id, so it cannot promise to land on an arbitrary plugin cell.
-- Relay hosts without web pages do not show web-only panels.
+- Paired computers without web pages do not show web-only panels.
 
 ## Resource and compatibility limits
 

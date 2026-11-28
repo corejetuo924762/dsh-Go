@@ -122,4 +122,4 @@ await h.capabilityEvent({ sessionId: 's1' }, { instance: 'reading', event: 'voic
 
 ## 在哪能用
 
-本机引擎可用。SSH 主机要等桥接能装上（见[主机覆盖](hosts.md)）；中转主机没有这些能力，带 `requires` 的按钮不会出现。
+本机引擎可用。SSH 主机要等桥接能装上（见[主机覆盖](hosts.md)）；配对电脑没有这些能力，带 `requires` 的按钮不会出现。

@@ -195,7 +195,7 @@ Expand **More settings**. **Recent actions** logs every step, without screen con
 
 **Check phone control** opens a separate page showing only status and start or cancel/cleanup controls. B, C1 and C2 profiles, coverage, individual results, refresh and report export are under **Technical details**. This is a partial check: untested items never count as passed. Opening the page does not start a check.
 
-**Text recognition** shows a switch and a short data notice. Recognition is on-device, results may go to your configured model, and the SDK collects usage statistics. **Privacy details** contains the full Google SDK disclosure, what turning it off does, and the separate shared-SDK use by Remote pairing. Turning it off does not uninstall the SDK or promise to erase or stop sending accumulated statistics.
+**Text recognition** shows a switch and a short data notice. Recognition is on-device, results may go to your configured model, and the SDK collects usage statistics. **Privacy details** contains the full Google SDK disclosure, what turning it off does, and the separate shared-SDK use by pairing scanning. Turning it off does not uninstall the SDK or promise to erase or stop sending accumulated statistics.
 
 **Non-disruptive mode**:
 
