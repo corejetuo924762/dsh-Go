@@ -38,6 +38,7 @@ jobs:
       runtime: ${{ github.event_name != 'pull_request' || steps.filter.outputs.runtime == 'true' || steps.filter.outputs.memory == 'true' }}
       memory: ${{ github.event_name != 'pull_request' || steps.filter.outputs.memory == 'true' }}
       ios_runtime: ${{ steps.filter.outputs.ios_runtime }}
+      android_build: ${{ github.event_name != 'pull_request' || steps.filter.outputs.android_build == 'true' }}
     steps:
       - id: filter
         if: github.event_name == 'pull_request'
@@ -47,6 +48,7 @@ jobs:
           filters: |
             ci: &ci .github/workflows/ci.yml
             app: [*ci, 'app/**', 'tooling/companion/**', 'packages/**', 'sdk/plugin-kit/**', 'runtime/tests/direct/**', 'site/share/**', 'docs/guide/**', 'THIRD_PARTY_NOTICES.md', 'tooling/fixtures/diagnostic-redaction.json']
+            android_build: [*ci, 'app/**', 'packages/**', 'tooling/**', 'runtime/tawcroot/**', 'runtime/lib/**']
             startup_policy: [*ci, 'app/android/**', 'runtime/tests/direct/**', '**/.gitattributes']
             packages: [*ci, 'packages/**']
             runtime: [*ci, 'runtime/**', 'app/assets/islands/island.js', 'app/test/plugins/islands/support/island_page_harness.mjs', 'app/assets/engine/auth/**', 'packages/dsh_client/test/fixtures/companion_signal_results.json', 'app/ohos/entry/src/main/ets/runtime/**', 'app/ohos/entry/src/main/ets/entryability/EntryAbility.ets', 'app/ohos/entry/src/main/ets/phone/PhoneBridge.ets', 'tooling/ohos/**', 'examples/**', 'sdk/plugin-kit/**', 'app/tool/engine_auth/**', 'app/test/plugin_config/fixtures/**', 'app/test/media/fixtures/**', 'app/android/app/src/main/kotlin/io/github/ccch1mneyyy/dsh_app/runtime/SafeMode.kt', 'app/android/app/src/main/kotlin/io/github/ccch1mneyyy/dsh_app/phone/PhoneGuest.kt']
@@ -483,6 +485,70 @@ jobs:
       - working-directory: app/android
         run: gradle --stacktrace :app:testArm64DebugUnitTest -x :app:compileFlutterBuildArm64Debug
 
+  # This job's time is the toolchain and the Gradle build, not the Dart compile: the
+  # runtime bundle and the companion pack are deliberately absent here, both of which
+  # tooling/build-apk.sh stops for (it is for APKs that go onto a phone).
+  android-build:
+    name: Android arm64 build
+    needs: changes
+    if: needs.changes.outputs.android_build == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      DSH_MAVEN_MIRRORS: 0 # As in the Android JVM job: the Aliyun mirrors are slow from a US runner.
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - *checkout
+      - *java
+      - *flutter
+      # The runner image's NDK is not necessarily the one this app's Kotlin and native
+      # sources are built against (tooling/setup-toolchain.sh sets up the same pieces
+      # locally, emulator aside).
+      - name: Install Flutter's default NDK
+        run: |
+          extension=$(find "$FLUTTER_ROOT/packages/flutter_tools/gradle/src/main" -name 'FlutterExtension.*' -print -quit)
+          version=$(grep -oE 'ndkVersion[^"]*"[0-9.]+"' "$extension" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          android_home=${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}
+          test -n "$android_home"
+          test -d "$android_home/ndk/$version" || "$android_home/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$version"
+      - name: Dependencies and local.properties
+        run: |
+          flutter pub get --enforce-lockfile
+          printf 'sdk.dir=%s\nflutter.sdk=%s\n' "${ANDROID_HOME:-${ANDROID_SDK_ROOT:-}}" "$FLUTTER_ROOT" > android/local.properties
+          # The tracked wrapper names a Tencent mirror, which a runner in the US waits on:
+          # the official host, same version, for this build only (Flutter keeps the file it
+          # finds, so the rewrite has to happen before it injects the wrapper).
+          sed -i 's|mirrors\.cloud\.tencent\.com/gradle/|services.gradle.org/distributions/|' \
+            android/gradle/wrapper/gradle-wrapper.properties
+          grep distributionUrl android/gradle/wrapper/gradle-wrapper.properties
+      # The gradlew this runs is Flutter's own: the repository does not track it, so
+      # gradle_utils.dart injects one and keeps the gradle-wrapper.properties above, which
+      # is where this build's Gradle version comes from.
+      - name: Build the arm64 APK
+        run: |
+          code=$(python3 ../tooling/build_number.py)
+          name=$(sed -n 's/^version:[[:space:]]*\([^+[:space:]]*\).*/\1/p' pubspec.yaml)
+          flutter build apk --release --flavor arm64 --target-platform android-arm64 \
+            --build-name "$name" --build-number "$code" --dart-define="DSH_APP_VERSION=$name+$code" --no-pub
+          apk=build/app/outputs/flutter-apk/app-arm64-release.apk
+          test -f "$apk"
+          ls -l "$apk"
+      # What the build-type profile still lets through: R8 renaming the ONNX classes
+      # that the runtime looks up by name.
+      - name: The APK keeps its JNI class definitions
+        run: |
+          apk=build/app/outputs/flutter-apk/app-arm64-release.apk
+          python3 ../tooling/check_apk_jni.py "$apk"
+          unzip -l "$apk" | grep -E 'lib/arm64-v8a/'
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dsh-go-arm64-${{ github.sha }}
+          path: app/build/app/outputs/flutter-apk/app-arm64-release.apk
+          if-no-files-found: error
+          retention-days: 7
+
   # Two minutes that need kotlinc and a JVM but nothing of Flutter or Gradle: on a runner of
   # its own they come off the Android job, the longest one left.
   startup-policy:
@@ -500,7 +566,7 @@ jobs:
   ci-ok:
     name: CI OK
     if: always()
-    needs: [changes, checks, analyze, flutter, dart, runtime, memory-replay, android, startup-policy, ios-runtime]
+    needs: [changes, checks, analyze, flutter, dart, runtime, memory-replay, android, android-build, startup-policy, ios-runtime]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
